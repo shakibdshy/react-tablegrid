@@ -8,7 +8,7 @@ export type UpdateDataFn<T> = (index: number, field: keyof T, value: T[keyof T])
 
 // Define strict column interface
 export interface Column<T> {
-  id: string
+  id: keyof T
   header: ReactNode | (() => ReactNode)
   accessorKey: keyof T
   sortable?: boolean
@@ -18,13 +18,10 @@ export interface Column<T> {
   pinned?: 'left' | 'right' | false
   cell?: (props: {
     value: T[keyof T]
-    onChange: (value: T[keyof T]) => void
+    row: T
+    onChange?: (value: T[keyof T]) => void
     onDelete?: () => void
-    row: {
-      original: T
-      index: number
-    }
-    table: {
+    table?: {
       options: {
         meta: {
           updateData: UpdateDataFn<T>
@@ -42,13 +39,13 @@ export interface HeaderGroup<T> {
 
 export interface TableState<T> {
   data: T[]
-  sortColumn: string
+  sortColumn: keyof T
   sortDirection: SortDirection
   filterValue?: string
-  visibleColumns: string[]
+  visibleColumns: Array<keyof T>
   pinnedColumns: {
-    left: string[]
-    right: string[]
+    left: Array<keyof T>
+    right: Array<keyof T>
   }
 }
 
@@ -100,14 +97,17 @@ export interface TableStyleConfig {
   };
 }
 
+// Add this type to handle Fuse.js keys
+export type FuseKeys<T> = Array<keyof T | string>;
+
 // Define strict table props interface
-export interface TableProps<T extends Record<string, unknown>> {
+export interface TableProps<T> {
   columns: Column<T>[]
   data: T[]
   variant?: TableVariant
   className?: string
   onSort?: (column: Column<T>) => void
-  sortColumn?: string
+  sortColumn?: keyof T
   sortDirection?: SortDirection
   gridTemplateColumns?: string
   maxHeight?: string
@@ -122,7 +122,7 @@ export interface TableProps<T extends Record<string, unknown>> {
   enableFiltering?: boolean
   headerGroups?: boolean
   enableFuzzySearch?: boolean
-  fuzzySearchKeys?: Array<keyof T & string>
+  fuzzySearchKeys?: FuseKeys<T>
   fuzzySearchThreshold?: number
   
   // New customization props
@@ -138,4 +138,34 @@ export interface TableProps<T extends Record<string, unknown>> {
     placeholder?: string;
   }) => ReactNode;
   isLoading?: boolean;
+}
+
+// Update TableGridReturn to use typed column ids
+export interface TableGridReturn<T> {
+  // Data
+  data: T[]
+  setData: (data: T[]) => void
+  
+  // Sorting
+  sortColumn: keyof T
+  sortDirection: SortDirection
+  handleSort: (column: Column<T>) => void
+  
+  // Filtering
+  filterValue: string
+  setFilterValue: (value: string) => void
+  filteredData: T[]
+  
+  // State
+  state: TableState<T>
+  resetState: () => void
+  visibleColumns: Array<keyof T>
+  toggleColumnVisibility: (columnId: keyof T) => void
+  
+  // Pinning
+  pinnedColumns: {
+    left: Array<keyof T>
+    right: Array<keyof T>
+  }
+  toggleColumnPin: (columnId: keyof T, position: 'left' | 'right' | false) => void
 } 

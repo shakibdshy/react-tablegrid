@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback, useEffect } from "react"
 import type { Column, SortDirection, TableState } from "@/components/ui/table-grid/types"
 import Fuse from "fuse.js"
+import type { IFuseOptions } from 'fuse.js';
 
 interface TableGridOptions<T> {
   data: T[]
@@ -9,7 +10,7 @@ interface TableGridOptions<T> {
   onStateChange?: (state: TableState<T>) => void
   debounceMs?: number
   enableFuzzySearch?: boolean
-  fuzzySearchKeys?: Array<keyof T & string>
+  fuzzySearchKeys?: Array<keyof T>
   fuzzySearchThreshold?: number
 }
 
@@ -19,7 +20,7 @@ interface TableGridReturn<T> {
   setData: (data: T[]) => void
   
   // Sorting
-  sortColumn: string
+  sortColumn: keyof T
   sortDirection: SortDirection
   handleSort: (column: Column<T>) => void
   
@@ -31,18 +32,18 @@ interface TableGridReturn<T> {
   // State
   state: TableState<T>
   resetState: () => void
-  visibleColumns: string[]
-  toggleColumnVisibility: (columnId: string) => void
+  visibleColumns: Array<keyof T>
+  toggleColumnVisibility: (columnId: keyof T) => void
   
   // Pinning
   pinnedColumns: {
-    left: string[]
-    right: string[]
+    left: Array<keyof T>
+    right: Array<keyof T>
   }
-  toggleColumnPin: (columnId: string, position: 'left' | 'right' | false) => void
+  toggleColumnPin: (columnId: keyof T, position: 'left' | 'right' | false) => void
 }
 
-export function useTableGrid<T extends Record<string, unknown>>({
+export function useTableGrid<T>({
   data: initialData,
   columns,
   initialState,
@@ -55,7 +56,7 @@ export function useTableGrid<T extends Record<string, unknown>>({
   // Initialize state with pinned columns from both column definitions and initial state
   const [state, setState] = useState<TableState<T>>({
     data: initialData,
-    sortColumn: initialState?.sortColumn ?? "",
+    sortColumn: initialState?.sortColumn ?? columns[0]?.id ?? ("" as keyof T),
     sortDirection: initialState?.sortDirection ?? "asc",
     filterValue: initialState?.filterValue ?? "",
     visibleColumns: initialState?.visibleColumns ?? columns.map(col => col.id),
@@ -83,7 +84,8 @@ export function useTableGrid<T extends Record<string, unknown>>({
   const fuse = useMemo(() => {
     if (!enableFuzzySearch) return null
     return new Fuse(state.data, {
-      keys: fuzzySearchKeys || columns.map(col => col.accessorKey as string),
+      keys: (fuzzySearchKeys || columns.map(col => col.accessorKey))
+        .map(key => String(key)) as IFuseOptions<T>['keys'],
       threshold: fuzzySearchThreshold,
     })
   }, [state.data, enableFuzzySearch, fuzzySearchKeys, columns, fuzzySearchThreshold])
@@ -167,7 +169,7 @@ export function useTableGrid<T extends Record<string, unknown>>({
 
   const resetState = useCallback(() => {
     updateState({
-      sortColumn: "",
+      sortColumn: "" as keyof T,
       sortDirection: "asc",
       filterValue: "",
       data: initialData,
@@ -175,7 +177,7 @@ export function useTableGrid<T extends Record<string, unknown>>({
   }, [initialData, updateState])
 
   // Add toggle column visibility handler
-  const toggleColumnVisibility = useCallback((columnId: string) => {
+  const toggleColumnVisibility = useCallback((columnId: keyof T) => {
     updateState({
       visibleColumns: state.visibleColumns.includes(columnId)
         ? state.visibleColumns.filter(id => id !== columnId)
@@ -184,7 +186,7 @@ export function useTableGrid<T extends Record<string, unknown>>({
   }, [state.visibleColumns, updateState]);
 
   // Add toggle column pin handler
-  const toggleColumnPin = useCallback((columnId: string, position: 'left' | 'right' | false) => {
+  const toggleColumnPin = useCallback((columnId: keyof T, position: 'left' | 'right' | false) => {
     updateState({
       pinnedColumns: {
         left: position === 'left' 

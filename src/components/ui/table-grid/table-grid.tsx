@@ -78,8 +78,10 @@ function TableGridComponent<T extends Record<string, unknown>>(
   // Fuzzy search setup
   const fuse = useMemo(() => {
     if (!enableFuzzySearch) return null
+    const searchKeys = (fuzzySearchKeys || columns.map(col => col.accessorKey))
+      .map(key => String(key)) as string[]
     return new Fuse(data, {
-      keys: fuzzySearchKeys || columns.map(col => col.accessorKey as string),
+      keys: searchKeys,
       threshold: fuzzySearchThreshold,
     })
   }, [data, enableFuzzySearch, fuzzySearchKeys, columns, fuzzySearchThreshold])
@@ -173,29 +175,26 @@ function TableGridComponent<T extends Record<string, unknown>>(
     }
 
     if (column.cell) {
-      const defaultUpdateData: UpdateDataFn<T> = () => undefined
-      const updateData = meta?.updateData || onRowChange || defaultUpdateData
+      const defaultUpdateData: UpdateDataFn<T> = () => undefined;
+      const updateData = meta?.updateData || onRowChange || defaultUpdateData;
 
       return column.cell({
         value: getRowValue(row, column.accessorKey),
+        row,
         onChange: (value) => {
-          updateData(rowIndex, column.accessorKey, value)
+          updateData(rowIndex, column.accessorKey, value);
         },
         onDelete: () => onRowDelete?.(rowIndex),
-        row: {
-          original: row,
-          index: rowIndex,
-        },
-        table: {
+        table: meta && {
           options: {
             meta: {
               updateData,
             },
           },
         },
-      })
+      });
     }
-    return String(getRowValue(row, column.accessorKey))
+    return String(getRowValue(row, column.accessorKey));
   }
 
   const renderEmptyState = () => {
@@ -306,7 +305,7 @@ function TableGridComponent<T extends Record<string, unknown>>(
                 {/* Left Pinned Columns */}
                 {columns.filter(col => col.pinned === 'left').map((column) => (
                   <div
-                    key={`pin-left-${column.id}`}
+                    key={`pin-left-${String(column.id)}`}
                     className={cn(
                       styles.headerCell(),
                       'sticky left-0 z-20 bg-gray-100 dark:bg-gray-700',
@@ -321,7 +320,7 @@ function TableGridComponent<T extends Record<string, unknown>>(
                 {/* Unpinned Columns */}
                 {columns.filter(col => !col.pinned).map((column) => (
                   <div
-                    key={column.id}
+                    key={String(column.id)}
                     className={cn(
                       styles.headerCell(),
                       column.className,
@@ -335,7 +334,7 @@ function TableGridComponent<T extends Record<string, unknown>>(
                 {/* Right Pinned Columns */}
                 {columns.filter(col => col.pinned === 'right').map((column) => (
                   <div
-                    key={`pin-right-${column.id}`}
+                    key={`pin-right-${String(column.id)}`}
                     className={cn(
                       styles.headerCell(),
                       'sticky right-0 z-20 bg-gray-100 dark:bg-gray-700',
@@ -362,7 +361,7 @@ function TableGridComponent<T extends Record<string, unknown>>(
                     {/* Left Pinned Cells */}
                     {columns.filter(col => col.pinned === 'left').map((column) => (
                       <div
-                        key={`pin-left-${column.id}`}
+                        key={`pin-left-${String(column.id)}`}
                         className={cn(
                           styles.cell(),
                           'sticky left-0 z-10 bg-white dark:bg-gray-800',
@@ -377,7 +376,7 @@ function TableGridComponent<T extends Record<string, unknown>>(
                     {/* Unpinned Cells */}
                     {columns.filter(col => !col.pinned).map((column) => (
                       <div
-                        key={`cell-${column.id}`}
+                        key={`cell-${String(column.id)}`}
                         className={cn(
                           styles.cell(),
                           column.className,
@@ -391,7 +390,7 @@ function TableGridComponent<T extends Record<string, unknown>>(
                     {/* Right Pinned Cells */}
                     {columns.filter(col => col.pinned === 'right').map((column) => (
                       <div
-                        key={`pin-right-${column.id}`}
+                        key={`pin-right-${String(column.id)}`}
                         className={cn(
                           styles.cell(),
                           'sticky right-0 z-10 bg-white dark:bg-gray-800',
@@ -415,7 +414,8 @@ function TableGridComponent<T extends Record<string, unknown>>(
   )
 }
 
-const TableGrid = forwardRef(TableGridComponent) as unknown as (<T extends Record<string, unknown>>(
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-constraint, @typescript-eslint/no-explicit-any
+const TableGrid = forwardRef(TableGridComponent) as unknown as (<T extends any>(
   props: TableProps<T> & { ref?: React.ForwardedRef<HTMLDivElement> }
 ) => ReactNode) & { displayName?: string }
 
