@@ -25,7 +25,7 @@ const tableStyles = tv({
     table: "w-full min-w-max",
     header: "bg-gray-100 dark:bg-gray-700 sticky top-0 z-20 rounded-t-lg",
     headerRow: "grid items-center border-b border-dashed border-gray-500/20",
-    headerCell: "px-3 py-3 text-xs font-semibold tracking-wider text-gray-500 uppercase",
+    headerCell: "px-3 py-3 text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-100",
     body: "divide-y divide-dashed divide-gray-500/20",
     row: "grid items-center hover:bg-gray-50/50 dark:hover:bg-gray-900/50 transition-colors",
     cell: "px-3 py-4 text-sm text-gray-600 dark:text-gray-400",
@@ -63,6 +63,7 @@ interface Column<T> {
   sortable?: boolean
   className?: string
   width?: string
+  group?: string
   cell?: (props: {
     value: T[keyof T]
     onChange: (value: T[keyof T]) => void
@@ -79,6 +80,13 @@ interface Column<T> {
       }
     }
   }) => ReactNode
+}
+
+// Add this interface before TableProps
+interface HeaderGroup<T> {
+  id: string
+  name: string
+  columns: Column<T>[]
 }
 
 // Define strict table props interface
@@ -101,6 +109,7 @@ interface TableProps<T extends Record<string, unknown>> {
   onFilterChange?: (value: string) => void
   filterPlaceholder?: string
   enableFiltering?: boolean
+  headerGroups?: HeaderGroup<T>[]
 }
 
 // Helper function to type-check row data access
@@ -125,6 +134,7 @@ function TableGridComponent<T extends Record<string, unknown>>(
     meta,
     filterValue = "",
     enableFiltering = false,
+    headerGroups,
   }: TableProps<T>,
   ref: React.ForwardedRef<HTMLDivElement>
 ) {
@@ -196,26 +206,71 @@ function TableGridComponent<T extends Record<string, unknown>>(
     return String(getRowValue(row, column.accessorKey))
   }
 
+  const renderHeaders = () => {
+    if (headerGroups) {
+      return (
+        <>
+          <div className={styles.headerRow()} style={{ gridTemplateColumns }}>
+            {headerGroups.map((group) => (
+              <div
+                key={group.id}
+                className={cn(
+                  styles.headerCell(),
+                  "text-center font-bold",
+                  `colspan-${group.columns.length}`
+                )}
+                style={{
+                  gridColumn: `span ${group.columns.length}`
+                }}
+              >
+                {group.name}
+              </div>
+            ))}
+          </div>
+          <div className={styles.headerRow()} style={{ gridTemplateColumns }}>
+            {columns.map((column) => (
+              <div
+                key={column.id}
+                className={cn(
+                  styles.headerCell(),
+                  column.className,
+                  column.width && `w-[${column.width}]`
+                )}
+              >
+                {renderHeader(column)}
+                {renderSortIcon(column)}
+              </div>
+            ))}
+          </div>
+        </>
+      )
+    }
+
+    return (
+      <div className={styles.headerRow()} style={{ gridTemplateColumns }}>
+        {columns.map((column) => (
+          <div
+            key={column.id}
+            className={cn(
+              styles.headerCell(),
+              column.className,
+              column.width && `w-[${column.width}]`
+            )}
+          >
+            {renderHeader(column)}
+            {renderSortIcon(column)}
+          </div>
+        ))}
+      </div>
+    )
+  }
+
   return (
     <div ref={ref} className={cn(styles.wrapper(), className)}>
       <SimpleBar style={{ maxHeight }} className={styles.scrollContainer()}>
         <div className={styles.table()}>
           <div className={styles.header()}>
-            <div className={styles.headerRow()} style={{ gridTemplateColumns }}>
-              {columns.map((column) => (
-                <div
-                  key={column.id}
-                  className={cn(
-                    styles.headerCell(),
-                    column.className,
-                    column.width && `w-[${column.width}]`
-                  )}
-                >
-                  {renderHeader(column)}
-                  {renderSortIcon(column)}
-                </div>
-              ))}
-            </div>
+            {renderHeaders()}
           </div>
 
           <div className={styles.body()}>
@@ -260,5 +315,5 @@ const TableGrid = forwardRef(TableGridComponent) as unknown as (<T extends Recor
 
 TableGrid.displayName = "TableGrid"
 
-export type { TableProps, Column, UpdateDataFn, TableVariant, SortDirection }
+export type { TableProps, Column, UpdateDataFn, TableVariant, SortDirection, HeaderGroup }
 export default TableGrid

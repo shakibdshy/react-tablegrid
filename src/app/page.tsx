@@ -1,7 +1,10 @@
 import BasicTable from "@/components/containers/basic-table";
-
+import HeaderGroupsTable from "@/components/containers/header-groups";
 export default function Home() {
   return (
-    <BasicTable />
+    <div>
+      <BasicTable />
+      <HeaderGroupsTable />
+    </div>
   );
 }

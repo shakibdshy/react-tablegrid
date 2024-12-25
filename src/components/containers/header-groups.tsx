@@ -14,31 +14,54 @@ interface DataItem extends Record<string, unknown> {
 const columns: Column<DataItem>[] = [
   { 
     id: "name", 
-    header: "Name", 
+    header: "Name",
     accessorKey: "name",
-    sortable: true 
+    sortable: true,
+    group: "Personal Information",
+    width: "200px"
   },
   { 
     id: "age", 
-    header: "Age", 
+    header: "Age",
     accessorKey: "age",
-    sortable: true 
+    sortable: true,
+    group: "Personal Information",
+    width: "100px"
   },
   { 
     id: "email", 
-    header: "Email", 
+    header: "Email",
     accessorKey: "email",
-    sortable: true 
+    sortable: true,
+    group: "Contact Information",
+    width: "250px"
   },
 ];
 
-const BasicTable = () => {
+// Helper function to organize columns by groups
+const getHeaderGroups = (columns: Column<DataItem>[]) => {
+  const groups = columns.reduce((acc, column) => {
+    const group = column.group || 'Ungrouped'
+    if (!acc[group]) {
+      acc[group] = []
+    }
+    acc[group].push(column)
+    return acc
+  }, {} as Record<string, Column<DataItem>[]>)
+
+  return Object.entries(groups).map(([groupName, groupColumns]) => ({
+    id: groupName,
+    name: groupName,
+    columns: groupColumns,
+  }))
+}
+
+const HeaderGroupsTable = () => {
   const {
     filteredData,
     handleSort,
     sortColumn,
     sortDirection,
-    setFilterValue,
   } = useTableGrid<DataItem>({
     data: dummyData,
     columns,
@@ -51,20 +74,20 @@ const BasicTable = () => {
     },
   });
 
+  const headerGroups = getHeaderGroups(columns);
+
   return (
     <div className="p-4">
-      <input
-        type="text"
-        onChange={(e) => setFilterValue(e.target.value)}
-        placeholder="Search..."
-        className="mb-4 px-3 py-2 border rounded"
-      />
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-xl font-semibold">Header Groups</h2>
+      </div>
       
       <TableGrid<DataItem>
         columns={columns}
         data={filteredData}
+        headerGroups={headerGroups}
         gridTemplateColumns="1fr 1fr 1fr"
-        maxHeight="400px"
+        maxHeight="800px"
         variant="classic"
         onSort={handleSort}
         sortColumn={sortColumn}
@@ -74,4 +97,4 @@ const BasicTable = () => {
   );
 };
 
-export default BasicTable;
+export default HeaderGroupsTable;
