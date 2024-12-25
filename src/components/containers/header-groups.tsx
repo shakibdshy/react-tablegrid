@@ -1,7 +1,7 @@
 "use client"
-import TableGrid from "@/components/ui/table-grid";
+import TableGrid from "@/components/ui/table-grid/table-grid";
 import dummyData from "@/data/dummy.json";
-import type { Column } from "@/components/ui/table-grid";
+import type { Column } from "@/components/ui/table-grid/table-grid";
 import { useTableGrid } from "@/hooks/use-table-grid";
 
 interface DataItem extends Record<string, unknown> {
@@ -38,24 +38,6 @@ const columns: Column<DataItem>[] = [
   },
 ];
 
-// Helper function to organize columns by groups
-const getHeaderGroups = (columns: Column<DataItem>[]) => {
-  const groups = columns.reduce((acc, column) => {
-    const group = column.group || 'Ungrouped'
-    if (!acc[group]) {
-      acc[group] = []
-    }
-    acc[group].push(column)
-    return acc
-  }, {} as Record<string, Column<DataItem>[]>)
-
-  return Object.entries(groups).map(([groupName, groupColumns]) => ({
-    id: groupName,
-    name: groupName,
-    columns: groupColumns,
-  }))
-}
-
 const HeaderGroupsTable = () => {
   const {
     filteredData,
@@ -74,8 +56,6 @@ const HeaderGroupsTable = () => {
     },
   });
 
-  const headerGroups = getHeaderGroups(columns);
-
   return (
     <div className="p-4">
       <div className="flex items-center justify-between mb-4">
@@ -85,7 +65,6 @@ const HeaderGroupsTable = () => {
       <TableGrid<DataItem>
         columns={columns}
         data={filteredData}
-        headerGroups={headerGroups}
         gridTemplateColumns="1fr 1fr 1fr"
         maxHeight="800px"
         variant="classic"

@@ -1,8 +1,9 @@
 "use client";
-import TableGrid from "@/components/ui/table-grid";
+import TableGrid from "@/components/ui/table-grid/table-grid";
 import dummyData from "@/data/dummy.json";
-import type { Column } from "@/components/ui/table-grid";
+import type { Column } from "@/components/ui/table-grid/table-grid";
 import { useTableGrid } from "@/hooks/use-table-grid";
+import { Input } from "../ui/input";
 
 interface DataItem extends Record<string, unknown> {
   id: number;
@@ -53,9 +54,9 @@ const BasicSearch = () => {
 
   return (
     <div className="p-4">
-      <div className="flex items-center justify-between mb-4">
+      <div className="grid grid-cols-2 gap-4">
         <h2 className="text-xl font-semibold">Basic Search</h2>
-        <input
+        <Input
           type="text"
           onChange={(e) => setFilterValue(e.target.value)}
           placeholder="Search..."

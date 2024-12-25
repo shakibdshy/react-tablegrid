@@ -1,7 +1,7 @@
 "use client"
-import TableGrid from "@/components/ui/table-grid";
+import TableGrid from "@/components/ui/table-grid/table-grid";
 import dummyData from "@/data/dummy.json";
-import type { Column } from "@/components/ui/table-grid";
+import type { Column } from "@/components/ui/table-grid/table-grid";
 import { useTableGrid } from "@/hooks/use-table-grid";
 
 interface DataItem extends Record<string, unknown> {
