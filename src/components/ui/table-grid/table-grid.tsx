@@ -96,8 +96,11 @@ function TableGridComponent<T extends Record<string, unknown>>(
   }, [data, filterValue, columns, enableFiltering, enableFuzzySearch, fuse])
 
   const renderHeader = (column: Column<T>): ReactNode => {
-    return typeof column.header === "function" ? column.header() : column.header
-  }
+    if (typeof column.header === 'function') {
+      return column.header();
+    }
+    return column.header;
+  };
 
   const renderSortIcon = (column: Column<T>): ReactNode => {
     if (!column.sortable) return null

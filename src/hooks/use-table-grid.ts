@@ -31,6 +31,8 @@ interface TableGridReturn<T> {
   // State
   state: TableState<T>
   resetState: () => void
+  visibleColumns: string[]
+  toggleColumnVisibility: (columnId: string) => void
 }
 
 export function useTableGrid<T extends Record<string, unknown>>({
@@ -49,6 +51,7 @@ export function useTableGrid<T extends Record<string, unknown>>({
     sortColumn: initialState?.sortColumn ?? "",
     sortDirection: initialState?.sortDirection ?? "asc",
     filterValue: initialState?.filterValue ?? "",
+    visibleColumns: initialState?.visibleColumns ?? columns.map(col => col.id),
   })
 
   // Initialize debounced filter value
@@ -158,6 +161,15 @@ export function useTableGrid<T extends Record<string, unknown>>({
     })
   }, [initialData, updateState])
 
+  // Add toggle column visibility handler
+  const toggleColumnVisibility = useCallback((columnId: string) => {
+    updateState({
+      visibleColumns: state.visibleColumns.includes(columnId)
+        ? state.visibleColumns.filter(id => id !== columnId)
+        : [...state.visibleColumns, columnId]
+    });
+  }, [state.visibleColumns, updateState]);
+
   return {
     // Data management
     data: state.data,
@@ -176,5 +188,7 @@ export function useTableGrid<T extends Record<string, unknown>>({
     // State management
     state,
     resetState,
+    visibleColumns: state.visibleColumns,
+    toggleColumnVisibility,
   }
 } 

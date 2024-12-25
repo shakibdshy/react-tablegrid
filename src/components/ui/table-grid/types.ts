@@ -9,7 +9,7 @@ export type UpdateDataFn<T> = (index: number, field: keyof T, value: T[keyof T])
 // Define strict column interface
 export interface Column<T> {
   id: string
-  header: string | (() => ReactNode)
+  header: ReactNode | (() => ReactNode)
   accessorKey: keyof T
   sortable?: boolean
   className?: string
@@ -44,6 +44,7 @@ export interface TableState<T> {
   sortColumn: string
   sortDirection: SortDirection
   filterValue?: string
+  visibleColumns: string[]
 }
 
 // Define strict table props interface
