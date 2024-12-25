@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import TableGrid from "@/components/ui/table-grid";
 import dummyData from "@/data/dummy.json";
 import type { Column } from "@/components/ui/table-grid";
@@ -12,32 +12,33 @@ interface DataItem extends Record<string, unknown> {
 }
 
 const columns: Column<DataItem>[] = [
-  { 
-    id: "name", 
-    header: "Name", 
+  {
+    id: "name",
+    header: "Name",
     accessorKey: "name",
-    sortable: true 
+    sortable: true,
   },
-  { 
-    id: "age", 
-    header: "Age", 
+  {
+    id: "age",
+    header: "Age",
     accessorKey: "age",
-    sortable: true 
+    sortable: true,
   },
-  { 
-    id: "email", 
-    header: "Email", 
+  {
+    id: "email",
+    header: "Email",
     accessorKey: "email",
-    sortable: true 
+    sortable: true,
   },
 ];
 
-const BasicTable = () => {
+const BasicSearch = () => {
   const {
     filteredData,
     handleSort,
     sortColumn,
     sortDirection,
+    setFilterValue,
   } = useTableGrid<DataItem>({
     data: dummyData,
     columns,
@@ -46,12 +47,22 @@ const BasicTable = () => {
       sortDirection: "asc",
     },
     onStateChange: (state) => {
-      console.log("Table state changed:", state)
+      console.log("Table state changed:", state);
     },
   });
 
   return (
-    <div className="p-4">      
+    <div className="p-4">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-xl font-semibold">Basic Search</h2>
+        <input
+          type="text"
+          onChange={(e) => setFilterValue(e.target.value)}
+          placeholder="Search..."
+          className="mb-4 px-3 py-2 border rounded"
+        />
+      </div>
+
       <TableGrid<DataItem>
         columns={columns}
         data={filteredData}
@@ -66,4 +77,4 @@ const BasicTable = () => {
   );
 };
 
-export default BasicTable;
+export default BasicSearch;
