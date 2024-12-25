@@ -71,6 +71,7 @@ const HeaderGroupsTable = () => {
         onSort={handleSort}
         sortColumn={sortColumn}
         sortDirection={sortDirection}
+        headerGroups={true}
       />
     </div>
   );

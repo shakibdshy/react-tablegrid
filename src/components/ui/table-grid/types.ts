@@ -15,6 +15,7 @@ export interface Column<T> {
   className?: string
   width?: string
   group?: string
+  pinned?: 'left' | 'right' | false
   cell?: (props: {
     value: T[keyof T]
     onChange: (value: T[keyof T]) => void
@@ -34,9 +35,9 @@ export interface Column<T> {
 }
 
 export interface HeaderGroup<T> {
-  id: string
-  name: string
-  columns: Column<T>[]
+  id: string;
+  name: string;
+  columns: Column<T>[];
 }
 
 export interface TableState<T> {
@@ -45,6 +46,10 @@ export interface TableState<T> {
   sortDirection: SortDirection
   filterValue?: string
   visibleColumns: string[]
+  pinnedColumns: {
+    left: string[]
+    right: string[]
+  }
 }
 
 // Define strict table props interface
@@ -67,8 +72,9 @@ export interface TableProps<T extends Record<string, unknown>> {
   onFilterChange?: (value: string) => void
   filterPlaceholder?: string
   enableFiltering?: boolean
-  headerGroups?: HeaderGroup<T>[]
+  headerGroups?: boolean
   enableFuzzySearch?: boolean
   fuzzySearchKeys?: Array<keyof T & string>
   fuzzySearchThreshold?: number
+  
 } 

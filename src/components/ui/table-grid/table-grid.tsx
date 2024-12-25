@@ -7,7 +7,7 @@ import SimpleBar from "simplebar-react"
 import "simplebar-react/dist/simplebar.min.css"
 import { cn } from "@/utils/cn"
 import { tableStyles } from "./styles"
-import type { TableProps, Column, UpdateDataFn } from "./types"
+import type { TableProps, Column, UpdateDataFn, HeaderGroup } from "./types"
 import Fuse from "fuse.js"
 import { Input } from "../input"
 
@@ -17,23 +17,26 @@ const getRowValue = <T extends Record<string, unknown>>(
   accessorKey: keyof T
 ): T[keyof T] => row[accessorKey]
 
-// Helper function to organize columns by groups
-const getHeaderGroups = <T extends Record<string, unknown>>(columns: Column<T>[]) => {
-  const groups = columns.reduce((acc, column) => {
-    const group = column.group || 'Ungrouped'
-    if (!acc[group]) {
-      acc[group] = []
+const generateHeaderGroups = <T extends Record<string, unknown>>(
+  columns: Column<T>[]
+): HeaderGroup<T>[] => {
+  const groupMap = new Map<string, Column<T>[]>();
+  
+  columns.forEach(column => {
+    if (column.group) {
+      if (!groupMap.has(column.group)) {
+        groupMap.set(column.group, []);
+      }
+      groupMap.get(column.group)!.push(column);
     }
-    acc[group].push(column)
-    return acc
-  }, {} as Record<string, Column<T>[]>)
+  });
 
-  return Object.entries(groups).map(([groupName, groupColumns]) => ({
-    id: groupName,
-    name: groupName,
-    columns: groupColumns,
-  }))
-}
+  return Array.from(groupMap.entries()).map(([name, groupColumns]) => ({
+    id: name.toLowerCase().replace(/\s+/g, '-'),
+    name,
+    columns: groupColumns
+  }));
+};
 
 function TableGridComponent<T extends Record<string, unknown>>(
   props: TableProps<T>,
@@ -55,7 +58,6 @@ function TableGridComponent<T extends Record<string, unknown>>(
     filterValue: externalFilterValue,
     onFilterChange,
     enableFiltering = false,
-    headerGroups: externalHeaderGroups,
     enableFuzzySearch = false,
     fuzzySearchKeys,
     fuzzySearchThreshold = 0.3,
@@ -94,6 +96,11 @@ function TableGridComponent<T extends Record<string, unknown>>(
 
     return data
   }, [data, filterValue, columns, enableFiltering, enableFuzzySearch, fuse])
+
+  const headerGroups = useMemo(() => {
+    if (!props.headerGroups) return [];
+    return generateHeaderGroups(columns);
+  }, [columns, props.headerGroups]);
 
   const renderHeader = (column: Column<T>): ReactNode => {
     if (typeof column.header === 'function') {
@@ -152,69 +159,6 @@ function TableGridComponent<T extends Record<string, unknown>>(
     return String(getRowValue(row, column.accessorKey))
   }
 
-  const renderHeaders = () => {
-    if (headerGroups) {
-      return (
-        <>
-          <div className={styles.headerRow()} style={{ gridTemplateColumns }}>
-            {headerGroups.map((group) => (
-              <div
-                key={group.id}
-                className={cn(
-                  styles.headerCell(),
-                  "text-center font-bold",
-                  `colspan-${group.columns.length}`
-                )}
-                style={{
-                  gridColumn: `span ${group.columns.length}`
-                }}
-              >
-                {group.name}
-              </div>
-            ))}
-          </div>
-          <div className={styles.headerRow()} style={{ gridTemplateColumns }}>
-            {columns.map((column) => (
-              <div
-                key={column.id}
-                className={cn(
-                  styles.headerCell(),
-                  column.className,
-                  column.width && `w-[${column.width}]`
-                )}
-              >
-                {renderHeader(column)}
-                {renderSortIcon(column)}
-              </div>
-            ))}
-          </div>
-        </>
-      )
-    }
-
-    return (
-      <div className={styles.headerRow()} style={{ gridTemplateColumns }}>
-        {columns.map((column) => (
-          <div
-            key={column.id}
-            className={cn(
-              styles.headerCell(),
-              column.className,
-              column.width && `w-[${column.width}]`
-            )}
-          >
-            {renderHeader(column)}
-            {renderSortIcon(column)}
-          </div>
-        ))}
-      </div>
-    )
-  }
-
-  const headerGroups = externalHeaderGroups || (
-    columns.some(col => col.group) ? getHeaderGroups(columns) : undefined
-  )
-
   return (
     <div className="space-y-4">
       {(enableFiltering || enableFuzzySearch) && (
@@ -237,7 +181,74 @@ function TableGridComponent<T extends Record<string, unknown>>(
         <SimpleBar style={{ maxHeight }} className={styles.scrollContainer()}>
           <div className={styles.table()}>
             <div className={styles.header()}>
-              {renderHeaders()}
+              {props.headerGroups && headerGroups.length > 0 && (
+                <div className={styles.headerRow()} style={{ gridTemplateColumns }}>
+                  {headerGroups.map((group) => (
+                    <div
+                      key={group.id}
+                      className={cn(
+                        styles.headerCell(),
+                        "text-center font-bold",
+                        `colspan-${group.columns.length}`
+                      )}
+                      style={{
+                        gridColumn: `span ${group.columns.length}`
+                      }}
+                    >
+                      {group.name}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className={styles.headerRow()} style={{ gridTemplateColumns }}>
+                {/* Left Pinned Columns */}
+                {columns.filter(col => col.pinned === 'left').map((column) => (
+                  <div
+                    key={`pin-left-${column.id}`}
+                    className={cn(
+                      styles.headerCell(),
+                      'sticky left-0 z-20 bg-gray-100 dark:bg-gray-700',
+                      column.className,
+                      column.width && `w-[${column.width}]`
+                    )}
+                  >
+                    {renderHeader(column)}
+                    {renderSortIcon(column)}
+                  </div>
+                ))}
+
+                {/* Unpinned Columns */}
+                {columns.filter(col => !col.pinned).map((column) => (
+                  <div
+                    key={column.id}
+                    className={cn(
+                      styles.headerCell(),
+                      column.className,
+                      column.width && `w-[${column.width}]`
+                    )}
+                  >
+                    {renderHeader(column)}
+                    {renderSortIcon(column)}
+                  </div>
+                ))}
+
+                {/* Right Pinned Columns */}
+                {columns.filter(col => col.pinned === 'right').map((column) => (
+                  <div
+                    key={`pin-right-${column.id}`}
+                    className={cn(
+                      styles.headerCell(),
+                      'sticky right-0 z-20 bg-gray-100 dark:bg-gray-700',
+                      column.className,
+                      column.width && `w-[${column.width}]`
+                    )}
+                  >
+                    {renderHeader(column)}
+                    {renderSortIcon(column)}
+                  </div>
+                ))}
+              </div>
             </div>
 
             <div className={styles.body()}>
@@ -248,11 +259,42 @@ function TableGridComponent<T extends Record<string, unknown>>(
                     className={styles.row()}
                     style={{ gridTemplateColumns }}
                   >
-                    {columns.map((column) => (
+                    {/* Left Pinned Cells */}
+                    {columns.filter(col => col.pinned === 'left').map((column) => (
+                      <div
+                        key={`pin-left-${column.id}`}
+                        className={cn(
+                          styles.cell(),
+                          'sticky left-0 z-10 bg-white dark:bg-gray-800',
+                          column.className,
+                          column.width && `w-[${column.width}]`
+                        )}
+                      >
+                        {renderCell(column, row, rowIndex)}
+                      </div>
+                    ))}
+
+                    {/* Unpinned Cells */}
+                    {columns.filter(col => !col.pinned).map((column) => (
                       <div
                         key={`cell-${column.id}`}
                         className={cn(
                           styles.cell(),
+                          column.className,
+                          column.width && `w-[${column.width}]`
+                        )}
+                      >
+                        {renderCell(column, row, rowIndex)}
+                      </div>
+                    ))}
+
+                    {/* Right Pinned Cells */}
+                    {columns.filter(col => col.pinned === 'right').map((column) => (
+                      <div
+                        key={`pin-right-${column.id}`}
+                        className={cn(
+                          styles.cell(),
+                          'sticky right-0 z-10 bg-white dark:bg-gray-800',
                           column.className,
                           column.width && `w-[${column.width}]`
                         )}

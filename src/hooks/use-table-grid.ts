@@ -33,6 +33,13 @@ interface TableGridReturn<T> {
   resetState: () => void
   visibleColumns: string[]
   toggleColumnVisibility: (columnId: string) => void
+  
+  // Pinning
+  pinnedColumns: {
+    left: string[]
+    right: string[]
+  }
+  toggleColumnPin: (columnId: string, position: 'left' | 'right' | false) => void
 }
 
 export function useTableGrid<T extends Record<string, unknown>>({
@@ -45,13 +52,19 @@ export function useTableGrid<T extends Record<string, unknown>>({
   fuzzySearchKeys,
   fuzzySearchThreshold = 0.3,
 }: TableGridOptions<T>): TableGridReturn<T> {
-  // Initialize state with defaults and initial values
+  // Initialize state with pinned columns from both column definitions and initial state
   const [state, setState] = useState<TableState<T>>({
     data: initialData,
     sortColumn: initialState?.sortColumn ?? "",
     sortDirection: initialState?.sortDirection ?? "asc",
     filterValue: initialState?.filterValue ?? "",
     visibleColumns: initialState?.visibleColumns ?? columns.map(col => col.id),
+    pinnedColumns: {
+      left: initialState?.pinnedColumns?.left ?? 
+        columns.filter(col => col.pinned === 'left').map(col => col.id),
+      right: initialState?.pinnedColumns?.right ?? 
+        columns.filter(col => col.pinned === 'right').map(col => col.id),
+    },
   })
 
   // Initialize debounced filter value
@@ -170,6 +183,20 @@ export function useTableGrid<T extends Record<string, unknown>>({
     });
   }, [state.visibleColumns, updateState]);
 
+  // Add toggle column pin handler
+  const toggleColumnPin = useCallback((columnId: string, position: 'left' | 'right' | false) => {
+    updateState({
+      pinnedColumns: {
+        left: position === 'left' 
+          ? [...state.pinnedColumns.left, columnId]
+          : state.pinnedColumns.left.filter(id => id !== columnId),
+        right: position === 'right'
+          ? [...state.pinnedColumns.right, columnId]
+          : state.pinnedColumns.right.filter(id => id !== columnId),
+      }
+    });
+  }, [state.pinnedColumns, updateState]);
+
   return {
     // Data management
     data: state.data,
@@ -190,5 +217,9 @@ export function useTableGrid<T extends Record<string, unknown>>({
     resetState,
     visibleColumns: state.visibleColumns,
     toggleColumnVisibility,
+    
+    // Pinning
+    pinnedColumns: state.pinnedColumns,
+    toggleColumnPin,
   }
 } 

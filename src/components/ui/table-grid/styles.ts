@@ -20,6 +20,7 @@ export const tableStyles = tv({
     sortButton: "ms-2 inline-flex items-center gap-1",
     searchContainer: "mb-4",
     searchInput: "w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500",
+    headerGroup: "px-4 py-2 border-b bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-200",
   },
   variants: {
     variant: {
