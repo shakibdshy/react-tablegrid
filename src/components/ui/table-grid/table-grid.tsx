@@ -61,6 +61,14 @@ function TableGridComponent<T extends Record<string, unknown>>(
     enableFuzzySearch = false,
     fuzzySearchKeys,
     fuzzySearchThreshold = 0.3,
+    components,
+    styleConfig,
+    renderHeader: customRenderHeader,
+    renderCell: customRenderCell,
+    renderEmpty: customRenderEmpty,
+    renderLoading: customRenderLoading,
+    renderSearch: customRenderSearch,
+    isLoading = false,
   } = props
 
   const styles = tableStyles({ variant })
@@ -103,10 +111,27 @@ function TableGridComponent<T extends Record<string, unknown>>(
   }, [columns, props.headerGroups]);
 
   const renderHeader = (column: Column<T>): ReactNode => {
-    if (typeof column.header === 'function') {
-      return column.header();
+    if (customRenderHeader) {
+      return customRenderHeader(column);
     }
-    return column.header;
+
+    if (components?.Header) {
+      return (
+        <components.Header 
+          column={column} 
+          sortIcon={column.sortable ? renderSortIcon(column) : undefined}
+          onSort={() => onSort?.(column)}
+        />
+      );
+    }
+
+    // Default header rendering
+    return (
+      <div className="flex items-center justify-between">
+        {typeof column.header === 'function' ? column.header() : column.header}
+        {column.sortable && renderSortIcon(column)}
+      </div>
+    );
   };
 
   const renderSortIcon = (column: Column<T>): ReactNode => {
@@ -133,6 +158,20 @@ function TableGridComponent<T extends Record<string, unknown>>(
   }
 
   const renderCell = (column: Column<T>, row: T, rowIndex: number): ReactNode => {
+    if (customRenderCell) {
+      return customRenderCell(column, row, getRowValue(row, column.accessorKey));
+    }
+
+    if (components?.Cell) {
+      return (
+        <components.Cell
+          column={column}
+          row={row}
+          value={getRowValue(row, column.accessorKey)}
+        />
+      );
+    }
+
     if (column.cell) {
       const defaultUpdateData: UpdateDataFn<T> = () => undefined
       const updateData = meta?.updateData || onRowChange || defaultUpdateData
@@ -159,25 +198,87 @@ function TableGridComponent<T extends Record<string, unknown>>(
     return String(getRowValue(row, column.accessorKey))
   }
 
+  const renderEmptyState = () => {
+    if (customRenderEmpty) {
+      return customRenderEmpty();
+    }
+
+    if (components?.EmptyState) {
+      return <components.EmptyState />;
+    }
+
+    // Default empty state
+    return (
+      <Empty
+        image={<EmptyProductBoxIcon />}
+        text="No data found"
+        className="mx-auto w-full"
+      />
+    );
+  };
+
+  const renderLoadingState = () => {
+    if (customRenderLoading) {
+      return customRenderLoading();
+    }
+
+    if (components?.LoadingState) {
+      return <components.LoadingState />;
+    }
+
+    // Default loading state
+    return (
+      <div className="flex items-center justify-center p-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-white" />
+      </div>
+    );
+  };
+
   return (
     <div className="space-y-4">
       {(enableFiltering || enableFuzzySearch) && (
-        <div className={styles.searchContainer()}>
-          <Input
-            type="text"
-            value={filterValue}
-            onChange={(e) => {
-              const newValue = e.target.value
-              setInternalFilterValue(newValue)
-              onFilterChange?.(newValue)
-            }}
-            placeholder={enableFuzzySearch ? "Fuzzy search..." : "Search..."}
-            className={styles.searchInput()}
-          />
+        <div className={cn(styles.searchContainer(), styleConfig?.searchContainer?.className)} 
+             style={styleConfig?.searchContainer?.style}>
+          {customRenderSearch ? (
+            customRenderSearch({
+              value: filterValue,
+              onChange: (value) => {
+                setInternalFilterValue(value);
+                onFilterChange?.(value);
+              },
+              placeholder: enableFuzzySearch ? "Fuzzy search..." : "Search...",
+            })
+          ) : components?.SearchInput ? (
+            <components.SearchInput
+              value={filterValue}
+              onChange={(value) => {
+                setInternalFilterValue(value);
+                onFilterChange?.(value);
+              }}
+              placeholder={enableFuzzySearch ? "Fuzzy search..." : "Search..."}
+            />
+          ) : (
+            // Default search input
+            <Input
+              type="text"
+              value={filterValue}
+              onChange={(e) => {
+                const newValue = e.target.value;
+                setInternalFilterValue(newValue);
+                onFilterChange?.(newValue);
+              }}
+              placeholder={enableFuzzySearch ? "Fuzzy search..." : "Search..."}
+              className={styles.searchInput()}
+            />
+          )}
         </div>
       )}
 
-      <div ref={ref} className={cn(styles.wrapper(), className)}>
+      <div 
+        ref={ref} 
+        className={cn(styles.wrapper(), styleConfig?.container?.className, className)}
+        style={styleConfig?.container?.style}
+      >
         <SimpleBar style={{ maxHeight }} className={styles.scrollContainer()}>
           <div className={styles.table()}>
             <div className={styles.header()}>
@@ -214,7 +315,6 @@ function TableGridComponent<T extends Record<string, unknown>>(
                     )}
                   >
                     {renderHeader(column)}
-                    {renderSortIcon(column)}
                   </div>
                 ))}
 
@@ -229,7 +329,6 @@ function TableGridComponent<T extends Record<string, unknown>>(
                     )}
                   >
                     {renderHeader(column)}
-                    {renderSortIcon(column)}
                   </div>
                 ))}
 
@@ -245,14 +344,15 @@ function TableGridComponent<T extends Record<string, unknown>>(
                     )}
                   >
                     {renderHeader(column)}
-                    {renderSortIcon(column)}
                   </div>
                 ))}
               </div>
             </div>
 
             <div className={styles.body()}>
-              {filteredData.length > 0 ? (
+              {isLoading ? (
+                renderLoadingState()
+              ) : filteredData.length > 0 ? (
                 filteredData.map((row, rowIndex) => (
                   <div
                     key={`row-${rowIndex}-${(row as { id?: string }).id || ""}`}
@@ -305,11 +405,7 @@ function TableGridComponent<T extends Record<string, unknown>>(
                   </div>
                 ))
               ) : (
-                <Empty
-                  image={<EmptyProductBoxIcon />}
-                  text="No data found"
-                  className="mx-auto w-full"
-                />
+                renderEmptyState()
               )}
             </div>
           </div>

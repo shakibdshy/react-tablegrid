@@ -52,6 +52,54 @@ export interface TableState<T> {
   }
 }
 
+// New interfaces for customization
+export interface TableCustomComponents<T> {
+  Header?: React.ComponentType<{
+    column: Column<T>;
+    sortIcon?: React.ReactNode;
+    onSort?: () => void;
+  }>;
+  Cell?: React.ComponentType<{
+    column: Column<T>;
+    row: T;
+    value: T[keyof T];
+  }>;
+  EmptyState?: React.ComponentType;
+  LoadingState?: React.ComponentType;
+  SearchInput?: React.ComponentType<{
+    value: string;
+    onChange: (value: string) => void;
+    placeholder?: string;
+  }>;
+}
+
+export interface TableStyleConfig {
+  header?: {
+    className?: string;
+    style?: React.CSSProperties;
+  };
+  row?: {
+    className?: string;
+    style?: React.CSSProperties;
+  };
+  cell?: {
+    className?: string;
+    style?: React.CSSProperties;
+  };
+  headerCell?: {
+    className?: string;
+    style?: React.CSSProperties;
+  };
+  container?: {
+    className?: string;
+    style?: React.CSSProperties;
+  };
+  searchContainer?: {
+    className?: string;
+    style?: React.CSSProperties;
+  };
+}
+
 // Define strict table props interface
 export interface TableProps<T extends Record<string, unknown>> {
   columns: Column<T>[]
@@ -77,4 +125,17 @@ export interface TableProps<T extends Record<string, unknown>> {
   fuzzySearchKeys?: Array<keyof T & string>
   fuzzySearchThreshold?: number
   
+  // New customization props
+  components?: TableCustomComponents<T>;
+  styleConfig?: TableStyleConfig;
+  renderHeader?: (column: Column<T>) => ReactNode;
+  renderCell?: (column: Column<T>, row: T, value: T[keyof T]) => ReactNode;
+  renderEmpty?: () => ReactNode;
+  renderLoading?: () => ReactNode;
+  renderSearch?: (props: {
+    value: string;
+    onChange: (value: string) => void;
+    placeholder?: string;
+  }) => ReactNode;
+  isLoading?: boolean;
 } 

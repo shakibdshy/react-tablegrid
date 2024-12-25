@@ -20,7 +20,7 @@
     "department": "Marketing",
     "role": "Marketing Manager",
     "salary": 92000,
-    "status": "Active",
+    "status": "Inactive",
     "location": "San Francisco",
     "joinDate": "2022-08-20",
     "phone": "+1 (555) 234-5678"
@@ -33,7 +33,7 @@
     "department": "Sales",
     "role": "Sales Director",
     "salary": 115000,
-    "status": "Active",
+    "status": "pending",
     "location": "Chicago",
     "joinDate": "2021-03-10",
     "phone": "+1 (555) 345-6789"
@@ -59,7 +59,7 @@
     "department": "Finance",
     "role": "Financial Analyst",
     "salary": 95000,
-    "status": "Active",
+    "status": "pending",
     "location": "Miami",
     "joinDate": "2020-11-30",
     "phone": "+1 (555) 567-8901"
@@ -72,7 +72,7 @@
     "department": "HR",
     "role": "HR Manager",
     "salary": 88000,
-    "status": "Active",
+    "status": "Inactive",
     "location": "Seattle",
     "joinDate": "2022-06-15",
     "phone": "+1 (555) 678-9012"
