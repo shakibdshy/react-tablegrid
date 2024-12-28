@@ -17,7 +17,6 @@ interface DataItem {
   location: string;
   joinDate: string;
   phone: string;
-  [key: string]: unknown;
 }
 
 const columnHelper = createColumnHelper<DataItem>();
