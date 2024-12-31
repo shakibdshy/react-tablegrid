@@ -1,12 +1,42 @@
-# React Table Grid
+# React Table Grid (Beta)
 
 A powerful and flexible table grid component for React applications with TailwindCSS support. Built with TypeScript and modern React patterns.
+
+## Demo
+
+[Example Demo](https://github.com/shakibdshy/react-tablegrid/blob/master/src/components/containers/basic-table.tsx)
+
+## Prerequisites
+
+Before installing this package, make sure you have the following peer dependencies installed in your project:
+
+```bash
+# Required peer dependencies
+npm install react@>=16.8.0 react-dom@>=16.8.0 tailwindcss@^3.4.1
+
+# If using TypeScript (recommended)
+npm install @types/react@^19.0.0
+```
+
+## Installation
+
+```bash
+# Install with npm
+npm install @shakibdshy/react-tablegrid
+
+# Or with yarn
+yarn add @shakibdshy/react-tablegrid
+
+# Or with pnpm
+pnpm add @shakibdshy/react-tablegrid
+```
 
 ## Features
 
 - 🔄 Dynamic Sorting
 - 🔍 Advanced Filtering with Fuzzy Search
 - 📌 Column Pinning (Left/Right)
+- 📏 Column Resizing
 - 👥 Header Groups
 - 🎨 Custom Cell Rendering
 - 🎯 TypeScript Support
@@ -15,21 +45,13 @@ A powerful and flexible table grid component for React applications with Tailwin
 - ⚡ Virtualization Support
 - 🎛️ Customizable Components
 - 🎨 Multiple Style Variants
-
-## Installation
-
-```bash
-# Install with npm
-npm install @shakibdshy/react-table-grid@1.0.0-beta.1
-
-# Or with yarn
-bun add @shakibdshy/react-table-grid@1.0.0-beta.1
-```
+- 🔄 Toggle Column Visibility
+- 📍 Toggle Column Pinning
 
 ## Basic Usage
 
 ```tsx
-import { useTableGrid, TableGrid, Column } from "react-table-grid";
+import { useTableGrid, TableGrid, Column } from "@shakibdshy/react-tablegrid";
 import dummyData from "@/data/dummy.json";
 
 interface DataItem extends Record<string, unknown> {
@@ -99,6 +121,126 @@ export default BasicTable;
 ```
 
 ## Advanced Features
+
+### Toggle Column with Pinning
+
+```tsx
+const ToggleColumnPinningTable = () => {
+  const {
+    filteredData,
+    handleSort,
+    sortColumn,
+    sortDirection,
+    pinnedColumns,
+    toggleColumnPin,
+  } = useTableGrid<DataItem>({
+    data: dummyData,
+    columns,
+    initialState: {
+      sortColumn: "name",
+      sortDirection: "asc",
+      pinnedColumns: {
+        left: ["id"],
+        right: ["phone"]
+      },
+    },
+  });
+
+  const syncedColumns = useMemo(() => 
+    columns.map(column => ({
+      ...column,
+      pinned: pinnedColumns.left.includes(column.id) 
+        ? 'left' as const
+        : pinnedColumns.right.includes(column.id)
+          ? 'right' as const
+          : false as const
+    })), [columns, pinnedColumns]
+  );
+
+  const renderPinningControls = (columnId: string) => {
+    const isPinnedLeft = pinnedColumns.left.includes(columnId);
+    const isPinnedRight = pinnedColumns.right.includes(columnId);
+
+    return (
+      <div className="flex gap-2">
+        <button
+          className={`flex items-center gap-2 ${isPinnedLeft ? "text-blue-500" : ""}`}
+          onClick={() => toggleColumnPin(columnId, isPinnedLeft ? false : 'left')}
+          disabled={isPinnedRight}
+        >
+          <PiPushPinSimpleFill className={isPinnedLeft ? "rotate-45" : ""} />
+          <span className="ml-2">Pin Left</span>
+        </button>
+        <button
+          className={`flex items-center gap-2 ${isPinnedRight ? "text-blue-500" : ""}`}
+          onClick={() => toggleColumnPin(columnId, isPinnedRight ? false : 'right')}
+          disabled={isPinnedLeft}
+        >
+          <PiPushPinSimpleFill className={isPinnedRight ? "rotate-45" : ""} />
+          <span className="ml-2">Pin Right</span>
+        </button>
+      </div>
+    );
+  };
+
+  return (
+    <div className="p-4">  
+      <div className="flex flex-col gap-4 mb-4">
+        <h2 className="text-2xl font-bold">Column Pinning</h2>
+        <div className="flex flex-wrap gap-4">
+          {columns.map((column) => (
+            <div key={column.id} className="flex items-center gap-2">
+              <span>{column.header as string}:</span>
+              {renderPinningControls(column.id as string)}
+            </div>
+          ))}
+        </div>
+      </div>
+      <TableGrid<DataItem>
+        columns={syncedColumns}
+        data={filteredData}
+        gridTemplateColumns="1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr"
+        maxHeight="400px"
+        variant="classic"
+        onSort={handleSort}
+        sortColumn={sortColumn}
+        sortDirection={sortDirection}
+      />
+    </div>
+  );
+};
+
+export default ToggleColumnPinningTable;
+
+```
+
+### Column Resizing
+
+```tsx
+const ResizableTable = () => {
+  const {
+    filteredData,
+    columnSizing,
+    handleColumnResize,
+  } = useTableGrid<DataItem>({
+    data: dummyData,
+    columns,
+    columnResizeMode: 'onChange'
+  });
+
+  return (
+    <div className="p-4">      
+      <TableGrid<DataItem>
+        columns={columns}
+        data={filteredData}
+        columnSizing={columnSizing}
+        onColumnResize={handleColumnResize}
+        columnResizeMode="onChange"
+      />
+    </div>
+  );
+};
+```
 
 ### Column Pinning
 
@@ -271,6 +413,20 @@ interface TableStyleConfig {
   // ... more style options
 }
 ```
+
+### Additional Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `columnResizeMode` | `"onChange" \| "onResize"` | `"onChange"` | When to update column sizes |
+| `onColumnResize` | `(columnId: string, width: number) => void` | - | Column resize handler |
+| `columnSizing` | `{ columnSizes: { [key: string]: number } }` | - | Column width states |
+| `onColumnPin` | `(columnId: keyof T, position: 'left' \| 'right' \| false) => void` | - | Column pin handler |
+
+## Version History
+
+- v1.2.0 - Added column resizing and toggle column pinning features
+- v1.0.0 - Initial release
 
 ## Contributing
 
