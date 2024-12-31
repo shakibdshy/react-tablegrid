@@ -4,6 +4,7 @@ import TableGrid from "@/components/ui/table-grid/table-grid";
 import dummyData from "@/data/dummy.json";
 import { useTableGrid } from "@/hooks/use-table-grid";
 import { createColumnHelper } from "@/components/ui/table-grid/column-helper";
+import { useDirection } from "@/hooks/use-direction";
 
 interface DataItem {
   id: number;
@@ -22,6 +23,8 @@ interface DataItem {
 const columnHelper = createColumnHelper<DataItem>();
 
 const ColumnResizingTable = () => {
+  const { direction } = useDirection();
+  
   const columns = useMemo(
     () => [
       columnHelper.accessor("id", {
@@ -52,25 +55,27 @@ const ColumnResizingTable = () => {
     []
   );
 
-  const { filteredData, handleSort, sortColumn, sortDirection } =
-    useTableGrid<DataItem>({
-      data: dummyData,
-      columns,
-      initialState: {
-        sortColumn: "name",
-        sortDirection: "asc",
-      },
-      onStateChange: (state) => {
-        console.log("Table state changed:", state);
-      },
-    });
+  const {
+    filteredData,
+    handleSort,
+    sortColumn,
+    sortDirection,
+    columnSizing,
+    handleColumnResize,
+    columnResizeInfo,
+  } = useTableGrid<DataItem>({
+    data: dummyData,
+    columns,
+    columnResizeMode: 'onChange',
+    initialState: {
+      sortColumn: "name",
+      sortDirection: "asc",
+    },
+  });
 
-  return (
-    <div className="p-4">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold">Column Resizing Table</h2>
-      </div>
-
+  // Memoize the table body while resizing
+  const tableBody = useMemo(
+    () => (
       <TableGrid<DataItem>
         columns={columns}
         data={filteredData}
@@ -80,7 +85,38 @@ const ColumnResizingTable = () => {
         onSort={handleSort}
         sortColumn={sortColumn}
         sortDirection={sortDirection}
+        columnResizeMode="onChange"
+        columnResizeDirection={direction as 'ltr' | 'rtl'}
+        onColumnSizingChange={(columnSizing) => {
+          if (columnSizing.columnSizes) {
+            Object.entries(columnSizing.columnSizes).forEach(([columnId, width]) => {
+              handleColumnResize(columnId, width);
+            });
+          }
+        }}
+        columnSizing={columnSizing}
+        columnResizeInfo={columnResizeInfo}
       />
+    ),
+    [
+      columns,
+      filteredData,
+      handleSort,
+      sortColumn,
+      sortDirection,
+      direction,
+      handleColumnResize,
+      columnSizing,
+      columnResizeInfo,
+    ]
+  );
+
+  return (
+    <div className="p-4">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold">Column Resizing Table</h2>
+      </div>
+      {tableBody}
     </div>
   );
 };

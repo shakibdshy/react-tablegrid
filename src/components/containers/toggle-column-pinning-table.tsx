@@ -157,7 +157,7 @@ const ToggleColumnPinningTable = () => {
           {columns.map((column) => (
             <div key={column.id} className="flex items-center gap-2">
               <span>{column.header as string}:</span>
-              {renderPinningControls(column.id)}
+              {renderPinningControls(column.id as string)}
             </div>
           ))}
         </div>

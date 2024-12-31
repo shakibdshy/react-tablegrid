@@ -47,6 +47,8 @@ export interface TableState<T> {
     left: Array<keyof T>
     right: Array<keyof T>
   }
+  columnSizing: { columnSizes: { [key: string]: number } }
+  columnResizeMode: ColumnResizeMode
 }
 
 // New interfaces for customization
@@ -138,6 +140,13 @@ export interface TableProps<T> {
     placeholder?: string;
   }) => ReactNode;
   isLoading?: boolean;
+  columnResizeMode?: ColumnResizeMode
+  onColumnSizingChange?: (columnSizing: { columnSizes: { [key: string]: number } }) => void
+  columnResizeDirection?: 'ltr' | 'rtl'
+  columnResizeInfo?: ColumnResizeInfoState
+  columnSizing?: {
+    columnSizes: { [key: string]: number }
+  }
 }
 
 // Update TableGridReturn to use typed column ids
@@ -168,4 +177,15 @@ export interface TableGridReturn<T> {
     right: Array<keyof T>
   }
   toggleColumnPin: (columnId: keyof T, position: 'left' | 'right' | false) => void
-} 
+}
+
+// Add this interface for resize indicator state
+export interface ColumnResizeInfoState {
+  startX: number | null
+  currentX: number | null
+  deltaX: number | null
+  isResizingColumn: string | false
+  columnSizingStart: { [key: string]: number }
+}
+
+export type ColumnResizeMode = 'onChange' | 'onResize' 

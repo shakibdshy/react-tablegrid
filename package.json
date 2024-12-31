@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@shakibdshy/react-tablegrid": "1.0.0-beta4",
     "clsx": "^2.1.1",
     "fuse.js": "^7.0.0",
     "jotai": "^2.11.0",

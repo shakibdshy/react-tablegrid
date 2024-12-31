@@ -10,6 +10,7 @@ import ColumnResizingTable from "@/components/containers/column-resizing-table";
 export default function Home() {
   return (
     <main className="min-h-screen p-4">
+      <BasicTable />
       <ColumnResizingTable />
       <div className="space-y-8">
         <div className="border rounded-lg">
@@ -17,7 +18,6 @@ export default function Home() {
         </div>
         <ColumnPinningTable />
         <ColumnVisibilityTable />
-        <BasicTable />
         <HeaderGroupsTable />
         <BasicSearch />
         <FuzzySearchFilter />

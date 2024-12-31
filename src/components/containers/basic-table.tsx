@@ -1,8 +1,6 @@
 "use client"
-import TableGrid from "@/components/ui/table-grid/table-grid";
 import dummyData from "@/data/dummy.json";
-import type { Column } from "@/components/ui/table-grid/table-grid";
-import { useTableGrid } from "@/hooks/use-table-grid";
+import { TableGrid, useTableGrid, Column } from "@shakibdshy/react-tablegrid";
 
 interface DataItem extends Record<string, unknown> {
   id: number;

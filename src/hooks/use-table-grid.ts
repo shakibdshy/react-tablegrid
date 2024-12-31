@@ -1,7 +1,8 @@
 import { useState, useMemo, useCallback, useEffect } from "react"
-import type { Column, SortDirection, TableState } from "@/components/ui/table-grid/types"
+import type { Column, SortDirection, TableState, ColumnResizeInfoState } from "@/components/ui/table-grid/types"
 import Fuse from "fuse.js"
 import type { IFuseOptions } from 'fuse.js';
+import { useDirection } from "@/hooks/use-direction"
 
 interface TableGridOptions<T> {
   data: T[]
@@ -12,6 +13,7 @@ interface TableGridOptions<T> {
   enableFuzzySearch?: boolean
   fuzzySearchKeys?: Array<keyof T>
   fuzzySearchThreshold?: number
+  columnResizeMode?: 'onChange' | 'onResize'
 }
 
 interface TableGridReturn<T> {
@@ -41,6 +43,18 @@ interface TableGridReturn<T> {
     right: Array<keyof T>
   }
   toggleColumnPin: (columnId: keyof T, position: 'left' | 'right' | false) => void
+  
+  // Column resizing
+  columnSizing: {
+    columnSizes: { [key: string]: number }
+  }
+  handleColumnResize: (columnId: string, width: number) => void
+  handleColumnResizeStart: (columnId: string, startX: number) => void
+  handleColumnResizeMove: (currentX: number) => void
+  handleColumnResizeEnd: () => void
+  columnResizeInfo: ColumnResizeInfoState
+  columnResizeMode: 'onChange' | 'onResize'
+  columnResizeDirection: 'ltr' | 'rtl'
 }
 
 export function useTableGrid<T>({
@@ -52,7 +66,10 @@ export function useTableGrid<T>({
   enableFuzzySearch = false,
   fuzzySearchKeys,
   fuzzySearchThreshold = 0.3,
+  columnResizeMode = 'onChange',
 }: TableGridOptions<T>): TableGridReturn<T> {
+  const { direction } = useDirection();
+  
   // Initialize state with pinned columns from both column definitions and initial state
   const [state, setState] = useState<TableState<T>>({
     data: initialData,
@@ -66,6 +83,10 @@ export function useTableGrid<T>({
       right: initialState?.pinnedColumns?.right ?? 
         columns.filter(col => col.pinned === 'right').map(col => col.id),
     },
+    columnSizing: {
+      columnSizes: {},
+    },
+    columnResizeMode: columnResizeMode,
   })
 
   // Initialize debounced filter value
@@ -199,6 +220,76 @@ export function useTableGrid<T>({
     });
   }, [state.pinnedColumns, updateState]);
 
+  // Add resize info state
+  const [columnResizeInfo, setColumnResizeInfo] = useState<ColumnResizeInfoState>({
+    startX: null,
+    currentX: null,
+    deltaX: null,
+    isResizingColumn: false,
+    columnSizingStart: {},
+  });
+
+  // Update column resize handler
+  const handleColumnResize = useCallback(
+    (columnId: string, width: number) => {
+      updateState({
+        columnSizing: {
+          columnSizes: {
+            ...state.columnSizing.columnSizes,
+            [columnId]: Math.max(width, 50) // Minimum width of 50px
+          },
+        },
+      });
+    },
+    [state.columnSizing.columnSizes, updateState]
+  );
+
+  // Add resize start handler
+  const handleColumnResizeStart = useCallback(
+    (columnId: string, startX: number) => {
+      const startWidth = state.columnSizing.columnSizes[columnId] || 100;
+      setColumnResizeInfo({
+        startX,
+        currentX: startX,
+        deltaX: 0,
+        isResizingColumn: columnId,
+        columnSizingStart: { [columnId]: startWidth }
+      });
+    },
+    [state.columnSizing.columnSizes]
+  );
+
+  // Add resize move handler
+  const handleColumnResizeMove = useCallback(
+    (currentX: number) => {
+      if (!columnResizeInfo.isResizingColumn) return;
+
+      const columnId = columnResizeInfo.isResizingColumn;
+      const startWidth = columnResizeInfo.columnSizingStart[columnId];
+      const deltaX = currentX - (columnResizeInfo.startX ?? 0);
+      const newWidth = Math.max(startWidth + deltaX, 50);
+
+      handleColumnResize(columnId, newWidth);
+      setColumnResizeInfo(prev => ({
+        ...prev,
+        currentX,
+        deltaX
+      }));
+    },
+    [columnResizeInfo, handleColumnResize]
+  );
+
+  // Add resize end handler
+  const handleColumnResizeEnd = useCallback(() => {
+    setColumnResizeInfo({
+      startX: null,
+      currentX: null,
+      deltaX: null,
+      isResizingColumn: false,
+      columnSizingStart: {}
+    });
+  }, []);
+
   return {
     // Data management
     data: state.data,
@@ -223,5 +314,15 @@ export function useTableGrid<T>({
     // Pinning
     pinnedColumns: state.pinnedColumns,
     toggleColumnPin,
+    
+    // Column resizing
+    columnSizing: state.columnSizing,
+    handleColumnResize,
+    handleColumnResizeStart,
+    handleColumnResizeMove,
+    handleColumnResizeEnd,
+    columnResizeInfo,
+    columnResizeMode: state.columnResizeMode,
+    columnResizeDirection: direction as 'ltr' | 'rtl',
   }
 } 
