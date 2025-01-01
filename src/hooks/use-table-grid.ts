@@ -4,59 +4,112 @@ import Fuse from "fuse.js"
 import type { IFuseOptions } from 'fuse.js';
 import { useDirection } from "@/hooks/use-direction"
 
+/**
+ * Interface for table grid configuration options
+ * @template T - Type of data being managed in the table
+ */
 interface TableGridOptions<T> {
+  /** Array of data items to display in the table */
   data: T[]
+  /** Array of column definitions */
   columns: Column<T>[]
+  /** Initial state for the table */
   initialState?: Partial<TableState<T>>
+  /** Callback when table state changes */
   onStateChange?: (state: TableState<T>) => void
+  /** Debounce time in milliseconds for search input */
   debounceMs?: number
+  /** Enable fuzzy search functionality */
   enableFuzzySearch?: boolean
+  /** Keys to use for fuzzy search */
   fuzzySearchKeys?: Array<keyof T>
+  /** Threshold for fuzzy search matching (0-1) */
   fuzzySearchThreshold?: number
+  /** Mode for column resizing behavior */
   columnResizeMode?: 'onChange' | 'onResize'
 }
 
+/**
+ * Hook return type containing all table functionality
+ * @template T - Type of data being managed
+ */
 interface TableGridReturn<T> {
-  // Data
+  // Data management
+  /** Current table data */
   data: T[]
+  /** Function to update table data */
   setData: (data: T[]) => void
   
-  // Sorting
+  // Sorting functionality
+  /** Currently sorted column */
   sortColumn: keyof T
+  /** Current sort direction */
   sortDirection: SortDirection
+  /** Handler for column sort events */
   handleSort: (column: Column<T>) => void
   
-  // Filtering
+  // Filtering functionality
+  /** Current filter value */
   filterValue: string
+  /** Function to update filter value */
   setFilterValue: (value: string) => void
+  /** Filtered and sorted data */
   filteredData: T[]
   
-  // State
+  // State management
+  /** Current table state */
   state: TableState<T>
+  /** Function to reset table state */
   resetState: () => void
+  /** Currently visible columns */
   visibleColumns: Array<keyof T>
+  /** Toggle column visibility */
   toggleColumnVisibility: (columnId: keyof T) => void
   
-  // Pinning
+  // Column pinning
+  /** Currently pinned columns */
   pinnedColumns: {
     left: Array<keyof T>
     right: Array<keyof T>
   }
+  /** Toggle column pin state */
   toggleColumnPin: (columnId: keyof T, position: 'left' | 'right' | false) => void
   
   // Column resizing
+  /** Column sizing state */
   columnSizing: {
     columnSizes: { [key: string]: number }
   }
+  /** Handler for column resize */
   handleColumnResize: (columnId: string, width: number) => void
+  /** Handler for resize start */
   handleColumnResizeStart: (columnId: string, startX: number) => void
+  /** Handler for resize move */
   handleColumnResizeMove: (currentX: number) => void
+  /** Handler for resize end */
   handleColumnResizeEnd: () => void
+  /** Current resize state */
   columnResizeInfo: ColumnResizeInfoState
+  /** Column resize mode */
   columnResizeMode: 'onChange' | 'onResize'
+  /** Column resize direction */
   columnResizeDirection: 'ltr' | 'rtl'
 }
 
+/**
+ * Custom hook for managing table grid state and functionality
+ * Provides state management and handlers for:
+ * - Sorting
+ * - Filtering
+ * - Column visibility
+ * - Column pinning
+ * - Column resizing
+ * - Data management
+ * 
+ * @template T - Type of data being managed in the table
+ * @param options - Configuration options for the table grid
+ * @returns Object containing table state and handler functions
+ */
 export function useTableGrid<T>({
   data: initialData,
   columns,
@@ -160,7 +213,10 @@ export function useTableGrid<T>({
     fuse
   ])
 
-  // Update state and notify parent
+  /**
+   * Updates table state and notifies parent of changes
+   * @param updates - Partial state updates to apply
+   */
   const updateState = useCallback((updates: Partial<TableState<T>>) => {
     const newState = { ...state, ...updates }
     setState(newState)
@@ -197,7 +253,10 @@ export function useTableGrid<T>({
     })
   }, [initialData, updateState])
 
-  // Add toggle column visibility handler
+  /**
+   * Handles column visibility toggling
+   * @param columnId - ID of the column to toggle visibility
+   */
   const toggleColumnVisibility = useCallback((columnId: keyof T) => {
     updateState({
       visibleColumns: state.visibleColumns.includes(columnId)
@@ -206,7 +265,11 @@ export function useTableGrid<T>({
     });
   }, [state.visibleColumns, updateState]);
 
-  // Add toggle column pin handler
+  /**
+   * Handles column pinning/unpinning
+   * @param columnId - ID of the column to pin/unpin
+   * @param position - Position to pin the column ('left', 'right', or false for unpin)
+   */
   const toggleColumnPin = useCallback((columnId: keyof T, position: 'left' | 'right' | false) => {
     updateState({
       pinnedColumns: {
@@ -229,14 +292,18 @@ export function useTableGrid<T>({
     columnSizingStart: {},
   });
 
-  // Update column resize handler
+  /**
+   * Handles column resize operations
+   * @param columnId - ID of the column being resized
+   * @param width - New width for the column
+   */
   const handleColumnResize = useCallback(
     (columnId: string, width: number) => {
       updateState({
         columnSizing: {
           columnSizes: {
             ...state.columnSizing.columnSizes,
-            [columnId]: Math.max(width, 50) // Minimum width of 50px
+            [columnId]: width
           },
         },
       });
@@ -244,22 +311,33 @@ export function useTableGrid<T>({
     [state.columnSizing.columnSizes, updateState]
   );
 
-  // Add resize start handler
+  /**
+   * Handles the start of a column resize operation
+   * @param columnId - ID of the column being resized
+   * @param startX - Initial X coordinate of the resize
+   */
   const handleColumnResizeStart = useCallback(
     (columnId: string, startX: number) => {
-      const startWidth = state.columnSizing.columnSizes[columnId] || 100;
+      const headerCell = document.querySelector(`[data-column-id="${columnId}"]`);
+      const currentWidth = headerCell?.getBoundingClientRect().width;
+      
       setColumnResizeInfo({
         startX,
         currentX: startX,
         deltaX: 0,
         isResizingColumn: columnId,
-        columnSizingStart: { [columnId]: startWidth }
+        columnSizingStart: { 
+          [columnId]: currentWidth || state.columnSizing.columnSizes[columnId] || 0 
+        }
       });
     },
     [state.columnSizing.columnSizes]
   );
 
-  // Add resize move handler
+  /**
+   * Handles column resize movement
+   * @param currentX - Current X coordinate during resize
+   */
   const handleColumnResizeMove = useCallback(
     (currentX: number) => {
       if (!columnResizeInfo.isResizingColumn) return;
@@ -279,7 +357,10 @@ export function useTableGrid<T>({
     [columnResizeInfo, handleColumnResize]
   );
 
-  // Add resize end handler
+  /**
+   * Handles the end of a column resize operation
+   * Resets resize state to initial values
+   */
   const handleColumnResizeEnd = useCallback(() => {
     setColumnResizeInfo({
       startX: null,

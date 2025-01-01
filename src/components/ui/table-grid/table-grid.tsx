@@ -46,6 +46,19 @@ const generateHeaderGroups = <T extends Record<string, unknown>>(
   }));
 };
 
+/**
+ * TableGrid Component
+ * A flexible and feature-rich table component with support for:
+ * - Column resizing
+ * - Column pinning
+ * - Column visibility
+ * - Sorting
+ * - Filtering
+ * - RTL/LTR support
+ * - Header groups
+ * 
+ * @template T - Type of data being displayed in the table
+ */
 function TableGridComponent<T extends Record<string, unknown>>(
   props: TableProps<T>,
   ref: React.ForwardedRef<HTMLDivElement>
@@ -132,56 +145,89 @@ function TableGridComponent<T extends Record<string, unknown>>(
   // Add this state to track drag state
   const [isDragging, setIsDragging] = useState(false);
 
-  // Update resize handlers
+  /**
+   * Handles the start of a column resize operation
+   * @param columnId - ID of the column being resized
+   * @param startX - Initial X coordinate of the resize operation
+   */
   const handleResizeStart = useCallback(
     (columnId: string, startX: number) => {
       setIsDragging(true);
-      const currentWidth = props.columnSizing?.columnSizes[columnId] || 100;
+      const headerCell = document.querySelector(
+        `[data-column-id="${columnId}"]`
+      );
+      const currentWidth = headerCell?.getBoundingClientRect().width || 0;
 
-      // Initialize column width immediately if not set
-      if (!props.columnSizing?.columnSizes[columnId]) {
-        onColumnSizingChange?.({
-          columnSizes: {
-            ...props.columnSizing?.columnSizes,
+      // Ensure we have a valid width before starting resize
+      if (currentWidth > 0) {
+        setResizeInfo({
+          isResizingColumn: columnId,
+          startX,
+          currentX: startX,
+          deltaX: 0,
+          columnSizingStart: {
             [columnId]: currentWidth,
           },
         });
       }
-
-      // Set resize info with current width
-      setResizeInfo({
-        isResizingColumn: columnId,
-        startX,
-        currentX: startX,
-        deltaX: 0,
-        columnSizingStart: {
-          [columnId]: currentWidth,
-        },
-      });
     },
-    [props.columnSizing, onColumnSizingChange]
+    [props.columnSizing]
   );
 
+  /**
+   * Handles the column resize movement
+   * @param currentX - Current X coordinate during resize
+   */
   const handleResizeMove = useCallback(
     (currentX: number) => {
       if (!isDragging || !resizeInfo?.isResizingColumn) return;
 
-      const deltaX = currentX - (resizeInfo.startX ?? 0);
       const columnId = resizeInfo.isResizingColumn;
-      const startWidth = resizeInfo.columnSizingStart[columnId] || 100;
-      const newWidth = Math.max(startWidth + deltaX, 20);
+      const startWidth = resizeInfo.columnSizingStart[columnId];
+      
+      // Only proceed if we have valid start width
+      if (startWidth) {
+        const deltaX = currentX - (resizeInfo.startX ?? 0);
+        const newWidth = Math.max(startWidth + deltaX, 50);
 
-      onColumnSizingChange?.({
-        columnSizes: {
-          ...props.columnSizing?.columnSizes,
-          [columnId]: newWidth,
-        },
-      });
+        onColumnSizingChange?.({
+          columnSizes: {
+            ...props.columnSizing?.columnSizes,
+            [columnId]: newWidth,
+          },
+        });
+
+        // Update resize info to track current position
+        setResizeInfo(prev => ({
+          ...prev!,
+          currentX,
+          deltaX,
+          startX: prev!.startX,
+          isResizingColumn: prev!.isResizingColumn,
+          columnSizingStart: prev!.columnSizingStart
+        }));
+      }
     },
     [isDragging, resizeInfo, onColumnSizingChange, props.columnSizing]
   );
 
+  /**
+   * Handles the end of a column resize operation
+   * Cleans up resize state and finalizes column width
+   */
   const handleResizeEnd = useCallback(() => {
+    if (resizeInfo?.isResizingColumn) {
+      const finalWidth = props.columnSizing?.columnSizes[resizeInfo.isResizingColumn];
+      if (finalWidth) {
+        onColumnSizingChange?.({
+          columnSizes: {
+            ...props.columnSizing?.columnSizes,
+            [resizeInfo.isResizingColumn]: finalWidth,
+          },
+        });
+      }
+    }
+    
     setIsDragging(false);
     setResizeInfo({
       startX: null,
@@ -190,7 +236,7 @@ function TableGridComponent<T extends Record<string, unknown>>(
       isResizingColumn: false,
       columnSizingStart: {},
     });
-  }, []);
+  }, [resizeInfo, props.columnSizing, onColumnSizingChange]);
 
   // Update event listeners
   useEffect(() => {
@@ -214,6 +260,11 @@ function TableGridComponent<T extends Record<string, unknown>>(
     }
   }, [resizeInfo, handleResizeMove, handleResizeEnd]);
 
+  /**
+   * Renders the header cell content for a column
+   * @param column - Column configuration object
+   * @returns ReactNode representing the header cell content
+   */
   const renderHeader = (column: Column<T>): ReactNode => {
     if (customRenderHeader) {
       return customRenderHeader(column);
@@ -223,8 +274,9 @@ function TableGridComponent<T extends Record<string, unknown>>(
 
     return (
       <div
-        className="flex items-center justify-between group relative"
+        data-column-id={String(column.id)}
         style={{ width: columnWidth ? `${columnWidth}px` : undefined }}
+        className="flex items-center justify-between group relative"
       >
         <div className="flex-1 overflow-hidden">
           {typeof column.header === "function"
@@ -236,31 +288,24 @@ function TableGridComponent<T extends Record<string, unknown>>(
         <div
           className={cn(
             styles.resizer(),
-            columnResizeDirection === "rtl" ? "rtl" : "ltr"
+            columnResizeDirection === "rtl" ? "rtl" : "ltr",
+            isDragging && "cursor-col-resize"
           )}
           onMouseDown={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            const columnId = String(column.id);
-            const startX = e.clientX;
-
-            // Set initial width synchronously
-            if (!props.columnSizing?.columnSizes[columnId]) {
-              onColumnSizingChange?.({
-                columnSizes: {
-                  ...props.columnSizing?.columnSizes,
-                  [columnId]: 100,
-                },
-              });
-            }
-
-            handleResizeStart(columnId, startX);
+            handleResizeStart(String(column.id), e.clientX);
           }}
         />
       </div>
     );
   };
 
+  /**
+   * Renders the sort icon for a sortable column
+   * @param column - Column configuration object
+   * @returns ReactNode representing the sort icon
+   */
   const renderSortIcon = (column: Column<T>): ReactNode => {
     if (!column.sortable) return null;
 
@@ -366,6 +411,10 @@ function TableGridComponent<T extends Record<string, unknown>>(
     );
   };
 
+  /**
+   * Calculates the grid template columns CSS value based on column widths
+   * @returns String representing the grid-template-columns CSS value
+   */
   const getGridTemplateColumns = useCallback(() => {
     return columns
       .map((column) => {
@@ -463,14 +512,36 @@ function TableGridComponent<T extends Record<string, unknown>>(
                 className={styles.headerRow()}
                 style={{ gridTemplateColumns: getGridTemplateColumns() }}
               >
-                {columns.map((column) => (
-                  <div
-                    key={String(column.id)}
-                    className={cn(styles.headerCell(), column.className)}
-                  >
-                    {renderHeader(column)}
-                  </div>
-                ))}
+                {columns.map((column) => {
+                  const columnWidth = props.columnSizing?.columnSizes[String(column.id)];
+                  
+                  return (
+                    <div
+                      key={String(column.id)}
+                      data-column-id={String(column.id)}
+                      className={cn(
+                        styles.headerCell(),
+                        column.className,
+                        "group relative"
+                      )}
+                      style={{ width: columnWidth ? `${columnWidth}px` : undefined }}
+                    >
+                      {renderHeader(column)}
+                      <div
+                        className={cn(
+                          styles.resizer(),
+                          columnResizeDirection === "rtl" ? "rtl" : "ltr",
+                          isDragging && "cursor-col-resize"
+                        )}
+                        onMouseDown={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleResizeStart(String(column.id), e.clientX);
+                        }}
+                      />
+                    </div>
+                  );
+                })}
               </div>
             </div>
 

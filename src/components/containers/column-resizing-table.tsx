@@ -14,10 +14,6 @@ interface DataItem {
   department: string;
   role: string;
   salary: number;
-  status: string;
-  location: string;
-  joinDate: string;
-  phone: string;
 }
 
 const columnHelper = createColumnHelper<DataItem>();
@@ -73,9 +69,11 @@ const ColumnResizingTable = () => {
     },
   });
 
-  // Memoize the table body while resizing
-  const tableBody = useMemo(
-    () => (
+  return (
+    <div className="p-4">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold">Column Resizing Table</h2>
+      </div>
       <TableGrid<DataItem>
         columns={columns}
         data={filteredData}
@@ -97,26 +95,6 @@ const ColumnResizingTable = () => {
         columnSizing={columnSizing}
         columnResizeInfo={columnResizeInfo}
       />
-    ),
-    [
-      columns,
-      filteredData,
-      handleSort,
-      sortColumn,
-      sortDirection,
-      direction,
-      handleColumnResize,
-      columnSizing,
-      columnResizeInfo,
-    ]
-  );
-
-  return (
-    <div className="p-4">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold">Column Resizing Table</h2>
-      </div>
-      {tableBody}
     </div>
   );
 };
