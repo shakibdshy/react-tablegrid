@@ -1,4 +1,7 @@
 import type { ReactNode } from "react"
+import { TableEventMap } from "./utility-types"
+import { ServerSideConfig } from "./utility-types"
+import { VirtualizationConfig } from "./utility-types"
 
 export type TableVariant = "modern" | "minimal" | "classic"
 export type SortDirection = "asc" | "desc"
@@ -121,7 +124,6 @@ export interface TableProps<T> {
   data: T[]
   variant?: TableVariant
   className?: string
-  onSort?: (column: Column<T>) => void
   sortColumn?: keyof T
   sortDirection?: SortDirection
   gridTemplateColumns?: string
@@ -160,6 +162,9 @@ export interface TableProps<T> {
   columnSizing?: {
     columnSizes: { [key: string]: number }
   }
+  virtualization?: VirtualizationConfig
+  serverSide?: ServerSideConfig<T>
+  events?: Partial<TableEventMap<T>>
 }
 
 // Update TableGridReturn to use typed column ids

@@ -13,11 +13,19 @@ import SimpleBar from "simplebar-react";
 import "simplebar-react/dist/simplebar.min.css";
 import { cn } from "@/utils/cn";
 import { tableStyles } from "./styles";
-import type { TableProps, Column, UpdateDataFn, HeaderGroup } from "./types";
+import type { 
+  TableProps, 
+  Column, 
+  UpdateDataFn, 
+  HeaderGroup, 
+  TableState 
+} from "./types";
 import Fuse from "fuse.js";
 import { Input } from "../input";
 import CaretDown from "@/components/icons/caret-down";
 import CaretUp from "@/components/icons/caret-up";
+import { useVirtualization } from './virtualization-manager'
+import { useServerState } from './server-state-manager'
 
 // Helper function to type-check row data access
 const getRowValue = <T extends Record<string, unknown>>(
@@ -68,7 +76,6 @@ function TableGridComponent<T extends Record<string, unknown>>(
     data,
     variant,
     className,
-    onSort,
     sortColumn,
     sortDirection,
     gridTemplateColumns = "1fr",
@@ -93,11 +100,24 @@ function TableGridComponent<T extends Record<string, unknown>>(
     columnResizeDirection,
     onColumnSizingChange,
     columnResizeInfo,
+    virtualization,
+    serverSide,
+    events,
   } = props;
 
   const styles = tableStyles({ variant });
-  const [internalFilterValue, setInternalFilterValue] = useState("");
-  const filterValue = externalFilterValue ?? internalFilterValue;
+  const filterValue = externalFilterValue ?? "";
+
+  const [state, updateState] = useState<TableState<T>>({
+    data,
+    sortColumn: sortColumn ?? columns[0]?.id ?? ("" as keyof T),
+    sortDirection: sortDirection ?? "asc",
+    filterValue: "",
+    visibleColumns: columns.map(col => col.id),
+    pinnedColumns: { left: [], right: [] },
+    columnSizing: { columnSizes: {} },
+    columnResizeMode: 'onChange'
+  });
 
   // Fuzzy search setup
   const fuse = useMemo(() => {
@@ -282,7 +302,24 @@ function TableGridComponent<T extends Record<string, unknown>>(
           {typeof column.header === "function"
             ? column.header()
             : column.header}
-          {column.sortable && renderSortIcon(column)}
+          {column.sortable && (
+            <button
+              onClick={() => handleSort(column)}
+              className={styles.sortButton()}
+              aria-label="Sort"
+              type="button"
+            >
+              {sortColumn === column.id ? (
+                sortDirection === "asc" ? (
+                  <CaretUp className="w-3.5 h-3.5 text-gray-400" />
+                ) : (
+                  <CaretDown className="w-3.5 h-3.5 text-gray-400" />
+                )
+              ) : (
+                <CaretDown className="w-3.5 h-3.5 text-gray-400" />
+              )}
+            </button>
+          )}
         </div>
 
         <div
@@ -298,34 +335,6 @@ function TableGridComponent<T extends Record<string, unknown>>(
           }}
         />
       </div>
-    );
-  };
-
-  /**
-   * Renders the sort icon for a sortable column
-   * @param column - Column configuration object
-   * @returns ReactNode representing the sort icon
-   */
-  const renderSortIcon = (column: Column<T>): ReactNode => {
-    if (!column.sortable) return null;
-
-    return (
-      <button
-        onClick={() => onSort?.(column)}
-        className={styles.sortButton()}
-        aria-label="Sort"
-        type="button"
-      >
-        {sortColumn === column.id ? (
-          sortDirection === "asc" ? (
-            <CaretUp className="w-3.5 h-3.5 text-gray-400" />
-          ) : (
-            <CaretDown className="w-3.5 h-3.5 text-gray-400" />
-          )
-        ) : (
-          <CaretDown className="w-3.5 h-3.5 text-gray-400" />
-        )}
-      </button>
     );
   };
 
@@ -424,8 +433,135 @@ function TableGridComponent<T extends Record<string, unknown>>(
       .join(" ");
   }, [columns, props.columnSizing]);
 
+  // Initialize server-side state
+  const serverState = useServerState(
+    serverSide ?? { enabled: false, totalRows: 0, pageSize: 10, currentPage: 0, loading: false, onFetch: async () => [] },
+    state
+  )
+
+  // Use server state data if enabled
+  const displayData = serverSide?.enabled ? serverState.data : filteredData;
+
+  // Update virtualization to use server data when enabled
+  const {
+    containerRef,
+    virtualItems,
+    totalHeight,
+  } = useVirtualization(displayData, {
+    enabled: !!virtualization?.enabled,
+    rowHeight: virtualization?.rowHeight ?? 40,
+    overscan: virtualization?.overscan ?? 3,
+    scrollingDelay: virtualization?.scrollingDelay,
+  })
+
+  // Add event handlers
+  const handleStateChange = useCallback(
+    (newState: Partial<TableState<T>>) => {
+      updateState(current => ({ ...current, ...newState }))
+      events?.onStateChange?.(state)
+    },
+    [events, state, updateState]
+  )
+
+  // Update the render logic to use virtualization
+  const renderRows = () => {
+    if (virtualization?.enabled) {
+      return (
+        <div
+          style={{ height: totalHeight, position: 'relative' }}
+          className={styles.body()}
+        >
+          {virtualItems.map((virtualItem) => (
+            <div
+              key={`row-${virtualItem.index}`}
+              className={styles.row()}
+              style={{
+                ...virtualItem.style,
+                gridTemplateColumns: getGridTemplateColumns(),
+              }}
+              onClick={() => events?.onRowSelect?.(virtualItem.item, virtualItem.index)}
+            >
+              {columns.map((column) => {
+                const columnWidth =
+                  props.columnSizing?.columnSizes[String(column.id)];
+                return (
+                  <div
+                    key={`cell-${String(column.id)}`}
+                    className={cn(styles.cell(), column.className)}
+                    style={{
+                      width: columnWidth
+                        ? `${columnWidth}px`
+                        : undefined,
+                      minWidth: columnWidth
+                        ? `${columnWidth}px`
+                        : undefined,
+                    }}
+                  >
+                    {renderCell(column, virtualItem.item, virtualItem.index)}
+                  </div>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+      )
+    }
+
+    // Existing row rendering logic for non-virtualized mode
+    return (
+      <div className={styles.body()}>
+        {isLoading
+          ? renderLoadingState()
+          : filteredData.length > 0
+          ? filteredData.map((row, rowIndex) => (
+              <div
+                key={`row-${rowIndex}-${
+                  (row as { id?: string }).id || ""
+                }`}
+                className={styles.row()}
+                style={{ gridTemplateColumns: getGridTemplateColumns() }}
+              >
+                {columns.map((column) => {
+                  const columnWidth =
+                    props.columnSizing?.columnSizes[String(column.id)];
+                  return (
+                    <div
+                      key={`cell-${String(column.id)}`}
+                      className={cn(styles.cell(), column.className)}
+                      style={{
+                        width: columnWidth
+                          ? `${columnWidth}px`
+                          : undefined,
+                        minWidth: columnWidth
+                          ? `${columnWidth}px`
+                          : undefined,
+                      }}
+                    >
+                      {renderCell(column, row, rowIndex)}
+                    </div>
+                  );
+                })}
+              </div>
+            ))
+          : renderEmptyState()}
+      </div>
+    )
+  }
+
+  const handleSort = useCallback((column: Column<T>) => {
+    const newDirection = state.sortColumn === column.id && state.sortDirection === "asc" ? "desc" : "asc";
+    handleStateChange({
+      sortColumn: column.id,
+      sortDirection: newDirection,
+    })
+  }, [state.sortColumn, state.sortDirection, handleStateChange])
+
+  const setFilterValue = useCallback((value: string) => {
+    handleStateChange({ filterValue: value })
+  }, [updateState])
+
   return (
-    <div className="space-y-4">
+    <div ref={ref} className="space-y-4">
       {(enableFiltering || enableFuzzySearch) && (
         <div
           className={cn(
@@ -438,7 +574,7 @@ function TableGridComponent<T extends Record<string, unknown>>(
             customRenderSearch({
               value: filterValue,
               onChange: (value) => {
-                setInternalFilterValue(value);
+                setFilterValue(value);
                 onFilterChange?.(value);
               },
               placeholder: enableFuzzySearch ? "Fuzzy search..." : "Search...",
@@ -447,19 +583,18 @@ function TableGridComponent<T extends Record<string, unknown>>(
             <components.SearchInput
               value={filterValue}
               onChange={(value) => {
-                setInternalFilterValue(value);
+                setFilterValue(value);
                 onFilterChange?.(value);
               }}
               placeholder={enableFuzzySearch ? "Fuzzy search..." : "Search..."}
             />
           ) : (
-            // Default search input
             <Input
               type="text"
               value={filterValue}
               onChange={(e) => {
                 const newValue = e.target.value;
-                setInternalFilterValue(newValue);
+                setFilterValue(newValue);
                 onFilterChange?.(newValue);
               }}
               placeholder={enableFuzzySearch ? "Fuzzy search..." : "Search..."}
@@ -470,13 +605,9 @@ function TableGridComponent<T extends Record<string, unknown>>(
       )}
 
       <div
-        ref={ref}
-        className={cn(
-          styles.wrapper(),
-          styleConfig?.container?.className,
-          className
-        )}
-        style={styleConfig?.container?.style}
+        ref={containerRef}
+        className={cn(styles.wrapper(), className)}
+        style={{ height: virtualization?.enabled ? '400px' : undefined }}
       >
         <SimpleBar
           style={{ maxHeight }}
@@ -545,42 +676,7 @@ function TableGridComponent<T extends Record<string, unknown>>(
               </div>
             </div>
 
-            <div className={styles.body()}>
-              {isLoading
-                ? renderLoadingState()
-                : filteredData.length > 0
-                ? filteredData.map((row, rowIndex) => (
-                    <div
-                      key={`row-${rowIndex}-${
-                        (row as { id?: string }).id || ""
-                      }`}
-                      className={styles.row()}
-                      style={{ gridTemplateColumns: getGridTemplateColumns() }}
-                    >
-                      {columns.map((column) => {
-                        const columnWidth =
-                          props.columnSizing?.columnSizes[String(column.id)];
-                        return (
-                          <div
-                            key={`cell-${String(column.id)}`}
-                            className={cn(styles.cell(), column.className)}
-                            style={{
-                              width: columnWidth
-                                ? `${columnWidth}px`
-                                : undefined,
-                              minWidth: columnWidth
-                                ? `${columnWidth}px`
-                                : undefined,
-                            }}
-                          >
-                            {renderCell(column, row, rowIndex)}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  ))
-                : renderEmptyState()}
-            </div>
+            {renderRows()}
           </div>
         </SimpleBar>
       </div>
