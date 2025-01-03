@@ -4,7 +4,7 @@ import { tableStyles } from "@/styles/table.style";
 import { TableResizer } from "@/components/ui/table-resizer";
 import { SortIcon } from "@/components/ui/sort-icon";
 import type { Column } from "@/types/column.types";
-import { useTable } from "@/hooks/use-table-context";
+import type { useTable } from "@/hooks/use-table-context";
 import type { TableCustomComponents } from "@/types/table.types";
 
 interface HeaderCellProps<T extends Record<string, unknown>> {

@@ -2,10 +2,11 @@ import { useCallback } from 'react'
 import { cn } from '@/utils/cn'
 import { tableStyles } from '@/styles/table.style'
 import { Input } from '@/components/ui/input'
-import { useTable } from '@/context/table-context'
+import type { useTable } from '@/hooks/use-table-context'
 
-interface TableSearchProps {
+interface TableSearchProps<T extends Record<string, unknown>> {
   className?: string
+  tableInstance: ReturnType<typeof useTable<T>>;
   style?: React.CSSProperties
   enableFuzzySearch?: boolean
   placeholder?: string
@@ -24,17 +25,18 @@ interface TableSearchProps {
   onFilterChange?: (value: string) => void
 }
 
-export function TableSearch({
+export function TableSearch<T extends Record<string, unknown>>({
   className,
+  tableInstance,
   style,
   enableFuzzySearch = false,
   placeholder,
   components,
   customRender,
   onFilterChange,
-}: TableSearchProps) {
+}: TableSearchProps<T>) {
   const styles = tableStyles()
-  const { filterValue, setFilterValue } = useTable()
+  const { filterValue, setFilterValue } = tableInstance;
 
   const handleChange = useCallback(
     (value: string) => {

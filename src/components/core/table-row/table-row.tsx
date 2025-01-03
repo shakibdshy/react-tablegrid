@@ -3,13 +3,14 @@ import { cn } from "@/utils/cn";
 import { tableStyles } from "@/styles/table.style";
 import { TableCell } from "@/components/ui/table-cell";
 import type { Column } from "@/types/column.types";
-import { useTable } from "@/context/table-context";
+import type { useTable } from "@/hooks/use-table-context";
 
-interface TableRowProps<T> {
+interface TableRowProps<T extends Record<string, unknown>> {
   row: T;
   rowIndex: number;
   className?: string;
   style?: React.CSSProperties;
+  tableInstance: ReturnType<typeof useTable<T>>;
   components?: {
     Cell?: React.ComponentType<{
       column: Column<T>;
@@ -31,6 +32,7 @@ export function TableRow<T extends Record<string, unknown>>({
   rowIndex,
   className,
   style,
+  tableInstance,
   components,
   customRender,
   isVirtual,
@@ -41,7 +43,7 @@ export function TableRow<T extends Record<string, unknown>>({
     columns,
     state: { columnSizing },
     handleRowSelect,
-  } = useTable<T>();
+  } = tableInstance;
 
   const handleClick = useCallback(() => {
     handleRowSelect(row, rowIndex);
