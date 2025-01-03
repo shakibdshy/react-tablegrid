@@ -4,10 +4,11 @@ import { tableStyles } from "@/styles/table.style";
 import { TableResizer } from "@/components/ui/table-resizer";
 import { SortIcon } from "@/components/ui/sort-icon";
 import type { Column } from "@/types/column.types";
-import { useTable } from "@/context/table-context";
+import { useTable } from "@/hooks/use-table-context";
 import type { TableCustomComponents } from "@/types/table.types";
 
-interface HeaderCellProps<T> {
+interface HeaderCellProps<T extends Record<string, unknown>> {
+  tableInstance: ReturnType<typeof useTable<T>>;
   column: Column<T>;
   className?: string;
   width?: number;
@@ -16,6 +17,7 @@ interface HeaderCellProps<T> {
 }
 
 export function HeaderCell<T extends Record<string, unknown>>({
+  tableInstance,
   column,
   className,
   width,
@@ -30,7 +32,7 @@ export function HeaderCell<T extends Record<string, unknown>>({
     handleColumnResizeStart,
     handleColumnResizeMove,
     handleColumnResizeEnd,
-  } = useTable<T>();
+  } = tableInstance;
 
   const isResizing = columnResizeInfo.isResizingColumn === column.id;
   const isCurrentSortColumn = sortColumn === column.id;

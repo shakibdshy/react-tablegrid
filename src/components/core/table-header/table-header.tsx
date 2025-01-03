@@ -1,12 +1,13 @@
 import { useMemo } from "react";
 import type { Column, HeaderGroup } from "@/types/column.types";
-import { useTable } from "@/context/table-context";
+import { useTable } from "@/hooks/use-table-context";
 import { cn } from "@/utils/cn";
 import { tableStyles } from "@/styles/table.style";
 import type { TableCustomComponents } from "@/types/table.types";
 import { HeaderCell } from "./header-cell";
 
-interface TableHeaderProps<T> {
+interface TableHeaderProps<T extends Record<string, unknown>> {
+  tableInstance: ReturnType<typeof useTable<T>>;
   className?: string;
   enableHeaderGroups?: boolean;
   components?: TableCustomComponents<T>;
@@ -34,15 +35,13 @@ function generateHeaderGroups<T extends Record<string, unknown>>(
 }
 
 export function TableHeader<T extends Record<string, unknown>>({
+  tableInstance,
   className,
   enableHeaderGroups = false,
   components,
 }: TableHeaderProps<T>) {
   const styles = tableStyles();
-  const {
-    columns,
-    state: { columnSizing },
-  } = useTable<T>();
+  const { columns, state: { columnSizing } } = tableInstance;
 
   const headerGroups = useMemo(() => {
     if (!enableHeaderGroups) return [];
@@ -51,7 +50,7 @@ export function TableHeader<T extends Record<string, unknown>>({
 
   const getGridTemplateColumns = () => {
     return columns
-      .map((column) => {
+      .map((column: Column<T>) => {
         const width = columnSizing.columnSizes[String(column.id)];
         return width ? `${width}px` : "1fr";
       })
@@ -87,11 +86,12 @@ export function TableHeader<T extends Record<string, unknown>>({
         className={styles.headerRow()}
         style={{ gridTemplateColumns: getGridTemplateColumns() }}
       >
-        {columns.map((column) => {
+        {columns.map((column: Column<T>) => {
           const width = columnSizing.columnSizes[String(column.id)];
           return (
-            <HeaderCell
+            <HeaderCell<T>
               key={String(column.id)}
+              tableInstance={tableInstance}
               column={column}
               width={width}
               className={column.className}
