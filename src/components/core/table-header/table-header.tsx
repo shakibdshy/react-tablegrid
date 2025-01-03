@@ -57,6 +57,8 @@ export function TableHeader<T extends Record<string, unknown>>({
       .join(" ");
   };
 
+  console.log(className);
+
   return (
     <div className={cn(styles.header(), className)}>
       {enableHeaderGroups && headerGroups.length > 0 && (

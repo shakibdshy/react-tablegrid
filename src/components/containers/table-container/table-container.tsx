@@ -22,28 +22,28 @@ interface TableContainerProps<T extends Record<string, unknown>> extends Omit<Ta
   onStateChange?: (state: TableState<T>) => void
 }
 
-export const TableContainer = forwardRef<
-  HTMLDivElement,
-  TableContainerProps<Record<string, unknown>>
->(({
-  className,
-  style,
-  maxHeight = '400px',
-  enableFiltering = false,
-  enableFuzzySearch = false,
-  headerGroups = false,
-  virtualization,
-  serverSide,
-  components,
-  customRender,
-  styleConfig,
-  variant = 'modern',
-  columns,
-  data,
-  onStateChange,
-}, ref) => {
+function TableContainerComponent<T extends Record<string, unknown>>(
+  {
+    className,
+    style,
+    maxHeight = '400px',
+    enableFiltering = false,
+    enableFuzzySearch = false,
+    headerGroups = false,
+    virtualization,
+    serverSide,
+    components,
+    customRender,
+    styleConfig,
+    variant = 'modern',
+    columns,
+    data,
+    onStateChange,
+  }: TableContainerProps<T>,
+  ref: React.ForwardedRef<HTMLDivElement>
+) {
   const styles = tableStyles({ variant })
-  const tableInstance = useTable({
+  const tableInstance = useTable<T>({
     data,
     columns,
     onStateChange,
@@ -92,7 +92,7 @@ export const TableContainer = forwardRef<
 
             {/* Header */}
             <TableHeader
-              className={styleConfig?.header?.className}
+              className={cn(styleConfig?.header?.className)}
               enableHeaderGroups={headerGroups}
               components={components}
               tableInstance={tableInstance}
@@ -104,7 +104,10 @@ export const TableContainer = forwardRef<
                 config={virtualization}
                 customRender={{
                   row: customRender?.renderCell
-                    ? (props) => (customRender.renderCell?.(props.row, props.rowIndex, undefined) ?? null) as React.ReactElement
+                    ? (props) => {
+                        const value = props.row[String(columns[0].accessorKey)] as T[keyof T];
+                        return (customRender.renderCell?.(props.row as unknown as T, props.rowIndex, value) ?? null) as React.ReactElement;
+                      }
                     : undefined,
                 }}
                 className={styleConfig?.row?.className}
@@ -121,7 +124,12 @@ export const TableContainer = forwardRef<
                   empty: customRender?.renderEmpty,
                   loading: customRender?.renderLoading,
                   row: customRender?.renderCell
-                    ? (props) => (customRender.renderCell?.(props.row, props.rowIndex, undefined) ?? null) as React.ReactElement
+                    ? (props) => {
+                        const row = props.row as Record<string, unknown>;
+                        const accessorKey = String(columns[0].accessorKey);
+                        const value = row[accessorKey];
+                        return (customRender?.renderCell?.(row as T, props.rowIndex, value as T[keyof T]) ?? null) as React.ReactElement;
+                      }
                     : undefined,
                 }}
                 className={styleConfig?.row?.className}
@@ -146,6 +154,13 @@ export const TableContainer = forwardRef<
       )}
     </div>
   )
-})
+}
+
+const TableContainer = forwardRef(TableContainerComponent) as unknown as (<T extends Record<string, unknown>>(
+  props: TableContainerProps<T> & { ref?: React.ForwardedRef<HTMLDivElement> }
+) => React.ReactElement) & { displayName?: string }
 
 TableContainer.displayName = 'TableContainer'
+
+export type { TableContainerProps }
+export { TableContainer }

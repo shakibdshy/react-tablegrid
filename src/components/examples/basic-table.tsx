@@ -1,64 +1,46 @@
 "use client"
+import { TableContainer } from "@/components/containers/table-container/table-container";
 import dummyData from "@/data/dummy.json";
-import { TableGrid, useTableGrid, Column } from "@shakibdshy/react-tablegrid";
+import { createColumnHelper } from "@/utils/column-helper";
+import type { Column } from "@/types/column.types";
 
-interface DataItem extends Record<string, unknown> {
+type DataItem = {
   id: number;
   name: string;
   age: number;
   email: string;
-}
+};
+
+const columnHelper = createColumnHelper<DataItem>();
 
 const columns: Column<DataItem>[] = [
-  { 
-    id: "name", 
-    header: "Name", 
-    accessorKey: "name",
-    sortable: true 
-  },
-  { 
-    id: "age", 
-    header: "Age", 
-    accessorKey: "age",
-    sortable: true 
-  },
-  { 
-    id: "email", 
-    header: "Email", 
-    accessorKey: "email",
-    sortable: true 
-  },
+  columnHelper.accessor("name", {
+    header: "Name",
+    sortable: false,
+  }),
+  columnHelper.accessor("age", {
+    header: "Age",
+    sortable: true,
+  }),
+  columnHelper.accessor("email", {
+    header: "Email",
+    sortable: false,
+  }),
 ];
 
 const BasicTable = () => {
-  const {
-    filteredData,
-    handleSort,
-    sortColumn,
-    sortDirection,
-  } = useTableGrid<DataItem>({
-    data: dummyData,
-    columns,
-    initialState: {
-      sortColumn: "name",
-      sortDirection: "asc",
-    },
-    onStateChange: (state) => {
-      console.log("Table state changed:", state)
-    },
-  });
-
   return (
     <div className="p-4">      
-      <TableGrid<DataItem>
+      <TableContainer
         columns={columns}
-        data={filteredData}
-        gridTemplateColumns="1fr 1fr 1fr"
+        data={dummyData}
         maxHeight="400px"
-        variant="classic"
-        onSort={handleSort}
-        sortColumn={sortColumn}
-        sortDirection={sortDirection}
+        variant="modern"
+        // enableFiltering={true}
+        // enableFuzzySearch={true}
+        onStateChange={(state) => {
+          console.log("Table state changed:", state);
+        }}
       />
     </div>
   );

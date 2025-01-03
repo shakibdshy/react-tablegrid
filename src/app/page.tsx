@@ -11,7 +11,9 @@ import VirtualizedTable from "@/components/examples/virtualized-table";
 export default function Home() {
   return (
     <main className="min-h-screen p-4">
-      <VirtualizedTable />
+      <BasicTable />
+      {/* <BasicSearch /> */}
+      {/* <VirtualizedTable /> */}
       {/* <BasicTable />
       <ColumnResizingTable />
       <div className="space-y-8">
@@ -21,7 +23,7 @@ export default function Home() {
         <ColumnPinningTable />
         <ColumnVisibilityTable />
         <HeaderGroupsTable />
-        <BasicSearch />
+        
         <FuzzySearchFilter />
       </div> */}
     </main>
