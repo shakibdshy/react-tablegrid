@@ -1,13 +1,14 @@
-import { useTable } from '@/context/table-context'
 import { cn } from '@/utils/cn'
 import { tableStyles } from '@/styles/table.style'
 import { TableRow } from '@/components/core/table-row/table-row'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { Empty } from '@/components/ui/empty'
+import type { useTable } from '@/hooks/use-table-context'
 
 interface TableBodyProps<T extends Record<string, unknown>> {
   className?: string
   style?: React.CSSProperties
+  tableInstance: ReturnType<typeof useTable<T>>
   components?: {
     EmptyState?: React.ComponentType
     LoadingState?: React.ComponentType
@@ -22,6 +23,7 @@ interface TableBodyProps<T extends Record<string, unknown>> {
 export function TableBody<T extends Record<string, unknown>>({
   className,
   style,
+  tableInstance,
   components,
   customRender,
 }: TableBodyProps<T>) {
@@ -29,7 +31,7 @@ export function TableBody<T extends Record<string, unknown>>({
   const {
     filteredData,
     state: { loading },
-  } = useTable<T>()
+  } = tableInstance;
 
   if (loading) {
     if (customRender?.loading) {
@@ -73,11 +75,12 @@ export function TableBody<T extends Record<string, unknown>>({
 
   return (
     <div className={cn(styles.body(), className)} style={style}>
-      {filteredData.map((row, index) => (
+      {filteredData.map((row: T, index: number) => (
         <RowComponent
           key={`row-${index}-${(row as { id?: string }).id || ''}`}
           row={row}
           rowIndex={index}
+          tableInstance={tableInstance}
         />
       ))}
     </div>
