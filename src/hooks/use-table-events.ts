@@ -101,6 +101,30 @@ export function useTableEvents<T extends Record<string, unknown>>({
     events?.onStateChange?.(newState)
   }, [events])
 
+  const handleKeyDown = useCallback((event: KeyboardEvent) => {
+    const { key, ctrlKey } = event;
+    
+    switch (key) {
+      case 'ArrowDown':
+        // Move selection down
+        break;
+      case 'ArrowUp':
+        // Move selection up
+        break;
+      case 'Space':
+        if (ctrlKey) {
+          // Toggle current row selection
+        }
+        break;
+      case 'a':
+        if (ctrlKey) {
+          // Select all rows
+          event.preventDefault();
+        }
+        break;
+    }
+  }, []);
+
   return {
     handleSort,
     handleFilterChange,
@@ -109,5 +133,6 @@ export function useTableEvents<T extends Record<string, unknown>>({
     handleColumnPin,
     handleRowSelect,
     handleStateChange,
+    handleKeyDown,
   }
 }
