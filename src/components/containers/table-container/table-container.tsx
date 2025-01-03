@@ -10,13 +10,16 @@ import SimpleBar from 'simplebar-react'
 import 'simplebar-react/dist/simplebar.min.css'
 import type { TableProps, TableCustomRender, TableState } from '@/types/table.types'
 import type { Column, ColumnResizeInfoState } from "@/types/column.types"
+import { useTable } from '@/hooks/use-table-context'
 
 interface TableContainerProps<T extends Record<string, unknown>> extends Omit<TableProps<T>, 'columns'> {
   style?: React.CSSProperties
   customRender?: TableCustomRender<T>
-  columns: Column<T>[];
-  columnResizeInfo?: ColumnResizeInfoState;
-  columnSizing?: TableState<T>['columnSizing'];
+  columns: Column<T>[]
+  columnResizeInfo?: ColumnResizeInfoState
+  columnSizing?: TableState<T>['columnSizing']
+  data: T[]
+  onStateChange?: (state: TableState<T>) => void
 }
 
 export const TableContainer = forwardRef<
@@ -35,8 +38,17 @@ export const TableContainer = forwardRef<
   customRender,
   styleConfig,
   variant = 'modern',
+  columns,
+  data,
+  onStateChange,
 }, ref) => {
   const styles = tableStyles({ variant })
+  const tableInstance = useTable({
+    data,
+    columns,
+    onStateChange,
+    enableFuzzySearch,
+  })
 
   return (
     <div ref={ref} className="space-y-4">
@@ -48,6 +60,7 @@ export const TableContainer = forwardRef<
           enableFuzzySearch={enableFuzzySearch}
           components={components}
           customRender={customRender?.renderSearch}
+          tableInstance={tableInstance}
         />
       )}
 
@@ -73,6 +86,7 @@ export const TableContainer = forwardRef<
                 customRender={{
                   group: (group) => customRender?.renderHeader?.(group.columns[0]),
                 }}
+                tableInstance={tableInstance}
               />
             )}
 
@@ -81,6 +95,7 @@ export const TableContainer = forwardRef<
               className={styleConfig?.header?.className}
               enableHeaderGroups={headerGroups}
               components={components}
+              tableInstance={tableInstance}
             />
 
             {/* Body */}
@@ -94,6 +109,7 @@ export const TableContainer = forwardRef<
                 }}
                 className={styleConfig?.row?.className}
                 style={styleConfig?.row?.style}
+                tableInstance={tableInstance}
               />
             ) : (
               <TableBody
@@ -110,6 +126,7 @@ export const TableContainer = forwardRef<
                 }}
                 className={styleConfig?.row?.className}
                 style={styleConfig?.row?.style}
+                tableInstance={tableInstance}
               />
             )}
           </div>
