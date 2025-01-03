@@ -1,121 +1,59 @@
-import { useMemo } from "react";
-import { useTable } from "@/context/table-context";
-import { cn } from "@/utils/cn";
-import { tableStyles } from "@/styles/table.style";
-import type { HeaderGroup } from "@/types/column.types";
+import { cn } from '@/utils/cn'
+import { tableStyles } from '@/styles/table.style'
+import type { HeaderGroup } from '@/types/column.types'
+import type { useTable } from '@/hooks/use-table-context'
 
 interface TableHeaderGroupProps<T extends Record<string, unknown>> {
-  className?: string;
-  style?: React.CSSProperties;
+  className?: string
+  style?: React.CSSProperties
+  tableInstance: ReturnType<typeof useTable<T>>
   customRender?: {
-    group?: (group: HeaderGroup<T>) => React.ReactNode;
-  };
-  components?: {
-    HeaderGroup?: React.ComponentType<{
-      group: HeaderGroup<T>;
-      className?: string;
-      style?: React.CSSProperties;
-    }>;
-  };
+    group: (group: HeaderGroup<T>) => React.ReactNode
+  }
 }
 
 export function TableHeaderGroup<T extends Record<string, unknown>>({
   className,
   style,
+  tableInstance,
   customRender,
-  components,
 }: TableHeaderGroupProps<T>) {
-  const styles = tableStyles();
-  const {
-    columns,
-    state: { columnSizing },
-  } = useTable<T>();
+  const styles = tableStyles()
+  const { columns } = tableInstance
 
-  const headerGroups = useMemo(() => {
-    const groupMap = new Map<string, HeaderGroup<T>>();
-
-    columns.forEach((column) => {
-      if (column.group) {
-        if (!groupMap.has(column.group)) {
-          groupMap.set(column.group, {
-            id: column.group.toLowerCase().replace(/\s+/g, "-"),
-            name: column.group,
-            columns: [],
-          });
-        }
-        groupMap.get(column.group)!.columns.push(column);
+  const headerGroups = columns.reduce((groups, column) => {
+    if (column.group) {
+      const existingGroup = groups.find(g => g.name === column.group)
+      if (existingGroup) {
+        existingGroup.columns.push(column)
+      } else {
+        groups.push({
+          id: column.group.toLowerCase().replace(/\s+/g, '-'),
+          name: column.group,
+          columns: [column],
+        })
       }
-    });
-
-    return Array.from(groupMap.values());
-  }, [columns]);
-
-  const getGridTemplateColumns = () => {
-    return columns
-      .map((column) => {
-        const width = columnSizing.columnSizes[String(column.id)];
-        return width ? `${width}px` : "1fr";
-      })
-      .join(" ");
-  };
-
-  if (headerGroups.length === 0) return null;
+    }
+    return groups
+  }, [] as HeaderGroup<T>[])
 
   return (
-    <div
-      className={cn(styles.headerRow(), className)}
-      style={{
-        ...style,
-        gridTemplateColumns: getGridTemplateColumns(),
-      }}
-    >
-      {headerGroups.map((group) => {
-        if (customRender?.group) {
-          return (
-            <div
-              key={group.id}
-              style={{
-                gridColumn: `span ${group.columns.length}`,
-              }}
-            >
-              {customRender.group(group)}
-            </div>
-          );
-        }
-
-        if (components?.HeaderGroup) {
-          return (
-            <components.HeaderGroup
-              key={group.id}
-              group={group}
-              className={cn(
-                styles.headerCell(),
-                "text-center font-bold",
-                `colspan-${group.columns.length}`
-              )}
-              style={{
-                gridColumn: `span ${group.columns.length}`,
-              }}
-            />
-          );
-        }
-
-        return (
-          <div
-            key={group.id}
-            className={cn(
-              styles.headerCell(),
-              "text-center font-bold",
-              `colspan-${group.columns.length}`
-            )}
-            style={{
-              gridColumn: `span ${group.columns.length}`,
-            }}
-          >
-            {group.name}
-          </div>
-        );
-      })}
+    <div className={cn(styles.headerGroup(), className)} style={style}>
+      {headerGroups.map((group) => (
+        <div
+          key={group.id}
+          className={cn(
+            styles.headerCell(),
+            'text-center font-bold',
+            `colspan-${group.columns.length}`
+          )}
+          style={{
+            gridColumn: `span ${group.columns.length}`,
+          }}
+        >
+          {customRender?.group ? customRender.group(group) : group.name}
+        </div>
+      ))}
     </div>
-  );
+  )
 }
