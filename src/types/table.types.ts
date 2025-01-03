@@ -29,6 +29,7 @@ export interface TableState<T> {
   };
   columnSizing: { columnSizes: { [key: string]: number } };
   columnResizeMode: ColumnResizeMode;
+  loading?: boolean;
 }
 
 export interface TableCustomComponents<T> {
@@ -49,6 +50,10 @@ export interface TableCustomComponents<T> {
     onChange: (value: string) => void;
     placeholder?: string;
   }>;
+  renderCell?: (row: T, rowIndex: number, value: unknown) => React.ReactNode;
+  renderLoading?: () => React.ReactNode;
+  renderEmpty?: () => React.ReactNode;
+  renderError?: (error: Error) => React.ReactNode;
 }
 
 export interface TableStyleConfig {
@@ -80,6 +85,18 @@ export interface TableStyleConfig {
 
 // Add this type to handle Fuse.js keys
 export type FuseKeys<T> = Array<keyof T | string>;
+
+export interface TableCustomRender<T> {
+  renderHeader?: (column: Column<T>) => ReactNode;
+  renderCell?: (row: T, rowIndex: number, value: T[keyof T]) => ReactNode;
+  renderEmpty?: () => ReactNode;
+  renderLoading?: () => ReactNode;
+  renderSearch?: (props: {
+    value: string;
+    onChange: (value: string) => void;
+    placeholder?: string;
+  }) => ReactNode;
+}
 
 export interface TableProps<T> {
   columns: Column<T>[];

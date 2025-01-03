@@ -5,12 +5,14 @@ import { TableResizer } from "@/components/ui/table-resizer";
 import { SortIcon } from "@/components/ui/sort-icon";
 import type { Column } from "@/types/column.types";
 import { useTable } from "@/context/table-context";
+import type { TableCustomComponents } from "@/types/table.types";
 
 interface HeaderCellProps<T> {
   column: Column<T>;
   className?: string;
   width?: number;
   style?: React.CSSProperties;
+  components?: TableCustomComponents<T>;
 }
 
 export function HeaderCell<T extends Record<string, unknown>>({

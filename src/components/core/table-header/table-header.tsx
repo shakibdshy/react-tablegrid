@@ -1,14 +1,15 @@
 import { useMemo } from "react";
-import { cn } from "@/utils/cn";
-import { tableStyles } from "@/styles/table.style";
-import { HeaderCell } from "./header-cell";
 import type { Column, HeaderGroup } from "@/types/column.types";
 import { useTable } from "@/context/table-context";
+import { cn } from "@/utils/cn";
+import { tableStyles } from "@/styles/table.style";
+import type { TableCustomComponents } from "@/types/table.types";
+import { HeaderCell } from "./header-cell";
 
-interface TableHeaderProps<T extends Record<string, unknown>> {
+interface TableHeaderProps<T> {
   className?: string;
   enableHeaderGroups?: boolean;
-  columns?: Column<T>[];
+  components?: TableCustomComponents<T>;
 }
 
 function generateHeaderGroups<T extends Record<string, unknown>>(
@@ -35,6 +36,7 @@ function generateHeaderGroups<T extends Record<string, unknown>>(
 export function TableHeader<T extends Record<string, unknown>>({
   className,
   enableHeaderGroups = false,
+  components,
 }: TableHeaderProps<T>) {
   const styles = tableStyles();
   const {
@@ -93,6 +95,7 @@ export function TableHeader<T extends Record<string, unknown>>({
               column={column}
               width={width}
               className={column.className}
+              components={components}
             />
           );
         })}
