@@ -2,7 +2,7 @@
 import TableGrid from "@/components/ui/table-grid/table-grid";
 import dummyData from "@/data/dummy.json";
 import { useTableGrid } from "@/hooks/use-table-grid";
-import { createColumnHelper } from "@/components/ui/table-grid/column-helper";
+import { createColumnHelper } from "@/utils/column-helper";
 
 interface DataItem {
   id: number;

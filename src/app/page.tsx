@@ -1,12 +1,12 @@
-import BasicTable from "@/components/containers/basic-table";
-import HeaderGroupsTable from "@/components/containers/header-groups";
-import BasicSearch from "@/components/containers/basic-search";
-import FuzzySearchFilter from "@/components/containers/fuzzy-search-filter";
-import ColumnVisibilityTable from "@/components/containers/column-visibility-table";
-import ColumnPinningTable from "@/components/containers/toggle-column-pinning-table";
-import CustomizedTable from "@/components/containers/customized-table";
-import ColumnResizingTable from "@/components/containers/column-resizing-table";
-import VirtualizedTable from "@/components/containers/virtualized-table";
+import BasicTable from "@/components/examples/basic-table";
+import HeaderGroupsTable from "@/components/examples/header-groups";
+import BasicSearch from "@/components/examples/basic-search";
+import FuzzySearchFilter from "@/components/examples/fuzzy-search-filter";
+import ColumnVisibilityTable from "@/components/examples/column-visibility-table";
+import ColumnPinningTable from "@/components/examples/toggle-column-pinning-table";
+import CustomizedTable from "@/components/examples/customized-table";
+import ColumnResizingTable from "@/components/examples/column-resizing-table";
+import VirtualizedTable from "@/components/examples/virtualized-table";
 
 export default function Home() {
   return (

@@ -1,5 +1,4 @@
-import type { Column } from './types'
-
+import { Column } from "@/types/column.types";
 /**
  * Helper functions for creating and managing table columns
  * Provides type-safe column definitions with various configuration options
@@ -10,32 +9,38 @@ import type { Column } from './types'
  * @template TData - Type of data being displayed
  * @template TValue - Type of value in the column
  */
-export type DisplayColumnDef<TData, TValue = unknown> = Omit<Column<TData>, 'id' | 'accessorKey'> & {
+export type DisplayColumnDef<TData, TValue = unknown> = Omit<
+  Column<TData>,
+  "id" | "accessorKey"
+> & {
   /** Optional column identifier */
-  id?: keyof TData
+  id?: keyof TData;
   /** Custom cell renderer function */
-  cell?: (props: { value: TValue; row: TData }) => React.ReactNode
-}
+  cell?: (props: { value: TValue; row: TData }) => React.ReactNode;
+};
 
 /**
  * Column definition with grouping support
  * @template TData - Type of data being displayed
  * @template TValue - Type of value in the column
  */
-export type GroupColumnDef<TData, TValue = unknown> = DisplayColumnDef<TData, TValue> & {
+export type GroupColumnDef<TData, TValue = unknown> = DisplayColumnDef<
+  TData,
+  TValue
+> & {
   /** Nested columns within the group */
-  columns?: Column<TData>[]
-}
+  columns?: Column<TData>[];
+};
 
 export interface ColumnHelper<TData> {
   accessor: <TKey extends keyof TData & string>(
     accessorKey: TKey,
-    columnDef?: Omit<DisplayColumnDef<TData, TData[TKey]>, 'id' | 'accessorKey'>
-  ) => Column<TData>
-  
-  display: (columnDef: DisplayColumnDef<TData>) => Column<TData>
-  
-  group: (columnDef: GroupColumnDef<TData>) => Column<TData>
+    columnDef?: Omit<DisplayColumnDef<TData, TData[TKey]>, "id" | "accessorKey">
+  ) => Column<TData>;
+
+  display: (columnDef: DisplayColumnDef<TData>) => Column<TData>;
+
+  group: (columnDef: GroupColumnDef<TData>) => Column<TData>;
 }
 
 /**
@@ -66,14 +71,14 @@ export function createColumnHelper<TData>(): ColumnHelper<TData> {
 
     display: (columnDef) => ({
       id: columnDef.id ?? (String(Math.random()) as keyof TData),
-      accessorKey: columnDef.id as keyof TData ?? ('' as keyof TData),
+      accessorKey: (columnDef.id as keyof TData) ?? ("" as keyof TData),
       ...columnDef,
     }),
 
     group: (columnDef) => ({
       id: columnDef.id ?? (String(Math.random()) as keyof TData),
-      accessorKey: columnDef.id as keyof TData ?? ('' as keyof TData),
+      accessorKey: (columnDef.id as keyof TData) ?? ("" as keyof TData),
       ...columnDef,
     }),
-  }
-} 
+  };
+}
