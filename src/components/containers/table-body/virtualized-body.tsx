@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { cn } from '@/utils/cn'
 import { tableStyles } from '@/styles/table.style'
 import { TableRow } from '@/components/core/table-row/table-row'
-import { useTable } from '@/context/table-context'
+import type { useTable } from '@/hooks/use-table-context'
 
 interface VirtualizationConfig {
   enabled: boolean
@@ -11,10 +11,11 @@ interface VirtualizationConfig {
   scrollingDelay?: number
 }
 
-interface VirtualizedBodyProps {
+interface VirtualizedBodyProps<T extends Record<string, unknown>> {
   className?: string
   style?: React.CSSProperties
   config: VirtualizationConfig
+  tableInstance: ReturnType<typeof useTable<T>>
   customRender?: {
     row?: typeof TableRow
   }
@@ -24,11 +25,12 @@ export function VirtualizedBody<T extends Record<string, unknown>>({
   className,
   style,
   config,
+  tableInstance,
   customRender,
-}: VirtualizedBodyProps) {
+}: VirtualizedBodyProps<T>) {
   const styles = tableStyles()
   const containerRef = useRef<HTMLDivElement>(null)
-  const { filteredData } = useTable<T>()
+  const { filteredData } = tableInstance
 
   const [state, setState] = useState({
     startIndex: 0,
@@ -79,7 +81,7 @@ export function VirtualizedBody<T extends Record<string, unknown>>({
 
   const getVirtualItems = useCallback(() => {
     if (!config.enabled) {
-      return filteredData.map((item, index) => ({
+      return filteredData.map((item: T, index: number) => ({
         item,
         index,
         style: {
@@ -93,7 +95,7 @@ export function VirtualizedBody<T extends Record<string, unknown>>({
 
     return filteredData
       .slice(state.startIndex, state.endIndex + 1)
-      .map((item, index) => ({
+      .map((item: T, index: number) => ({
         item,
         index: state.startIndex + index,
         style: {
@@ -134,6 +136,7 @@ export function VirtualizedBody<T extends Record<string, unknown>>({
             rowIndex={virtualItem.index}
             isVirtual
             virtualStyle={virtualItem.style}
+            tableInstance={tableInstance}
           />
         ))}
       </div>
