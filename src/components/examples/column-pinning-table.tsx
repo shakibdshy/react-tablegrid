@@ -1,8 +1,8 @@
 "use client";
-import TableGrid from "@/components/ui/table-grid/table-grid";
+import { TableContainer } from "@/components/containers/table-container/table-container";
 import dummyData from "@/data/dummy.json";
-import { useTableGrid } from "@/hooks/use-table-grid";
 import { createColumnHelper } from "@/utils/column-helper";
+import type { Column } from "@/types/column.types";
 
 interface DataItem {
   id: number;
@@ -20,7 +20,7 @@ interface DataItem {
 
 const columnHelper = createColumnHelper<DataItem>();
 
-const columns = [
+const columns: Column<DataItem>[] = [
   columnHelper.accessor("id", {
     header: "ID",
     sortable: true,
@@ -54,30 +54,19 @@ const columns = [
 ];
 
 const ColumnPinningTable = () => {
-  const { filteredData, handleSort, sortColumn, sortDirection } =
-    useTableGrid<DataItem>({
-      data: dummyData,
-      columns,
-      initialState: {
-        sortColumn: "name",
-        sortDirection: "asc",
-      },
-    });
-
   return (
     <div className="p-4">
       <div className="flex flex-col gap-4 mb-4">
         <h2 className="text-2xl font-bold">Column Pinning</h2>
       </div>
-      <TableGrid<DataItem>
+      <TableContainer
         columns={columns}
-        data={filteredData}
-        gridTemplateColumns="1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr"
+        data={dummyData}
         maxHeight="400px"
         variant="classic"
-        onSort={handleSort}
-        sortColumn={sortColumn}
-        sortDirection={sortDirection}
+        onStateChange={(state) => {
+          console.log("Table state changed:", state);
+        }}
       />
     </div>
   );

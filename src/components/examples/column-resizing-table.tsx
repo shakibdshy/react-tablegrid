@@ -1,12 +1,10 @@
 "use client";
-import { useMemo } from "react";
-import TableGrid from "@/components/ui/table-grid/table-grid";
+import { TableContainer } from "@/components/containers/table-container/table-container";
 import dummyData from "@/data/dummy.json";
-import { useTableGrid } from "@/hooks/use-table-grid";
-import { createColumnHelper } from "@/components/ui/table-grid/column-helper";
-import { useDirection } from "@/hooks/use-direction";
+import { createColumnHelper } from "@/utils/column-helper";
+import type { Column } from "@/types/column.types";
 
-interface DataItem {
+interface DataItem extends Record<string, unknown> {
   id: number;
   name: string;
   age: number;
@@ -18,82 +16,55 @@ interface DataItem {
 
 const columnHelper = createColumnHelper<DataItem>();
 
+const columns: Column<DataItem>[] = [
+  columnHelper.accessor("id", {
+    header: "ID",
+    sortable: true,
+    width: "80px",
+  }),
+  columnHelper.accessor("name", {
+    header: "Name",
+    sortable: true,
+    width: "200px",
+  }),
+  columnHelper.accessor("email", {
+    header: "Email",
+    sortable: true,
+    width: "250px",
+  }),
+  columnHelper.accessor("department", {
+    header: "Department",
+    sortable: true,
+    width: "150px",
+  }),
+  columnHelper.accessor("role", {
+    header: "Role",
+    sortable: true,
+    width: "150px",
+  }),
+  columnHelper.accessor("salary", {
+    header: "Salary",
+    sortable: true,
+    width: "120px",
+    cell: ({ value }) => `$${(value as number).toLocaleString()}`,
+  }),
+];
+
 const ColumnResizingTable = () => {
-  const { direction } = useDirection();
-  
-  const columns = useMemo(
-    () => [
-      columnHelper.accessor("id", {
-        header: "ID",
-        sortable: true,
-      }),
-      columnHelper.accessor("name", {
-        header: "Name",
-        sortable: true,
-      }),
-      columnHelper.accessor("email", {
-        header: "Email",
-        sortable: true,
-      }),
-      columnHelper.accessor("department", {
-        header: "Department",
-        sortable: true,
-      }),
-      columnHelper.accessor("role", {
-        header: "Role",
-        sortable: true,
-      }),
-      columnHelper.accessor("salary", {
-        header: "Salary",
-        sortable: true,
-      }),
-    ],
-    []
-  );
-
-  const {
-    filteredData,
-    handleSort,
-    sortColumn,
-    sortDirection,
-    columnSizing,
-    handleColumnResize,
-    columnResizeInfo,
-  } = useTableGrid<DataItem>({
-    data: dummyData,
-    columns,
-    columnResizeMode: 'onChange',
-    initialState: {
-      sortColumn: "name",
-      sortDirection: "asc",
-    },
-  });
-
   return (
     <div className="p-4">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold">Column Resizing Table</h2>
       </div>
-      <TableGrid<DataItem>
+      <TableContainer
         columns={columns}
-        data={filteredData}
-        gridTemplateColumns="1fr 1fr 1fr 1fr 1fr 1fr"
+        data={dummyData}
         maxHeight="400px"
         variant="classic"
-        onSort={handleSort}
-        sortColumn={sortColumn}
-        sortDirection={sortDirection}
         columnResizeMode="onChange"
-        columnResizeDirection={direction as 'ltr' | 'rtl'}
-        onColumnSizingChange={(columnSizing) => {
-          if (columnSizing.columnSizes) {
-            Object.entries(columnSizing.columnSizes).forEach(([columnId, width]) => {
-              handleColumnResize(columnId, width);
-            });
-          }
+        onStateChange={(state) => {
+          console.log("Table state changed:", state);
         }}
-        columnSizing={columnSizing}
-        columnResizeInfo={columnResizeInfo}
       />
     </div>
   );

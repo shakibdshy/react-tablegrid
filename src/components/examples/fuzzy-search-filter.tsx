@@ -1,9 +1,8 @@
 "use client";
-
-import TableGrid from "@/components/ui/table-grid/table-grid";
+import { TableContainer } from "@/components/containers/table-container/table-container";
 import dummyData from "@/data/dummy.json";
-import type { Column } from "@/components/ui/table-grid/table-grid";
-import { useTableGrid } from "@/hooks/use-table-grid";
+import { createColumnHelper } from "@/utils/column-helper";
+import type { Column } from "@/types/column.types";
 
 interface DataItem extends Record<string, unknown> {
   id: number;
@@ -12,65 +11,40 @@ interface DataItem extends Record<string, unknown> {
   email: string;
 }
 
+const columnHelper = createColumnHelper<DataItem>();
+
 const columns: Column<DataItem>[] = [
-  {
-    id: "name",
+  columnHelper.accessor("name", {
     header: "Name",
-    accessorKey: "name",
     sortable: true,
-  },
-  {
-    id: "age",
+  }),
+  columnHelper.accessor("age", {
     header: "Age",
-    accessorKey: "age",
     sortable: true,
-  },
-  {
-    id: "email",
+  }),
+  columnHelper.accessor("email", {
     header: "Email",
-    accessorKey: "email",
     sortable: true,
-  },
+  }),
 ];
 
 const FuzzySearchFilter = () => {
-  const {
-    filteredData,
-    handleSort,
-    sortColumn,
-    sortDirection,
-    setFilterValue,
-    filterValue,
-  } = useTableGrid<DataItem>({
-    data: dummyData,
-    columns,
-    initialState: {
-      sortColumn: "name",
-      sortDirection: "asc",
-    },
-    enableFuzzySearch: true,
-    fuzzySearchKeys: ["name", "age"],
-    debounceMs: 500,
-  });
-
   return (
     <div className="p-4">
       <div className="flex flex-col gap-4 mb-4">
         <h2 className="text-xl font-semibold">Fuzzy Search with Debouncing</h2>
       </div>
 
-      <TableGrid<DataItem>
+      <TableContainer
         columns={columns}
-        data={filteredData}
-        gridTemplateColumns="1fr 1fr 1fr"
+        data={dummyData}
         maxHeight="600px"
         variant="modern"
-        onSort={handleSort}
-        sortColumn={sortColumn}
-        sortDirection={sortDirection}
         enableFuzzySearch={true}
-        filterValue={filterValue}
-        onFilterChange={setFilterValue}
+        fuzzySearchKeys={["name", "age"]}
+        onStateChange={(state) => {
+          console.log("Table state changed:", state);
+        }}
       />
     </div>
   );

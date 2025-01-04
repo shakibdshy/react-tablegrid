@@ -1,8 +1,8 @@
 "use client"
-import TableGrid from "@/components/ui/table-grid/table-grid";
+import { TableContainer } from "@/components/containers/table-container/table-container";
 import dummyData from "@/data/dummy.json";
-import type { Column } from "@/components/ui/table-grid/table-grid";
-import { useTableGrid } from "@/hooks/use-table-grid";
+import { createColumnHelper } from "@/utils/column-helper";
+import type { Column } from "@/types/column.types";
 
 interface DataItem extends Record<string, unknown> {
   id: number;
@@ -11,67 +11,45 @@ interface DataItem extends Record<string, unknown> {
   email: string;
 }
 
+const columnHelper = createColumnHelper<DataItem>();
+
 const columns: Column<DataItem>[] = [
-  { 
-    id: "name", 
+  columnHelper.accessor("name", {
     header: "Name",
-    accessorKey: "name",
     sortable: true,
     group: "Personal Information",
-    width: "200px"
-  },
-  { 
-    id: "age", 
+    width: "200px",
+  }),
+  columnHelper.accessor("age", {
     header: "Age",
-    accessorKey: "age",
     sortable: true,
     group: "Personal Information",
-    width: "100px"
-  },
-  { 
-    id: "email", 
+    width: "100px",
+  }),
+  columnHelper.accessor("email", {
     header: "Email",
-    accessorKey: "email",
     sortable: true,
     group: "Contact Information",
-    width: "250px"
-  },
+    width: "250px",
+  }),
 ];
 
 const HeaderGroupsTable = () => {
-  const {
-    filteredData,
-    handleSort,
-    sortColumn,
-    sortDirection,
-  } = useTableGrid<DataItem>({
-    data: dummyData,
-    columns,
-    initialState: {
-      sortColumn: "name",
-      sortDirection: "asc",
-    },
-    onStateChange: (state) => {
-      console.log("Table state changed:", state)
-    },
-  });
-
   return (
     <div className="p-4">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-semibold">Header Groups</h2>
       </div>
       
-      <TableGrid<DataItem>
+      <TableContainer
         columns={columns}
-        data={filteredData}
-        gridTemplateColumns="1fr 1fr 1fr"
+        data={dummyData}
         maxHeight="800px"
         variant="classic"
-        onSort={handleSort}
-        sortColumn={sortColumn}
-        sortDirection={sortDirection}
         headerGroups={true}
+        onStateChange={(state) => {
+          console.log("Table state changed:", state);
+        }}
       />
     </div>
   );
