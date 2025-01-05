@@ -2,6 +2,10 @@
 
 A powerful and flexible table grid component for React applications with TailwindCSS support. Built with TypeScript and modern React patterns.
 
+[![npm version](https://img.shields.io/npm/v/@shakibdshy/react-tablegrid.svg)](https://www.npmjs.com/package/@shakibdshy/react-tablegrid)
+[![npm downloads](https://img.shields.io/npm/dm/@shakibdshy/react-tablegrid.svg)](https://www.npmjs.com/package/@shakibdshy/react-tablegrid)
+[![License](https://img.shields.io/npm/l/@shakibdshy/react-tablegrid.svg)](https://github.com/shakibdshy/react-tablegrid/blob/main/LICENSE)
+
 ## Demo
 
 [Example Demo](https://github.com/shakibdshy/react-tablegrid/blob/master/src/components/containers/basic-table.tsx)
