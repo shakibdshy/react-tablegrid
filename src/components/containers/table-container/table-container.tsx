@@ -93,7 +93,6 @@ function TableContainerComponent<T extends Record<string, unknown>>(
             {/* Header */}
             <TableHeader
               className={cn(styleConfig?.header?.className)}
-              enableHeaderGroups={headerGroups}
               components={components}
               tableInstance={tableInstance}
             />

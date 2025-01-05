@@ -34,7 +34,7 @@ const headerStyles = {
     "text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-100",
     "relative",
   ],
-  headerGroup: "px-4 py-2 border-b bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-200",
+  headerGroup: "px-4 py-2 border-b border-gray-200 dark:border-gray-500 bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-200",
 }
 
 // Body styles

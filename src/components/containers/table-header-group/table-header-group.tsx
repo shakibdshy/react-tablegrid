@@ -1,7 +1,8 @@
 import { cn } from '@/utils/cn'
 import { tableStyles } from '@/styles/table.style'
-import type { HeaderGroup } from '@/types/column.types'
+import type { Column, HeaderGroup } from '@/types/column.types'
 import type { useTable } from '@/hooks/use-table-context'
+import { useMemo } from 'react'
 
 interface TableHeaderGroupProps<T extends Record<string, unknown>> {
   className?: string
@@ -12,6 +13,27 @@ interface TableHeaderGroupProps<T extends Record<string, unknown>> {
   }
 }
 
+function generateHeaderGroups<T extends Record<string, unknown>>(
+  columns: Column<T>[]
+): HeaderGroup<T>[] {
+  const groupMap = new Map<string, Column<T>[]>();
+
+  columns.forEach((column) => {
+    if (column.group) {
+      if (!groupMap.has(column.group)) {
+        groupMap.set(column.group, []);
+      }
+      groupMap.get(column.group)!.push(column);
+    }
+  });
+
+  return Array.from(groupMap.entries()).map(([name, groupColumns]) => ({
+    id: name.toLowerCase().replace(/\s+/g, "-"),
+    name,
+    columns: groupColumns,
+  }));
+}
+
 export function TableHeaderGroup<T extends Record<string, unknown>>({
   className,
   style,
@@ -19,39 +41,54 @@ export function TableHeaderGroup<T extends Record<string, unknown>>({
   customRender,
 }: TableHeaderGroupProps<T>) {
   const styles = tableStyles()
-  const { columns } = tableInstance
+  const { columns, state: { columnSizing } } = tableInstance
 
-  const headerGroups = columns.reduce((groups, column) => {
-    if (column.group) {
-      const existingGroup = groups.find(g => g.name === column.group)
-      if (existingGroup) {
-        existingGroup.columns.push(column)
-      } else {
-        groups.push({
-          id: column.group.toLowerCase().replace(/\s+/g, '-'),
-          name: column.group,
-          columns: [column],
-        })
-      }
+  const headerGroups = useMemo(() => {
+    return generateHeaderGroups(columns);
+  }, [columns]);
+
+  const getGridTemplateColumns = () => {
+    return columns
+      .map((column) => {
+        const width = columnSizing.columnSizes[String(column.id)]
+        return width ? `${width}px` : '1fr'
+      })
+      .join(' ')
+  }
+
+  if (headerGroups.length === 0) {
+    return null
+  }
+
+  const renderGroupContent = (group: HeaderGroup<T>) => {
+    if (customRender?.group) {
+      const content = customRender.group(group)
+      return content || group.name
     }
-    return groups
-  }, [] as HeaderGroup<T>[])
+    return group.name
+  }
 
   return (
-    <div className={cn(styles.headerGroup(), className)} style={style}>
+    <div 
+      className={cn(styles.headerGroup(), className)} 
+      style={{ 
+        ...style,
+        display: 'grid',
+        gridTemplateColumns: getGridTemplateColumns(),
+      }}
+    >
       {headerGroups.map((group) => (
         <div
           key={group.id}
           className={cn(
             styles.headerCell(),
-            'text-center font-bold',
-            `colspan-${group.columns.length}`
+            'text-center font-bold'
           )}
           style={{
             gridColumn: `span ${group.columns.length}`,
           }}
         >
-          {customRender?.group ? customRender.group(group) : group.name}
+          {renderGroupContent(group)}
         </div>
       ))}
     </div>

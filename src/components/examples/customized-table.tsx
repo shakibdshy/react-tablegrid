@@ -219,7 +219,7 @@ const CustomizedTable = () => {
             className: "border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden bg-white dark:bg-gray-800 shadow-sm",
           },
           headerCell: {
-            className: "border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800",
+            className: "border-b border-gray-200 dark:border-gray-500 bg-gray-50 dark:bg-gray-800",
           },
           row: {
             className: "border-b border-gray-100 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors",

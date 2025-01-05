@@ -49,13 +49,13 @@ export function SortIcon({
   active = false,
 }: SortIconProps) {
   if (!direction) {
-    return <CaretDown className={cn("w-3.5 h-3.5 text-gray-400", className)} />;
+    return <CaretDown className={cn("size-5 text-gray-400", className)} />;
   }
 
   return direction === "asc" ? (
     <CaretUp
       className={cn(
-        "w-3.5 h-3.5",
+        "size-5",
         active ? "text-current" : "text-gray-400",
         className
       )}
@@ -63,7 +63,7 @@ export function SortIcon({
   ) : (
     <CaretDown
       className={cn(
-        "w-3.5 h-3.5",
+        "size-5",
         active ? "text-current" : "text-gray-400",
         className
       )}

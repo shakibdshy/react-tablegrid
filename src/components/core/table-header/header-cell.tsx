@@ -53,10 +53,12 @@ export function HeaderCell<T extends Record<string, unknown>>({
       }}
     >
       <div className="flex items-center justify-between">
-        <div className="flex-1 overflow-hidden">
-          {typeof column.header === "function"
-            ? column.header()
-            : column.header}
+        <div className="flex-1 overflow-hidden flex items-center">
+          <span>
+            {typeof column.header === "function"
+              ? column.header()
+              : column.header}
+          </span>
           {column.sortable && (
             <button
               onClick={handleSortClick}
@@ -72,15 +74,17 @@ export function HeaderCell<T extends Record<string, unknown>>({
           )}
         </div>
 
-        <TableResizer
-          columnId={String(column.id)}
-          isResizing={isResizing}
-          onResizeStart={handleColumnResizeStart}
-          onResizeMove={handleColumnResizeMove}
-          onResizeEnd={handleColumnResizeEnd}
-          direction={columnResizeDirection}
-          isDragging={!!columnResizeInfo.isResizingColumn}
-        />
+        {isResizing && (
+          <TableResizer
+            columnId={String(column.id)}
+            isResizing={isResizing}
+            onResizeStart={handleColumnResizeStart}
+            onResizeMove={handleColumnResizeMove}
+            onResizeEnd={handleColumnResizeEnd}
+            direction={columnResizeDirection}
+            isDragging={!!columnResizeInfo.isResizingColumn}
+          />
+        )}
       </div>
     </div>
   );

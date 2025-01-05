@@ -12,9 +12,9 @@ export default function Home() {
   return (
     <main className="min-h-screen p-4">
       <BasicTable />
+      <HeaderGroupsTable />
       <BasicSearch />
       <VirtualizedTable />
-      <BasicTable />
       <ColumnResizingTable />
       <div className="space-y-8">
         <div className="border rounded-lg">
@@ -22,8 +22,7 @@ export default function Home() {
         </div>
         <ColumnPinningTable />
         <ColumnVisibilityTable />
-        <HeaderGroupsTable />
-        
+
         <FuzzySearchFilter />
       </div>
     </main>
