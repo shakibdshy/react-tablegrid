@@ -31,12 +31,15 @@ export function VirtualizedBody<T extends Record<string, unknown>>({
   const styles = tableStyles()
   const containerRef = useRef<HTMLDivElement>(null)
   const { filteredData } = tableInstance
+  const scrollTimeout = useRef<NodeJS.Timeout | null>(null)
+  const rafId = useRef<number | null>(null)
 
   const [state, setState] = useState({
     startIndex: 0,
     endIndex: 0,
     visibleItems: 0,
     scrollTop: 0,
+    isScrolling: false
   })
 
   const calculateVisibleRange = useCallback(() => {
@@ -47,35 +50,57 @@ export function VirtualizedBody<T extends Record<string, unknown>>({
     const totalItems = filteredData.length
     const scrollTop = containerRef.current.scrollTop
 
+    // Adjust overscan based on scroll speed
+    const scrollSpeed = Math.abs(scrollTop - state.scrollTop)
+    const dynamicOverscan = Math.min(
+      config.overscan + Math.floor(scrollSpeed / 100),
+      Math.floor(visibleItems / 2)
+    )
+
     const startIndex = Math.max(
       0,
-      Math.floor(scrollTop / config.rowHeight) - config.overscan
+      Math.floor(scrollTop / config.rowHeight) - dynamicOverscan
     )
     const endIndex = Math.min(
       totalItems - 1,
-      Math.ceil((scrollTop + containerHeight) / config.rowHeight) + config.overscan
+      Math.ceil((scrollTop + containerHeight) / config.rowHeight) + dynamicOverscan
     )
 
-    setState({ startIndex, endIndex, visibleItems, scrollTop })
-  }, [config.enabled, config.rowHeight, config.overscan, filteredData.length])
+    setState(prev => ({ ...prev, startIndex, endIndex, visibleItems, scrollTop }))
+  }, [config.enabled, config.rowHeight, config.overscan, filteredData.length, state.scrollTop])
 
   useEffect(() => {
     const container = containerRef.current
     if (!container || !config.enabled) return
 
     const handleScroll = () => {
-      if (config.scrollingDelay) {
-        window.requestAnimationFrame(calculateVisibleRange)
-      } else {
-        calculateVisibleRange()
+      setState(prev => ({ ...prev, isScrolling: true }))
+      
+      if (scrollTimeout.current) {
+        clearTimeout(scrollTimeout.current)
       }
+      if (rafId.current !== null) {
+        cancelAnimationFrame(rafId.current)
+      }
+
+      scrollTimeout.current = setTimeout(() => {
+        setState(prev => ({ ...prev, isScrolling: false }))
+      }, config.scrollingDelay || 150)
+
+      rafId.current = requestAnimationFrame(calculateVisibleRange)
     }
 
-    container.addEventListener('scroll', handleScroll)
+    container.addEventListener('scroll', handleScroll, { passive: true })
     calculateVisibleRange()
 
     return () => {
       container.removeEventListener('scroll', handleScroll)
+      if (scrollTimeout.current) {
+        clearTimeout(scrollTimeout.current)
+      }
+      if (rafId.current !== null) {
+        cancelAnimationFrame(rafId.current)
+      }
     }
   }, [calculateVisibleRange, config.enabled, config.scrollingDelay])
 
@@ -87,7 +112,8 @@ export function VirtualizedBody<T extends Record<string, unknown>>({
         style: {
           position: 'absolute' as const,
           top: 0,
-          width: '100%',
+          left: 0,
+          right: 0,
           height: config.rowHeight,
         },
       }))
@@ -101,8 +127,13 @@ export function VirtualizedBody<T extends Record<string, unknown>>({
         style: {
           position: 'absolute' as const,
           top: (state.startIndex + index) * config.rowHeight,
-          width: '100%',
+          left: 0,
+          right: 0,
           height: config.rowHeight,
+          transform: `translate3d(0, 0, 0)`, // Enable GPU acceleration
+          willChange: state.isScrolling ? 'transform' : 'auto', // Optimize for scrolling
+          backfaceVisibility: 'hidden', // Prevent flickering
+          WebkitFontSmoothing: 'antialiased',
         },
       }))
   }, [
@@ -111,6 +142,7 @@ export function VirtualizedBody<T extends Record<string, unknown>>({
     filteredData,
     state.startIndex,
     state.endIndex,
+    state.isScrolling
   ])
 
   const RowComponent = customRender?.row || TableRow
@@ -120,17 +152,30 @@ export function VirtualizedBody<T extends Record<string, unknown>>({
   return (
     <div
       ref={containerRef}
-      className={cn("relative overflow-auto", className)}
-      style={{ height: '100%', ...style }}
+      className={cn(
+        "relative overflow-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600",
+        "overscroll-none", // Prevent overscroll bounce
+        className
+      )}
+      style={{ 
+        height: '100%',
+        ...style,
+        overscrollBehavior: 'contain', // Prevent scroll chaining
+        WebkitOverflowScrolling: 'touch', // Smooth scrolling on iOS
+      }}
     >
       <div
-        className={cn("relative", styles.body())}
-        style={{ height: totalHeight }}
+        className={cn("relative will-change-transform", styles.body())}
+        style={{ 
+          height: totalHeight,
+          contain: 'strict', // Optimize rendering
+          contentVisibility: 'auto', // Optimize rendering of off-screen content
+        }}
       >
         {virtualItems.map((virtualItem) => (
           <RowComponent
             key={`row-${virtualItem.index}-${
-              (virtualItem.item as { id?: string }).id || ''
+              (virtualItem.item as { id?: string }).id || virtualItem.index
             }`}
             row={virtualItem.item}
             rowIndex={virtualItem.index}

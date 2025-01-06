@@ -63,6 +63,17 @@ const columns: Column<DataItem>[] = [
     header: "Status",
     sortable: true,
     width: "250px",
+    cell: ({ value }) => (
+      <span
+        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+          String(value) === "Active"
+            ? "bg-green-100 text-green-800 dark:bg-green-800/20 dark:text-green-400"
+            : "bg-red-100 text-red-800 dark:bg-red-800/20 dark:text-red-400"
+        }`}
+      >
+        {String(value)}
+      </span>
+    ),
   }),
   columnHelper.accessor("location", {
     header: "Location",
@@ -78,6 +89,7 @@ const columns: Column<DataItem>[] = [
     header: "Join Date",
     sortable: true,
     width: "250px",
+    cell: ({ value }) => new Date(value as string).toLocaleDateString(),
   }),
 ];
 
@@ -112,30 +124,47 @@ const ColumnVisibilityTable = () => {
     }));
   };
 
+  const toggleAllColumns = () => {
+    setTableState(prevState => ({
+      ...prevState,
+      visibleColumns: prevState.visibleColumns.length === columns.length
+        ? []
+        : columns.map(col => col.accessorKey)
+    }));
+  };
+
   return (
     <div className="p-4">   
       <div className="flex flex-col gap-4 mb-4">
-        <h2 className="text-2xl font-bold">Column Visibility</h2>
-        <div className="flex flex-wrap gap-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-bold">Column Visibility</h2>
+          <button
+            onClick={toggleAllColumns}
+            className="px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700 transition-colors"
+          >
+            {tableState.visibleColumns.length === columns.length ? "Hide All" : "Show All"}
+          </button>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
           {columns.map((column) => (
-            <div key={String(column.id)} className="flex items-center gap-2">
+            <div key={String(column.id)} className="flex items-center">
               <button
                 onClick={() => toggleColumnVisibility(column.accessorKey)}
-                className={`px-3 py-1.5 rounded text-sm font-medium transition-colors ${
+                className={`w-full px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                   tableState.visibleColumns.includes(column.accessorKey)
-                    ? 'bg-blue-500 text-white hover:bg-blue-600'
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600'
+                    ? 'bg-blue-500 text-white hover:bg-blue-600 shadow-sm'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700'
                 }`}
               >
-                <div className="flex items-center gap-2">
-                  <span>{String(column.header)}</span>
+                <div className="flex items-center justify-between gap-2">
+                  <span className="truncate">{String(column.header)}</span>
                   {tableState.visibleColumns.includes(column.accessorKey) ? (
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                     </svg>
                   ) : (
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
                     </svg>
                   )}
@@ -146,12 +175,23 @@ const ColumnVisibilityTable = () => {
         </div>
       </div>
 
-      <div className="border rounded-lg overflow-hidden">
+      <div className="border rounded-lg overflow-hidden shadow-sm">
         <TableContainer
           columns={columns.filter(col => tableState.visibleColumns.includes(col.accessorKey))}
           data={dummyData}
           maxHeight="600px"
-          variant="classic"
+          variant="modern"
+          styleConfig={{
+            header: {
+              className: "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200",
+            },
+            row: {
+              className: "hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors",
+            },
+            cell: {
+              className: "px-4 py-3 text-sm text-gray-600 dark:text-gray-300",
+            },
+          }}
           onStateChange={(state) => {
             setTableState(prevState => ({
               ...prevState,

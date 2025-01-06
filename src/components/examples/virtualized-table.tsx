@@ -1,4 +1,5 @@
 "use client"
+import { useState } from "react";
 import { TableContainer } from "@/components/containers/table-container/table-container";
 import dummyData from "@/data/dummy.json";
 import { createColumnHelper } from "@/utils/column-helper";
@@ -41,14 +42,17 @@ const columns: Column<DataItem>[] = [
   }),
 ];
 
-// Generate more data for better virtualization demo
 const generateMoreData = () => {
   const moreData = [];
-  for (let i = 0; i < 10; i++) {
+  const baseData = dummyData.slice(0, 10);
+  
+  for (let i = 0; i < 100; i++) {
     moreData.push(
-      ...dummyData.map((item, index) => ({
+      ...baseData.map((item) => ({
         ...item,
-        id: item.id + index * dummyData.length + i * dummyData.length * 10,
+        id: i * baseData.length + (item.id as number),
+        salary: Math.floor(Math.random() * 100000) + 50000,
+        status: Math.random() > 0.5 ? "Active" : "Inactive",
       }))
     );
   }
@@ -56,29 +60,45 @@ const generateMoreData = () => {
 };
 
 const VirtualizedTable = () => {
+  const [virtualData] = useState(() => generateMoreData());
+
   return (
     <div className="p-4">
       <div className="flex flex-col gap-4 mb-4">
         <h2 className="text-2xl font-bold">Virtualized Table</h2>
-        <p className="text-gray-600">
-          Displaying {generateMoreData().length} rows with virtualization
+        <p className="text-gray-600 dark:text-gray-400">
+          Displaying {virtualData.length.toLocaleString()} rows with virtualization
         </p>
       </div>
 
-      <TableContainer
-        columns={columns}
-        data={generateMoreData()}
-        maxHeight="600px"
-        variant="modern"
-        virtualization={{
-          enabled: true,
-          rowHeight: 48,
-          overscan: 5,
-        }}
-        onStateChange={(state) => {
-          console.log("Table state changed:", state);
-        }}
-      />
+      <div className="border rounded-lg overflow-hidden shadow-sm">
+        <TableContainer
+          columns={columns}
+          data={virtualData}
+          maxHeight="600px"
+          variant="modern"
+          virtualization={{
+            enabled: true,
+            rowHeight: 52,
+            overscan: 5,
+            scrollingDelay: 100,
+          }}
+          styleConfig={{
+            header: {
+              className: "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200",
+            },
+            row: {
+              className: "hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors",
+            },
+            cell: {
+              className: "px-4 py-3 text-sm text-gray-600 dark:text-gray-300",
+            },
+          }}
+          onStateChange={(state) => {
+            console.log("Table state changed:", state);
+          }}
+        />
+      </div>
     </div>
   );
 };

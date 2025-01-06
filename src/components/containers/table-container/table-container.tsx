@@ -66,22 +66,37 @@ function TableContainerComponent<T extends Record<string, unknown>>(
 
       {/* Table Container */}
       <div
-        className={cn(styles.wrapper(), className)}
+        className={cn(
+          styles.wrapper(),
+          "relative",
+          className
+        )}
         style={{
           ...style,
-          height: virtualization?.enabled ? '400px' : undefined,
+          height: virtualization?.enabled ? maxHeight : undefined,
         }}
       >
         <SimpleBar
           style={{ maxHeight }}
-          className={styles.scrollContainer()}
+          className={cn(
+            styles.scrollContainer(),
+            "scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600"
+          )}
           autoHide={false}
         >
-          <div className={styles.table()}>
+          <div className={cn(
+            styles.table(),
+            "relative",
+            "will-change-transform",
+            "backface-visibility-hidden"
+          )}>
             {/* Header Groups */}
             {headerGroups && (
               <TableHeaderGroup
-                className={styleConfig?.header?.className}
+                className={cn(
+                  styleConfig?.header?.className,
+                  "sticky top-0 z-20"
+                )}
                 style={styleConfig?.header?.style}
                 customRender={{
                   group: (group) => customRender?.renderHeader?.(group.columns[0]),
@@ -92,7 +107,10 @@ function TableContainerComponent<T extends Record<string, unknown>>(
 
             {/* Header */}
             <TableHeader
-              className={cn(styleConfig?.header?.className)}
+              className={cn(
+                styleConfig?.header?.className,
+                "sticky top-0 z-10"
+              )}
               components={components}
               tableInstance={tableInstance}
             />
@@ -109,7 +127,10 @@ function TableContainerComponent<T extends Record<string, unknown>>(
                       }
                     : undefined,
                 }}
-                className={styleConfig?.row?.className}
+                className={cn(
+                  styleConfig?.row?.className,
+                  "transition-colors"
+                )}
                 style={styleConfig?.row?.style}
                 tableInstance={tableInstance}
               />
@@ -131,7 +152,10 @@ function TableContainerComponent<T extends Record<string, unknown>>(
                       }
                     : undefined,
                 }}
-                className={styleConfig?.row?.className}
+                className={cn(
+                  styleConfig?.row?.className,
+                  "transition-colors"
+                )}
                 style={styleConfig?.row?.style}
                 tableInstance={tableInstance}
               />
@@ -140,11 +164,11 @@ function TableContainerComponent<T extends Record<string, unknown>>(
         </SimpleBar>
       </div>
 
-      {/* TODO: Server-side Pagination */}
+      {/* Server-side Pagination */}
       {serverSide?.enabled && serverSide.pageSize && (
         <div className="mt-4">
           <div className="flex justify-between items-center">
-            <div className="text-sm text-gray-500">
+            <div className="text-sm text-gray-500 dark:text-gray-400">
               Showing {serverSide.pageSize} items per page
             </div>
             {/* Add pagination controls here */}

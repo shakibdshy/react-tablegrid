@@ -3,10 +3,10 @@
 // import BasicSearch from "@/components/examples/basic-search";
 // import FuzzySearchFilter from "@/components/examples/fuzzy-search-filter";
 import ColumnVisibilityTable from "@/components/examples/column-visibility-table";
+import VirtualizedTable from "@/components/examples/virtualized-table";
 // import ColumnPinningTable from "@/components/examples/column-pinning-table";
 // import CustomizedTable from "@/components/examples/customized-table";
 // import ColumnResizingTable from "@/components/examples/column-resizing-table";
-// import VirtualizedTable from "@/components/examples/virtualized-table";
 // import ToggleColumnPinningTable from "@/components/examples/toggle-column-pinning-table";
 
 export default function Home() {
@@ -15,17 +15,13 @@ export default function Home() {
       {/* <BasicTable />
       <BasicSearch />
       <HeaderGroupsTable /> */}
+      {/* <FuzzySearchFilter /> */}
       {/* <ColumnPinningTable /> */}
       {/* <ToggleColumnPinningTable /> */}
       <ColumnVisibilityTable />
-      {/* <VirtualizedTable />
-      <ColumnResizingTable />
-      <div className="space-y-8">
-        <div className="border rounded-lg">
-          <CustomizedTable />
-        </div>
-        <FuzzySearchFilter />
-      </div> */}
+      {/* <CustomizedTable /> */}
+      <VirtualizedTable />
+      {/* <ColumnResizingTable /> */}
     </main>
   );
 }
