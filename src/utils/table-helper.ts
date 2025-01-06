@@ -84,17 +84,21 @@ export function reorderColumns<T>(
   columns: Column<T>[],
   pinnedColumns: { left: Array<keyof T>; right: Array<keyof T> }
 ): Column<T>[] {
-  const leftPinned = columns.filter((col) => 
-    pinnedColumns.left.includes(col.id)
-  )
-  const rightPinned = columns.filter((col) => 
-    pinnedColumns.right.includes(col.id)
-  )
+  // Get pinned columns in their respective order
+  const leftPinned = columns.filter(col => 
+    pinnedColumns.left.includes(col.accessorKey)
+  );
+  const rightPinned = columns.filter(col => 
+    pinnedColumns.right.includes(col.accessorKey)
+  );
+  // Get unpinned columns (those not in either pinned array)
   const unpinned = columns.filter(
-    (col) => !pinnedColumns.left.includes(col.id) && !pinnedColumns.right.includes(col.id)
-  )
-  
-  return [...leftPinned, ...unpinned, ...rightPinned]
+    col => !pinnedColumns.left.includes(col.accessorKey) && 
+           !pinnedColumns.right.includes(col.accessorKey)
+  );
+
+  // Return columns in order: left pinned, unpinned, right pinned
+  return [...leftPinned, ...unpinned, ...rightPinned];
 }
 
 /**
@@ -146,6 +150,17 @@ export function createInitialTableState<T>(
   data: T[],
   columns: Column<T>[]
 ): TableState<T> {
+  // Initialize column sizes from column width definitions
+  const columnSizes = columns.reduce((acc, column) => {
+    if (column.width) {
+      const width = parseInt(column.width.toString().replace('px', ''), 10);
+      if (!isNaN(width)) {
+        acc[String(column.id)] = width;
+      }
+    }
+    return acc;
+  }, {} as Record<string, number>);
+
   return {
     data,
     sortColumn: columns[0]?.id ?? ("" as keyof T),
@@ -156,7 +171,7 @@ export function createInitialTableState<T>(
       left: columns.filter(col => col.pinned === 'left').map(col => col.id),
       right: columns.filter(col => col.pinned === 'right').map(col => col.id),
     },
-    columnSizing: { columnSizes: {} },
+    columnSizing: { columnSizes },
     columnResizeMode: 'onChange'
   }
 }

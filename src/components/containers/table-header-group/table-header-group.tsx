@@ -3,6 +3,7 @@ import { tableStyles } from '@/styles/table.style'
 import type { Column, HeaderGroup } from '@/types/column.types'
 import type { useTable } from '@/hooks/use-table-context'
 import { useMemo } from 'react'
+import { getGridTemplateColumns, reorderColumns } from '@/utils/table-helper'
 
 interface TableHeaderGroupProps<T extends Record<string, unknown>> {
   className?: string
@@ -41,23 +42,20 @@ export function TableHeaderGroup<T extends Record<string, unknown>>({
   customRender,
 }: TableHeaderGroupProps<T>) {
   const styles = tableStyles()
-  const { columns, state: { columnSizing } } = tableInstance
+  const { columns, state: { columnSizing, pinnedColumns } } = tableInstance
 
+  // Get ordered columns based on pinning
+  const orderedColumns = useMemo(() => {
+    return reorderColumns(columns, pinnedColumns);
+  }, [columns, pinnedColumns]);
+
+  // Generate header groups from ordered columns
   const headerGroups = useMemo(() => {
-    return generateHeaderGroups(columns);
-  }, [columns]);
-
-  const getGridTemplateColumns = () => {
-    return columns
-      .map((column) => {
-        const width = columnSizing.columnSizes[String(column.id)]
-        return width ? `${width}px` : '1fr'
-      })
-      .join(' ')
-  }
+    return generateHeaderGroups(orderedColumns);
+  }, [orderedColumns]);
 
   if (headerGroups.length === 0) {
-    return null
+    return null;
   }
 
   const renderGroupContent = (group: HeaderGroup<T>) => {
@@ -74,7 +72,7 @@ export function TableHeaderGroup<T extends Record<string, unknown>>({
       style={{ 
         ...style,
         display: 'grid',
-        gridTemplateColumns: getGridTemplateColumns(),
+        gridTemplateColumns: getGridTemplateColumns(orderedColumns, columnSizing),
       }}
     >
       {headerGroups.map((group) => (

@@ -51,6 +51,22 @@ const columns: Column<DataItem>[] = [
     header: "Phone",
     sortable: true,
   }),
+  columnHelper.accessor("email", {
+    header: "Email",
+    sortable: true,
+  }),
+  columnHelper.accessor("department", {
+    header: "Department",
+    sortable: true,
+  }),
+  columnHelper.accessor("role", {
+    header: "Role",
+    sortable: true,
+  }),
+  columnHelper.accessor("joinDate", {
+    header: "Join Date",
+    sortable: true,
+  }),
 ];
 
 const ColumnPinningTable = () => {
