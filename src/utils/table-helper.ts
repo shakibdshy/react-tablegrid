@@ -1,5 +1,5 @@
-import type { Column } from "@/types/column.types"
-import type { TableState, SortDirection } from "@/types/table.types"
+import type { Column } from "@/types/column.types";
+import type { TableState, SortDirection } from "@/types/table.types";
 
 /**
  * Helper functions for table operations and data manipulation
@@ -19,12 +19,12 @@ export function sortTableData<T>(
   direction: SortDirection
 ): T[] {
   return [...data].sort((a, b) => {
-    const aValue = String(a[column.accessorKey])
-    const bValue = String(b[column.accessorKey])
+    const aValue = String(a[column.accessorKey]);
+    const bValue = String(b[column.accessorKey]);
     return direction === "asc"
       ? aValue.localeCompare(bValue)
-      : bValue.localeCompare(aValue)
-  })
+      : bValue.localeCompare(aValue);
+  });
 }
 
 /**
@@ -40,18 +40,18 @@ export function filterTableData<T>(
   columns: Column<T>[],
   filterValue: string
 ): T[] {
-  if (!filterValue) return data
-  
-  const lowercasedFilter = filterValue.toLowerCase()
+  if (!filterValue) return data;
+
+  const lowercasedFilter = filterValue.toLowerCase();
   return data.filter((row) =>
     columns.some((column) => {
-      const cellValue = row[column.accessorKey]
-      return cellValue != null &&
-        String(cellValue)
-          .toLowerCase()
-          .includes(lowercasedFilter)
+      const cellValue = row[column.accessorKey];
+      return (
+        cellValue != null &&
+        String(cellValue).toLowerCase().includes(lowercasedFilter)
+      );
     })
-  )
+  );
 }
 
 /**
@@ -67,10 +67,25 @@ export function getGridTemplateColumns<T>(
 ): string {
   return columns
     .map((column) => {
-      const width = columnSizing?.columnSizes[String(column.id)]
-      return width ? `${width}px` : "1fr"
+      // If there's a width in columnSizing, use that
+      const width = columnSizing?.columnSizes[String(column.id)];
+      if (width) {
+        return `${width}px`;
+      }
+
+      if (column.width) {
+        if (column.width === "1fr" || column.width.toString().includes("fr")) {
+          return column.width.toString();
+        }
+        if (column.width.toString().includes("px")) {
+          return column.width.toString();
+        }
+        return `${column.width}px`;
+      }
+
+      return "1fr";
     })
-    .join(" ")
+    .join(" ");
 }
 
 /**
@@ -84,20 +99,18 @@ export function reorderColumns<T>(
   columns: Column<T>[],
   pinnedColumns: { left: Array<keyof T>; right: Array<keyof T> }
 ): Column<T>[] {
-  // Get pinned columns in their respective order
-  const leftPinned = columns.filter(col => 
+  const leftPinned = columns.filter((col) =>
     pinnedColumns.left.includes(col.accessorKey)
   );
-  const rightPinned = columns.filter(col => 
+  const rightPinned = columns.filter((col) =>
     pinnedColumns.right.includes(col.accessorKey)
   );
-  // Get unpinned columns (those not in either pinned array)
   const unpinned = columns.filter(
-    col => !pinnedColumns.left.includes(col.accessorKey) && 
-           !pinnedColumns.right.includes(col.accessorKey)
+    (col) =>
+      !pinnedColumns.left.includes(col.accessorKey) &&
+      !pinnedColumns.right.includes(col.accessorKey)
   );
 
-  // Return columns in order: left pinned, unpinned, right pinned
   return [...leftPinned, ...unpinned, ...rightPinned];
 }
 
@@ -107,16 +120,16 @@ export function reorderColumns<T>(
  * @param columns - Array of columns to group
  * @returns Object with grouped columns
  */
-export function groupColumns<T>(
-  columns: Column<T>[]
-): { [key: string]: Column<T>[] } {
+export function groupColumns<T>(columns: Column<T>[]): {
+  [key: string]: Column<T>[];
+} {
   return columns.reduce((groups, column) => {
-    const group = column.group || 'ungrouped'
+    const group = column.group || "ungrouped";
     return {
       ...groups,
       [group]: [...(groups[group] || []), column],
-    }
-  }, {} as { [key: string]: Column<T>[] })
+    };
+  }, {} as { [key: string]: Column<T>[] });
 }
 
 /**
@@ -132,11 +145,11 @@ export function calculateColumnWidth<T>(
   data: T[],
   minWidth: number = 50
 ): number {
-  const headerWidth = String(column.header).length * 8
+  const headerWidth = String(column.header).length * 8;
   const maxContentWidth = Math.max(
     ...data.map((row) => String(row[column.accessorKey]).length * 8)
-  )
-  return Math.max(minWidth, headerWidth, maxContentWidth)
+  );
+  return Math.max(minWidth, headerWidth, maxContentWidth);
 }
 
 /**
@@ -153,7 +166,7 @@ export function createInitialTableState<T>(
   // Initialize column sizes from column width definitions
   const columnSizes = columns.reduce((acc, column) => {
     if (column.width) {
-      const width = parseInt(column.width.toString().replace('px', ''), 10);
+      const width = parseInt(column.width.toString().replace("px", ""), 10);
       if (!isNaN(width)) {
         acc[String(column.id)] = width;
       }
@@ -166,14 +179,16 @@ export function createInitialTableState<T>(
     sortColumn: columns[0]?.id ?? ("" as keyof T),
     sortDirection: "asc",
     filterValue: "",
-    visibleColumns: columns.map(col => col.id),
+    visibleColumns: columns.map((col) => col.id),
     pinnedColumns: {
-      left: columns.filter(col => col.pinned === 'left').map(col => col.id),
-      right: columns.filter(col => col.pinned === 'right').map(col => col.id),
+      left: columns.filter((col) => col.pinned === "left").map((col) => col.id),
+      right: columns
+        .filter((col) => col.pinned === "right")
+        .map((col) => col.id),
     },
     columnSizing: { columnSizes },
-    columnResizeMode: 'onChange'
-  }
+    columnResizeMode: "onChange",
+  };
 }
 
 /**
@@ -187,7 +202,7 @@ export function getVisibleColumns<T>(
   columns: Column<T>[],
   visibleColumns: Array<keyof T>
 ): Column<T>[] {
-  return columns.filter(col => visibleColumns.includes(col.id))
+  return columns.filter((col) => visibleColumns.includes(col.id));
 }
 
 /**
@@ -203,18 +218,18 @@ export function processTableData<T>(
   state: TableState<T>,
   columns: Column<T>[]
 ): T[] {
-  let processed = [...data]
+  let processed = [...data];
 
   // Apply filtering
   if (state.filterValue) {
-    processed = filterTableData(processed, columns, state.filterValue)
+    processed = filterTableData(processed, columns, state.filterValue);
   }
 
   // Apply sorting
-  const sortColumn = columns.find(col => col.id === state.sortColumn)
+  const sortColumn = columns.find((col) => col.id === state.sortColumn);
   if (sortColumn) {
-    processed = sortTableData(processed, sortColumn, state.sortDirection)
+    processed = sortTableData(processed, sortColumn, state.sortDirection);
   }
 
-  return processed
+  return processed;
 }
