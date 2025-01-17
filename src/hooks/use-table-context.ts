@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 import type { TableState } from "@/types/table.types";
 import type { Column } from "@/types/column.types";
 import type { TableEventMap } from "@/types/events.types";
@@ -17,6 +17,7 @@ interface UseTableContextOptions<T extends Record<string, unknown>> {
   fuzzySearchThreshold?: number;
   columnResizeMode?: "onChange" | "onResize";
   debounceMs?: number;
+  isLoading?: boolean;
 }
 
 /**
@@ -34,6 +35,7 @@ export function useTableContext<T extends Record<string, unknown>>({
   fuzzySearchThreshold,
   columnResizeMode,
   debounceMs,
+  isLoading,
 }: UseTableContextOptions<T>) {
   // Initialize table state
   const {
@@ -53,7 +55,10 @@ export function useTableContext<T extends Record<string, unknown>>({
   } = useTableState({
     data,
     columns,
-    initialState,
+    initialState: {
+      ...initialState,
+      loading: isLoading,
+    },
     onStateChange,
     enableFuzzySearch,
     fuzzySearchKeys,
@@ -61,6 +66,13 @@ export function useTableContext<T extends Record<string, unknown>>({
     columnResizeMode,
     debounceMs,
   });
+
+  useEffect(() => {
+    updateState((current) => ({
+      ...current,
+      loading: isLoading,
+    }));
+  }, [isLoading, updateState]);
 
   // Initialize event handlers
   const {

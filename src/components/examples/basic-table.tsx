@@ -36,8 +36,6 @@ const BasicTable = () => {
         data={dummyData}
         maxHeight="400px"
         variant="modern"
-        // enableFiltering={true}
-        // enableFuzzySearch={true}
         onStateChange={(state) => {
           console.log("Table state changed:", state);
         }}

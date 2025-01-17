@@ -20,6 +20,7 @@ interface TableContainerProps<T extends Record<string, unknown>> extends Omit<Ta
   columnSizing?: TableState<T>['columnSizing']
   data: T[]
   onStateChange?: (state: TableState<T>) => void
+  isLoading?: boolean
 }
 
 function TableContainerComponent<T extends Record<string, unknown>>(
@@ -39,6 +40,7 @@ function TableContainerComponent<T extends Record<string, unknown>>(
     columns,
     data,
     onStateChange,
+    isLoading,
   }: TableContainerProps<T>,
   ref: React.ForwardedRef<HTMLDivElement>
 ) {
@@ -48,11 +50,11 @@ function TableContainerComponent<T extends Record<string, unknown>>(
     columns,
     onStateChange,
     enableFuzzySearch,
+    isLoading,
   })
 
   return (
     <div ref={ref} className="space-y-4">
-      {/* Search Section */}
       {(enableFiltering || enableFuzzySearch) && (
         <TableSearch
           className={cn(styles.searchContainer(), styleConfig?.searchContainer?.className)}
