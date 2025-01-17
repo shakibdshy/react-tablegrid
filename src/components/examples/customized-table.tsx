@@ -3,7 +3,7 @@ import { TableContainer } from "@/components/containers/table-container/table-co
 import dummyData from "@/data/dummy.json";
 import { createColumnHelper } from "@/utils/column-helper";
 import type { Column } from "@/types/column.types";
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { PiCaretDownFill, PiCaretUpFill, PiMagnifyingGlass } from "react-icons/pi"
 import { FiAlertCircle } from "react-icons/fi"
 
@@ -108,7 +108,7 @@ const CustomCell = ({ value, column }: { value: unknown; column: Column<DataItem
 }
 
 const CustomEmptyState = () => (
-  <div className="flex flex-col items-center justify-center p-8 bg-white dark:bg-red-800 rounded-lg shadow-sm">
+  <div className="flex flex-col items-center justify-center p-8 bg-white dark:bg-gray-800 shadow-sm">
     <FiAlertCircle className="w-12 h-12 text-gray-400 mb-4" />
     <h3 className="text-lg font-medium text-gray-900 dark:text-white">No Results Found</h3>
     <p className="text-gray-500 dark:text-gray-400 text-center mt-2 max-w-sm">
@@ -146,7 +146,7 @@ const CustomSearchInput = ({
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
       className="block w-full pl-10 pr-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg 
-                bg-white dark:bg-green-800 text-gray-900 dark:text-gray-100
+                bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100
                 focus:ring-2 focus:ring-blue-500 focus:border-transparent
                 placeholder-gray-500 dark:placeholder-gray-400
                 transition-colors duration-200"
@@ -155,15 +155,8 @@ const CustomSearchInput = ({
 )
 
 const CustomizedTable = () => {
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
   const [showEmpty, setShowEmpty] = useState(false)
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false)
-    }, 2000)
-    return () => clearTimeout(timer)
-  }, [])
 
   return (
     <div className="p-6 space-y-6">
@@ -203,10 +196,9 @@ const CustomizedTable = () => {
       <TableContainer
         columns={columns}
         data={showEmpty ? [] : dummyData}
+        isLoading={isLoading}
         maxHeight="600px"
         variant="modern"
-        enableFuzzySearch={true}
-        isLoading={isLoading}
         components={{
           Header: CustomHeader,
           Cell: CustomCell,

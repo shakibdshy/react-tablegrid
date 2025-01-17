@@ -20,7 +20,7 @@ const columns: Column<DataItem>[] = [
   }),
   columnHelper.accessor("age", {
     header: "Age",
-    sortable: true,
+    sortable: false,
   }),
   columnHelper.accessor("email", {
     header: "Email",
