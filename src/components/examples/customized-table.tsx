@@ -156,7 +156,6 @@ const CustomSearchInput = ({
 
 const CustomizedTable = () => {
   const [isLoading, setIsLoading] = useState(false)
-  const [showEmpty, setShowEmpty] = useState(false)
 
   return (
     <div className="p-6 space-y-6">
@@ -179,26 +178,16 @@ const CustomizedTable = () => {
           >
             Toggle Loading
           </button>
-          <button
-            onClick={() => setShowEmpty((prev) => !prev)}
-            className="inline-flex items-center px-4 py-2 border border-gray-300 
-                     dark:border-gray-600 text-sm font-medium rounded-lg shadow-sm 
-                     text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 
-                     hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none 
-                     focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 
-                     transition-colors"
-          >
-            Toggle Empty
-          </button>
         </div>
       </div>
 
       <TableContainer
         columns={columns}
-        data={showEmpty ? [] : dummyData}
+        data={dummyData}
         isLoading={isLoading}
         maxHeight="600px"
         variant="modern"
+        enableFuzzySearch={true}
         components={{
           Header: CustomHeader,
           Cell: CustomCell,
