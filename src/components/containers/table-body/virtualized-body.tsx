@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { cn } from '@/utils/cn'
 import { tableStyles } from '@/styles/table.style'
 import { TableRow } from '@/components/core/table-row/table-row'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import type { useTable } from '@/hooks/use-table-context'
 
 interface VirtualizationConfig {
@@ -9,6 +10,7 @@ interface VirtualizationConfig {
   rowHeight: number
   overscan: number
   scrollingDelay?: number
+  onEndReached?: () => void
 }
 
 interface VirtualizedBodyProps<T extends Record<string, unknown>> {
@@ -18,6 +20,10 @@ interface VirtualizedBodyProps<T extends Record<string, unknown>> {
   tableInstance: ReturnType<typeof useTable<T>>
   customRender?: {
     row?: typeof TableRow
+    loading?: () => React.ReactNode
+  }
+  components?: {
+    LoadingState?: React.ComponentType
   }
 }
 
@@ -27,10 +33,11 @@ export function VirtualizedBody<T extends Record<string, unknown>>({
   config,
   tableInstance,
   customRender,
+  components,
 }: VirtualizedBodyProps<T>) {
   const styles = tableStyles()
   const containerRef = useRef<HTMLDivElement>(null)
-  const { filteredData } = tableInstance
+  const { filteredData, state: { loading } } = tableInstance
   const scrollTimeout = useRef<NodeJS.Timeout | null>(null)
   const rafId = useRef<number | null>(null)
 
@@ -83,6 +90,15 @@ export function VirtualizedBody<T extends Record<string, unknown>>({
         cancelAnimationFrame(rafId.current)
       }
 
+      // Check if we're near the bottom (within 3 rows)
+      const { scrollTop, scrollHeight, clientHeight } = container
+      const distanceFromBottom = scrollHeight - scrollTop - clientHeight
+      const triggerDistance = config.rowHeight * 3
+
+      if (distanceFromBottom <= triggerDistance && !loading && config.onEndReached) {
+        config.onEndReached()
+      }
+
       scrollTimeout.current = setTimeout(() => {
         setState(prev => ({ ...prev, isScrolling: false }))
       }, config.scrollingDelay || 150)
@@ -102,7 +118,7 @@ export function VirtualizedBody<T extends Record<string, unknown>>({
         cancelAnimationFrame(rafId.current)
       }
     }
-  }, [calculateVisibleRange, config.enabled, config.scrollingDelay])
+  }, [calculateVisibleRange, config.enabled, config.scrollingDelay, config.rowHeight, config.onEndReached, loading])
 
   const getVirtualItems = useCallback(() => {
     if (!config.enabled) {
@@ -145,6 +161,26 @@ export function VirtualizedBody<T extends Record<string, unknown>>({
     state.isScrolling
   ])
 
+  // Handle loading state
+  if (loading) {
+    if (customRender?.loading) {
+      return customRender.loading()
+    }
+
+    if (components?.LoadingState) {
+      return <components.LoadingState />
+    }
+
+    return (
+      <div 
+        className={cn("flex items-center justify-center p-8", className)} 
+        style={style}
+      >
+        <LoadingSpinner />
+      </div>
+    )
+  }
+
   const RowComponent = customRender?.row || TableRow
   const virtualItems = getVirtualItems()
   const totalHeight = filteredData.length * config.rowHeight
@@ -154,22 +190,22 @@ export function VirtualizedBody<T extends Record<string, unknown>>({
       ref={containerRef}
       className={cn(
         "relative overflow-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600",
-        "overscroll-none", // Prevent overscroll bounce
+        "overscroll-none",
         className
       )}
       style={{ 
         height: '100%',
         ...style,
-        overscrollBehavior: 'contain', // Prevent scroll chaining
-        WebkitOverflowScrolling: 'touch', // Smooth scrolling on iOS
+        overscrollBehavior: 'contain',
+        WebkitOverflowScrolling: 'touch',
       }}
     >
       <div
         className={cn("relative will-change-transform", styles.body())}
         style={{ 
           height: totalHeight,
-          contain: 'strict', // Optimize rendering
-          contentVisibility: 'auto', // Optimize rendering of off-screen content
+          contain: 'strict',
+          contentVisibility: 'auto',
         }}
       >
         {virtualItems.map((virtualItem) => (
@@ -184,6 +220,20 @@ export function VirtualizedBody<T extends Record<string, unknown>>({
             tableInstance={tableInstance}
           />
         ))}
+        
+        {/* Loading indicator at the bottom */}
+        {loading && (
+          <div 
+            className="absolute left-0 right-0 flex items-center justify-center p-4"
+            style={{ 
+              bottom: 0,
+              height: config.rowHeight,
+              background: 'inherit'
+            }}
+          >
+            <LoadingSpinner />
+          </div>
+        )}
       </div>
     </div>
   )

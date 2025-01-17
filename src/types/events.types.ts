@@ -50,4 +50,5 @@ export interface VirtualizationConfig {
   overscan: number
   scrollingDelay?: number
   initialScrollOffset?: number
+  onEndReached?: () => void
 } 

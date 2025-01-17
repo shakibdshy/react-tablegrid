@@ -75,7 +75,6 @@ function TableContainerComponent<T extends Record<string, unknown>>(
         )}
         style={{
           ...style,
-          height: virtualization?.enabled ? maxHeight : undefined,
         }}
       >
         <SimpleBar

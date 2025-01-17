@@ -75,13 +75,13 @@ const VirtualizedTable = () => {
         <TableContainer
           columns={columns}
           data={virtualData}
-          maxHeight="600px"
           variant="modern"
+          // isLoading={true}
           virtualization={{
             enabled: true,
             rowHeight: 52,
             overscan: 5,
-            scrollingDelay: 100,
+            scrollingDelay: 500,
           }}
           styleConfig={{
             header: {
