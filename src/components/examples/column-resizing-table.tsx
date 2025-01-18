@@ -4,6 +4,8 @@ import { TableContainer } from "@/components/containers/table-container/table-co
 import dummyData from "@/data/dummy.json";
 import { createColumnHelper } from "@/utils/column-helper";
 import type { Column } from "@/types/column.types";
+import { useMemo, useCallback } from "react";
+import type { TableState } from "@/types/table.types";
 
 interface DataItem extends Record<string, unknown> {
   id: number;
@@ -17,41 +19,45 @@ interface DataItem extends Record<string, unknown> {
 
 const columnHelper = createColumnHelper<DataItem>();
 
-const columns: Column<DataItem>[] = [
-  columnHelper.accessor("id", {
-    header: "ID",
-    sortable: true,
-    width: "80px",
-  }),
-  columnHelper.accessor("name", {
-    header: "Name",
-    sortable: true,
-    width: "150px",
-  }),
-  columnHelper.accessor("email", {
-    header: "Email",
-    sortable: true,
-    width: "250px",
-  }),
-  columnHelper.accessor("department", {
-    header: "Department",
-    sortable: true,
-    width: "150px",
-  }),
-  columnHelper.accessor("role", {
-    header: "Role",
-    sortable: true,
-    width: "150px",
-  }),
-  columnHelper.accessor("salary", {
-    header: "Salary",
-    sortable: true,
-    width: "120px",
-    cell: ({ value }) => `$${(value as number).toLocaleString()}`,
-  }),
-];
-
 const ColumnResizingTable = () => {
+  const columns = useMemo<Column<DataItem>[]>(() => [
+    columnHelper.accessor("id", {
+      header: "ID",
+      sortable: true,
+      width: "80px",
+    }),
+    columnHelper.accessor("name", {
+      header: "Name",
+      sortable: true,
+      width: "150px",
+    }),
+    columnHelper.accessor("email", {
+      header: "Email",
+      sortable: true,
+      width: "250px",
+    }),
+    columnHelper.accessor("department", {
+      header: "Department",
+      sortable: true,
+      width: "150px",
+    }),
+    columnHelper.accessor("role", {
+      header: "Role",
+      sortable: true,
+      width: "150px",
+    }),
+    columnHelper.accessor("salary", {
+      header: "Salary",
+      sortable: true,
+      width: "120px",
+      cell: ({ value }) => `$${(value as number).toLocaleString()}`,
+    }),
+  ], []);
+
+  const handleStateChange = useCallback((state: TableState<DataItem>) => {
+    console.log("Table state changed:", state);
+  }, []);
+
   return (
     <div className="p-4">
       <div className="flex justify-between items-center mb-4">
@@ -63,9 +69,7 @@ const ColumnResizingTable = () => {
         maxHeight="400px"
         variant="classic"
         columnResizeMode="onChange"
-        onStateChange={(state) => {
-          console.log("Table state changed:", state);
-        }}
+        onStateChange={handleStateChange}
       />
     </div>
   );

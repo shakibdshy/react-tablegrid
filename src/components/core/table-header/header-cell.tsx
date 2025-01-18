@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, memo } from "react";
 import { cn } from "@/utils/cn";
 import { tableStyles } from "@/styles/table.style";
 import { TableResizer } from "@/components/ui/table-resizer";
@@ -16,7 +16,7 @@ interface HeaderCellProps<T extends Record<string, unknown>> {
   components?: TableCustomComponents<T>;
 }
 
-export function HeaderCell<T extends Record<string, unknown>>({
+function HeaderCellBase<T extends Record<string, unknown>>({
   tableInstance,
   column,
   className,
@@ -42,6 +42,10 @@ export function HeaderCell<T extends Record<string, unknown>>({
     handleSort(column);
   }, [column, handleSort]);
 
+  const headerContent = typeof column.header === "function" 
+    ? column.header()
+    : column.header;
+
   return (
     <div
       data-column-id={String(column.id)}
@@ -54,11 +58,7 @@ export function HeaderCell<T extends Record<string, unknown>>({
     >
       <div className="flex items-center w-full h-full">
         <div className="flex-1 overflow-hidden flex items-center">
-          <span>
-            {typeof column.header === "function"
-              ? column.header()
-              : column.header}
-          </span>
+          <span>{headerContent}</span>
           {column.sortable && (
             <button
               onClick={handleSortClick}
@@ -89,3 +89,5 @@ export function HeaderCell<T extends Record<string, unknown>>({
     </div>
   );
 }
+
+export const HeaderCell = memo(HeaderCellBase) as typeof HeaderCellBase;
