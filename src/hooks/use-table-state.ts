@@ -1,20 +1,20 @@
-import { useState, useCallback, useEffect, useMemo } from 'react'
-import type { TableState } from '@/types/table.types'
-import type { Column, ColumnResizeInfoState } from '@/types/column.types'
-import { createInitialTableState } from '@/utils/table-helper'
-import Fuse from 'fuse.js'
-import { useDirection } from '@/hooks/use-direction'
+import { useState, useCallback, useEffect, useMemo } from "react";
+import type { TableState } from "@/types/table.types";
+import type { Column, ColumnResizeInfoState } from "@/types/column.types";
+import { createInitialTableState } from "@/utils/table-helper";
+import Fuse from "fuse.js";
+import { useDirection } from "@/hooks/use-direction";
 
 interface UseTableStateOptions<T> {
-  data: T[]
-  columns: Column<T>[]
-  initialState?: Partial<TableState<T>>
-  onStateChange?: (state: TableState<T>) => void
-  debounceMs?: number
-  enableFuzzySearch?: boolean
-  fuzzySearchKeys?: Array<keyof T>
-  fuzzySearchThreshold?: number
-  columnResizeMode?: 'onChange' | 'onResize'
+  data: T[];
+  columns: Column<T>[];
+  initialState?: Partial<TableState<T>>;
+  onStateChange?: (state: TableState<T>) => void;
+  debounceMs?: number;
+  enableFuzzySearch?: boolean;
+  fuzzySearchKeys?: Array<keyof T>;
+  fuzzySearchThreshold?: number;
+  columnResizeMode?: "onChange" | "onResize";
 }
 
 /**
@@ -30,130 +30,169 @@ export function useTableState<T extends Record<string, unknown>>({
   enableFuzzySearch = false,
   fuzzySearchKeys,
   fuzzySearchThreshold = 0.3,
-  columnResizeMode = 'onChange',
+  columnResizeMode = "onChange",
 }: UseTableStateOptions<T>) {
-  const { direction } = useDirection()
+  const { direction } = useDirection();
 
   // Initialize state with default values and initial state
   const [state, setState] = useState<TableState<T>>(() => ({
     ...createInitialTableState(data, columns),
     ...initialState,
-  }))
+  }));
 
   // Initialize debounced filter value
-  const [debouncedFilterValue, setDebouncedFilterValue] = useState(state.filterValue)
+  const [debouncedFilterValue, setDebouncedFilterValue] = useState(
+    state.filterValue
+  );
 
   // Initialize column resize info state
-  const [columnResizeInfo, setColumnResizeInfo] = useState<ColumnResizeInfoState>({
-    startX: null,
-    currentX: null,
-    deltaX: null,
-    isResizingColumn: false,
-    columnSizingStart: {},
-  })
+  const [columnResizeInfo, setColumnResizeInfo] =
+    useState<ColumnResizeInfoState>({
+      startX: null,
+      currentX: null,
+      deltaX: null,
+      isResizingColumn: false,
+      columnSizingStart: {},
+    });
 
   // Setup debouncing for filter value
   useEffect(() => {
     const timer = setTimeout(() => {
-      setDebouncedFilterValue(state.filterValue)
-    }, debounceMs)
+      setDebouncedFilterValue(state.filterValue);
+    }, debounceMs);
 
-    return () => clearTimeout(timer)
-  }, [state.filterValue, debounceMs])
+    return () => clearTimeout(timer);
+  }, [state.filterValue, debounceMs]);
 
   // Initialize Fuse instance for fuzzy search
   const fuse = useMemo(() => {
-    if (!enableFuzzySearch) return null
+    if (!enableFuzzySearch) return null;
     return new Fuse(state.data, {
-      keys: (fuzzySearchKeys || columns.map(col => col.accessorKey))
-        .map(key => String(key)),
+      keys: (fuzzySearchKeys || columns.map((col) => col.accessorKey)).map(
+        (key) => String(key)
+      ),
       threshold: fuzzySearchThreshold,
-    })
-  }, [state.data, enableFuzzySearch, fuzzySearchKeys, columns, fuzzySearchThreshold])
+    });
+  }, [
+    state.data,
+    enableFuzzySearch,
+    fuzzySearchKeys,
+    columns,
+    fuzzySearchThreshold,
+  ]);
 
   /**
    * Updates table state and notifies parent of changes
    */
-  const updateState = useCallback((
-    updates: Partial<TableState<T>> | ((current: TableState<T>) => TableState<T>)
-  ) => {
-    setState(current => {
-      const newState = typeof updates === 'function' 
-        ? updates(current)
-        : { ...current, ...updates }
-      onStateChange?.(newState)
-      return newState
-    })
-  }, [onStateChange])
+  const updateState = useCallback(
+    (
+      updates:
+        | Partial<TableState<T>>
+        | ((current: TableState<T>) => TableState<T>)
+    ) => {
+      setState((current) => {
+        const newState =
+          typeof updates === "function"
+            ? updates(current)
+            : { ...current, ...updates };
+        onStateChange?.(newState);
+        return newState;
+      });
+    },
+    [onStateChange]
+  );
 
   /**
    * Resets table state to initial values
    */
   const resetState = useCallback(() => {
-    const defaultState = createInitialTableState(data, columns)
-    setState(defaultState)
-    onStateChange?.(defaultState)
-  }, [data, columns, onStateChange])
+    const defaultState = createInitialTableState(data, columns);
+    setState(defaultState);
+    onStateChange?.(defaultState);
+  }, [data, columns, onStateChange]);
 
   /**
    * Updates data in table state
    */
-  const setData = useCallback((newData: T[]) => {
-    updateState({ data: newData })
-  }, [updateState])
+  const setData = useCallback(
+    (newData: T[]) => {
+      updateState({ data: newData });
+    },
+    [updateState]
+  );
 
   /**
    * Toggles column visibility
    */
-  const toggleColumnVisibility = useCallback((columnId: keyof T) => {
-    updateState((current: TableState<T>) => ({
-      ...current,
-      visibleColumns: current.visibleColumns.includes(columnId)
-        ? current.visibleColumns.filter((id: keyof T) => id !== columnId)
-        : [...current.visibleColumns, columnId]
-    }))
-  }, [updateState])
+  const toggleColumnVisibility = useCallback(
+    (columnId: keyof T) => {
+      updateState((current: TableState<T>) => ({
+        ...current,
+        visibleColumns: current.visibleColumns.includes(columnId)
+          ? current.visibleColumns.filter((id: keyof T) => id !== columnId)
+          : [...current.visibleColumns, columnId],
+      }));
+    },
+    [updateState]
+  );
 
   /**
    * Toggles column pin position
    */
-  const toggleColumnPin = useCallback((columnId: keyof T, position: 'left' | 'right' | false) => {
-    updateState((current: TableState<T>) => ({
-      ...current,
-      pinnedColumns: {
-        left: position === 'left'
-          ? [...current.pinnedColumns.left, columnId]
-          : current.pinnedColumns.left.filter((id: keyof T) => id !== columnId),
-        right: position === 'right'
-          ? [...current.pinnedColumns.right, columnId]
-          : current.pinnedColumns.right.filter((id: keyof T) => id !== columnId),
-      }
-    }))
-  }, [updateState])
+  const toggleColumnPin = useCallback(
+    (columnId: keyof T, position: "left" | "right" | false) => {
+      updateState((current: TableState<T>) => ({
+        ...current,
+        pinnedColumns: {
+          left:
+            position === "left"
+              ? [...current.pinnedColumns.left, columnId]
+              : current.pinnedColumns.left.filter(
+                  (id: keyof T) => id !== columnId
+                ),
+          right:
+            position === "right"
+              ? [...current.pinnedColumns.right, columnId]
+              : current.pinnedColumns.right.filter(
+                  (id: keyof T) => id !== columnId
+                ),
+        },
+      }));
+    },
+    [updateState]
+  );
 
   /**
    * Updates column sizing
    */
-  const updateColumnSizing = useCallback((columnId: string, width: number) => {
-    updateState((current: TableState<T>) => ({
-      ...current,
-      columnSizing: {
-        columnSizes: {
-          ...current.columnSizing.columnSizes,
-          [columnId]: width
-        }
-      }
-    }))
-  }, [updateState])
+  const updateColumnSizing = useCallback(
+    (columnId: string, width: number) => {
+      updateState((current: TableState<T>) => ({
+        ...current,
+        columnSizing: {
+          columnSizes: {
+            ...current.columnSizing.columnSizes,
+            [columnId]: width,
+          },
+        },
+      }));
+    },
+    [updateState]
+  );
 
   /**
    * Handles column resize start
    */
-  const handleColumnResizeStart = useCallback((columnId: string, startX: number) => {
-    const headerCell = document.querySelector(`[data-column-id="${columnId}"]`)
-    const currentWidth = headerCell?.getBoundingClientRect().width || 0
+  const handleColumnResizeStart = useCallback(
+    (columnId: string, startX: number) => {
+      // Get current column width from state or DOM
+      const currentWidth =
+        state.columnSizing.columnSizes[columnId] ||
+        document
+          .querySelector(`[data-column-id="${columnId}"]`)
+          ?.getBoundingClientRect().width ||
+        100; // fallback width
 
-    if (currentWidth > 0) {
       setColumnResizeInfo({
         startX,
         currentX: startX,
@@ -162,32 +201,44 @@ export function useTableState<T extends Record<string, unknown>>({
         columnSizingStart: {
           [columnId]: currentWidth,
         },
-      })
-    }
-  }, [])
+      });
+    },
+    [state.columnSizing.columnSizes]
+  );
 
   /**
    * Handles column resize move
+   * @param currentX - The current X position of the mouse/touch event
+   * Updates the column width based on the resize drag movement
+   * Constrains width between min/max values for usability
    */
-  const handleColumnResizeMove = useCallback((currentX: number) => {
-    if (!columnResizeInfo.isResizingColumn) return
+  const handleColumnResizeMove = useCallback(
+    (currentX: number) => {
+      if (!columnResizeInfo.isResizingColumn) return;
 
-    const columnId = columnResizeInfo.isResizingColumn
-    const startWidth = columnResizeInfo.columnSizingStart[columnId]
-    const deltaX = currentX - (columnResizeInfo.startX ?? 0)
-    const newWidth = Math.max(startWidth + deltaX, 50)
+      const columnId = columnResizeInfo.isResizingColumn;
+      const startWidth = columnResizeInfo.columnSizingStart[columnId] || 0;
+      const deltaX = currentX - (columnResizeInfo.startX ?? 0);
 
-    updateColumnSizing(columnId, newWidth)
-    setColumnResizeInfo(prev => ({
-      ...prev,
-      currentX,
-      deltaX,
-    }))
-  }, [columnResizeInfo, updateColumnSizing])
+      // Constrain column width between minWidth (50px) and maxWidth (800px) to ensure
+      // columns remain usable and don't grow too large
+      const minWidth = 50;
+      const maxWidth = 800;
+      const newWidth = Math.min(
+        Math.max(startWidth + deltaX, minWidth),
+        maxWidth
+      );
 
-  /**
-   * Handles column resize end
-   */
+      updateColumnSizing(columnId, newWidth);
+      setColumnResizeInfo((prev) => ({
+        ...prev,
+        currentX,
+        deltaX,
+      }));
+    },
+    [columnResizeInfo, updateColumnSizing]
+  );
+
   const handleColumnResizeEnd = useCallback(() => {
     setColumnResizeInfo({
       startX: null,
@@ -195,8 +246,8 @@ export function useTableState<T extends Record<string, unknown>>({
       deltaX: null,
       isResizingColumn: false,
       columnSizingStart: {},
-    })
-  }, [])
+    });
+  }, []);
 
   return {
     state,
@@ -211,8 +262,8 @@ export function useTableState<T extends Record<string, unknown>>({
     handleColumnResizeMove,
     handleColumnResizeEnd,
     columnResizeMode,
-    columnResizeDirection: direction as 'ltr' | 'rtl',
+    columnResizeDirection: direction as "ltr" | "rtl",
     debouncedFilterValue,
     fuse,
-  }
+  };
 }

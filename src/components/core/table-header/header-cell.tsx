@@ -52,7 +52,7 @@ export function HeaderCell<T extends Record<string, unknown>>({
         ...style,
       }}
     >
-      <div className="flex items-center justify-between">
+      <div className="flex items-center w-full h-full">
         <div className="flex-1 overflow-hidden flex items-center">
           <span>
             {typeof column.header === "function"
@@ -74,7 +74,7 @@ export function HeaderCell<T extends Record<string, unknown>>({
           )}
         </div>
 
-        {isResizing && (
+        <div className="absolute right-0 top-0 h-full">
           <TableResizer
             columnId={String(column.id)}
             isResizing={isResizing}
@@ -84,7 +84,7 @@ export function HeaderCell<T extends Record<string, unknown>>({
             direction={columnResizeDirection}
             isDragging={!!columnResizeInfo.isResizingColumn}
           />
-        )}
+        </div>
       </div>
     </div>
   );

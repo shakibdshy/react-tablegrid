@@ -4,10 +4,10 @@ import BasicTable from "@/components/examples/basic-table";
 // import BasicSearch from "@/components/examples/basic-search";
 // import FuzzySearchFilter from "@/components/examples/fuzzy-search-filter";
 // import ColumnVisibilityTable from "@/components/examples/column-visibility-table";
-import VirtualizedTable from "@/components/examples/virtualized-table";
+// import VirtualizedTable from "@/components/examples/virtualized-table";
 // import ColumnPinningTable from "@/components/examples/column-pinning-table";
 // import CustomizedTable from "@/components/examples/customized-table";
-// import ColumnResizingTable from "@/components/examples/column-resizing-table";
+import ColumnResizingTable from "@/components/examples/column-resizing-table";
 // import ToggleColumnPinningTable from "@/components/examples/toggle-column-pinning-table";
 
 export default function Home() {
@@ -21,8 +21,8 @@ export default function Home() {
       {/* <ToggleColumnPinningTable /> */}
       {/* <ColumnVisibilityTable /> */}
       {/* <CustomizedTable /> */}
-      <VirtualizedTable />
-      {/* <ColumnResizingTable /> */}
+      {/* <VirtualizedTable /> */}
+      <ColumnResizingTable />
     </main>
   );
 }

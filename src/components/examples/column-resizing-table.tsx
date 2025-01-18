@@ -1,4 +1,5 @@
 "use client";
+
 import { TableContainer } from "@/components/containers/table-container/table-container";
 import dummyData from "@/data/dummy.json";
 import { createColumnHelper } from "@/utils/column-helper";
@@ -25,7 +26,7 @@ const columns: Column<DataItem>[] = [
   columnHelper.accessor("name", {
     header: "Name",
     sortable: true,
-    width: "200px",
+    width: "150px",
   }),
   columnHelper.accessor("email", {
     header: "Email",

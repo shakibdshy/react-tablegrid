@@ -87,13 +87,13 @@ export function TableResizer({
         onMouseDown={handleMouseDown}
         onTouchStart={handleTouchStart}
         onClick={(e) => e.stopPropagation()}
-        data-testid="column-resizer"
+        data-resize-column-id={columnId}
       />
       {isResizing && (
         <div
           ref={indicatorRef}
           className={cn(styles.resizerIndicator(), direction)}
-          data-testid="resize-indicator"
+          data-resize-indicator-id={columnId}
         />
       )}
     </>
