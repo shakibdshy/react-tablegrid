@@ -1,7 +1,7 @@
 import { useMemo, useEffect } from "react";
 import type { TableState } from "@/types/table.types";
 import type { Column } from "@/types/column.types";
-import type { TableEventMap } from "@/types/events.types";
+import type { TableEventMap, ServerSideConfig } from "@/types/events.types";
 import { useTableState } from "./use-table-state";
 import { useTableEvents } from "./use-table-events";
 import { processTableData } from "@/utils/table-helper";
@@ -18,6 +18,7 @@ interface UseTableContextOptions<T extends Record<string, unknown>> {
   columnResizeMode?: "onChange" | "onResize";
   debounceMs?: number;
   isLoading?: boolean;
+  serverSide?: ServerSideConfig<T>;
 }
 
 /**
@@ -36,6 +37,7 @@ export function useTableContext<T extends Record<string, unknown>>({
   columnResizeMode,
   debounceMs,
   isLoading,
+  serverSide,
 }: UseTableContextOptions<T>) {
   // Initialize table state
   const {
@@ -57,7 +59,7 @@ export function useTableContext<T extends Record<string, unknown>>({
     columns,
     initialState: {
       ...initialState,
-      loading: isLoading,
+      loading: isLoading || serverSide?.loading,
     },
     onStateChange,
     enableFuzzySearch,
@@ -70,9 +72,9 @@ export function useTableContext<T extends Record<string, unknown>>({
   useEffect(() => {
     updateState((current) => ({
       ...current,
-      loading: isLoading,
+      loading: isLoading || serverSide?.loading,
     }));
-  }, [isLoading, updateState]);
+  }, [isLoading, serverSide?.loading, updateState]);
 
   // Initialize event handlers
   const {
@@ -91,6 +93,11 @@ export function useTableContext<T extends Record<string, unknown>>({
 
   // Process table data (sorting, filtering)
   const filteredData = useMemo(() => {
+    // If server-side is enabled, don't process data locally
+    if (serverSide?.enabled) {
+      return state.data;
+    }
+
     let processed = state.data;
 
     // Apply fuzzy search if enabled
@@ -104,7 +111,30 @@ export function useTableContext<T extends Record<string, unknown>>({
     }
 
     return processed;
-  }, [state, columns, debouncedFilterValue, enableFuzzySearch, fuse]);
+  }, [state, columns, debouncedFilterValue, enableFuzzySearch, fuse, serverSide?.enabled]);
+
+  // Handle server-side pagination
+  useEffect(() => {
+    if (serverSide?.enabled && serverSide.onFetch) {
+      const fetchData = async () => {
+        try {
+          const newData = await serverSide.onFetch({
+            page: serverSide.currentPage,
+            pageSize: serverSide.pageSize,
+            sortColumn: state.sortColumn,
+            sortDirection: state.sortDirection,
+            filters: state.filterValue ? { search: state.filterValue } : undefined,
+          });
+          setData(newData);
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        }
+      };
+
+      fetchData();
+    }
+  }, [serverSide?.enabled, serverSide?.currentPage, serverSide?.pageSize, state.sortColumn, state.sortDirection, state.filterValue, setData, serverSide]);
+
 
   return {
     // State
@@ -146,6 +176,9 @@ export function useTableContext<T extends Record<string, unknown>>({
     resetState,
     setData,
     handleStateChange,
+
+    // Server-side config
+    serverSide,
   };
 }
 
