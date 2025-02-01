@@ -120,6 +120,8 @@ export interface TableProps<T> {
   enableFuzzySearch?: boolean;
   fuzzySearchKeys?: FuseKeys<T>;
   fuzzySearchThreshold?: number;
+  /** Whether column resizing is enabled. Defaults to false. */
+  enableColumnResize?: boolean;
 
   // Customization props
   components?: TableCustomComponents<T>;

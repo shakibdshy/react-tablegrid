@@ -11,12 +11,14 @@ interface TableHeaderProps<T extends Record<string, unknown>> {
   tableInstance: ReturnType<typeof useTable<T>>;
   className?: string;
   components?: TableCustomComponents<T>;
+  enableColumnResize?: boolean;
 }
 
 export function TableHeader<T extends Record<string, unknown>>({
   tableInstance,
   className,
   components,
+  enableColumnResize = false,
 }: TableHeaderProps<T>) {
   const styles = tableStyles();
   const { columns, state: { columnSizing, pinnedColumns } } = tableInstance;
@@ -59,6 +61,7 @@ export function TableHeader<T extends Record<string, unknown>>({
               tableInstance={tableInstance}
               column={column}
               width={width}
+              enableColumnResize={enableColumnResize}
               className={cn(
                 column.className,
                 isPinnedLeft && "sticky left-0 z-[35] shadow-[1px_0_0_0_theme(colors.gray.200)]",

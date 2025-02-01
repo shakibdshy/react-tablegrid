@@ -23,6 +23,7 @@ interface TableContainerProps<T extends Record<string, unknown>> extends Omit<Ta
   onStateChange?: (state: TableState<T>) => void
   isLoading?: boolean
   serverSide?: ServerSideConfig<T>
+  enableColumnResize?: boolean
 }
 
 function TableContainerComponent<T extends Record<string, unknown>>(
@@ -43,6 +44,7 @@ function TableContainerComponent<T extends Record<string, unknown>>(
     onStateChange,
     isLoading,
     serverSide,
+    enableColumnResize,
   }: TableContainerProps<T>,
   ref: React.ForwardedRef<HTMLDivElement>
 ) {
@@ -117,6 +119,7 @@ function TableContainerComponent<T extends Record<string, unknown>>(
               )}
               components={components}
               tableInstance={tableInstance}
+              enableColumnResize={enableColumnResize}
             />
 
             {/* Body */}

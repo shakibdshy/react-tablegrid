@@ -14,6 +14,7 @@ interface HeaderCellProps<T extends Record<string, unknown>> {
   width?: number;
   style?: React.CSSProperties;
   components?: TableCustomComponents<T>;
+  enableColumnResize?: boolean;
 }
 
 function HeaderCellBase<T extends Record<string, unknown>>({
@@ -22,6 +23,7 @@ function HeaderCellBase<T extends Record<string, unknown>>({
   className,
   width,
   style,
+  enableColumnResize = false,
 }: HeaderCellProps<T>) {
   const styles = tableStyles();
   const {
@@ -74,17 +76,19 @@ function HeaderCellBase<T extends Record<string, unknown>>({
           )}
         </div>
 
-        <div className="absolute right-0 top-0 h-full">
-          <TableResizer
-            columnId={String(column.id)}
-            isResizing={isResizing}
-            onResizeStart={handleColumnResizeStart}
-            onResizeMove={handleColumnResizeMove}
-            onResizeEnd={handleColumnResizeEnd}
-            direction={columnResizeDirection}
-            isDragging={!!columnResizeInfo.isResizingColumn}
-          />
-        </div>
+        {enableColumnResize && (
+          <div className="absolute right-0 top-0 h-full">
+            <TableResizer
+              columnId={String(column.id)}
+              isResizing={isResizing}
+              onResizeStart={handleColumnResizeStart}
+              onResizeMove={handleColumnResizeMove}
+              onResizeEnd={handleColumnResizeEnd}
+              direction={columnResizeDirection}
+              isDragging={!!columnResizeInfo.isResizingColumn}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

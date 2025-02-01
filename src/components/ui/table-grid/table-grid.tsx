@@ -89,6 +89,7 @@ function TableGridComponent<T extends Record<string, unknown>>(
     enableFuzzySearch = false,
     fuzzySearchKeys,
     fuzzySearchThreshold = 0.3,
+    enableColumnResize = false,
     components,
     styleConfig,
     renderHeader: customRenderHeader,
@@ -322,18 +323,20 @@ function TableGridComponent<T extends Record<string, unknown>>(
           )}
         </div>
 
-        <div
-          className={cn(
-            styles.resizer(),
-            columnResizeDirection === "rtl" ? "rtl" : "ltr",
-            isDragging && "cursor-col-resize"
-          )}
-          onMouseDown={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            handleResizeStart(String(column.id), e.clientX);
-          }}
-        />
+        {enableColumnResize && (
+          <div
+            className={cn(
+              styles.resizer(),
+              columnResizeDirection === "rtl" ? "rtl" : "ltr",
+              isDragging && "cursor-col-resize"
+            )}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleResizeStart(String(column.id), e.clientX);
+            }}
+          />
+        )}
       </div>
     );
   };
@@ -658,18 +661,20 @@ function TableGridComponent<T extends Record<string, unknown>>(
                       style={{ width: columnWidth ? `${columnWidth}px` : undefined }}
                     >
                       {renderHeader(column)}
-                      <div
-                        className={cn(
-                          styles.resizer(),
-                          columnResizeDirection === "rtl" ? "rtl" : "ltr",
-                          isDragging && "cursor-col-resize"
-                        )}
-                        onMouseDown={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          handleResizeStart(String(column.id), e.clientX);
-                        }}
-                      />
+                      {enableColumnResize && (
+                        <div
+                          className={cn(
+                            styles.resizer(),
+                            columnResizeDirection === "rtl" ? "rtl" : "ltr",
+                            isDragging && "cursor-col-resize"
+                          )}
+                          onMouseDown={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleResizeStart(String(column.id), e.clientX);
+                          }}
+                        />
+                      )}
                     </div>
                   );
                 })}

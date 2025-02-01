@@ -109,6 +109,7 @@ export default function PaginationExample() {
         columns={columns}
         maxHeight="600px"
         isLoading={isLoading}
+        enableColumnResize
         serverSide={{
           enabled: true,
           pageSize: limit,
