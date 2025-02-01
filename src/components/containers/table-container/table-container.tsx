@@ -9,6 +9,7 @@ import { TableHeaderGroup } from '@/components/containers/table-header-group/tab
 import SimpleBar from 'simplebar-react'
 import 'simplebar-react/dist/simplebar.min.css'
 import type { TableProps, TableCustomRender, TableState } from '@/types/table.types'
+import type { ServerSideConfig } from '@/types/events.types'
 import type { Column, ColumnResizeInfoState } from "@/types/column.types"
 import { useTable } from '@/hooks/use-table-context'
 
@@ -21,6 +22,7 @@ interface TableContainerProps<T extends Record<string, unknown>> extends Omit<Ta
   data: T[]
   onStateChange?: (state: TableState<T>) => void
   isLoading?: boolean
+  serverSide?: ServerSideConfig<T>
 }
 
 function TableContainerComponent<T extends Record<string, unknown>>(
@@ -32,7 +34,6 @@ function TableContainerComponent<T extends Record<string, unknown>>(
     enableFuzzySearch = false,
     headerGroups = false,
     virtualization,
-    serverSide,
     components,
     customRender,
     styleConfig,
@@ -41,6 +42,7 @@ function TableContainerComponent<T extends Record<string, unknown>>(
     data,
     onStateChange,
     isLoading,
+    serverSide,
   }: TableContainerProps<T>,
   ref: React.ForwardedRef<HTMLDivElement>
 ) {
@@ -51,6 +53,7 @@ function TableContainerComponent<T extends Record<string, unknown>>(
     onStateChange,
     enableFuzzySearch,
     isLoading,
+    serverSide,
   })
 
   return (
@@ -164,18 +167,6 @@ function TableContainerComponent<T extends Record<string, unknown>>(
           </div>
         </SimpleBar>
       </div>
-
-      {/* Server-side Pagination */}
-      {serverSide?.enabled && serverSide.pageSize && (
-        <div className="mt-4">
-          <div className="flex justify-between items-center">
-            <div className="text-sm text-gray-500 dark:text-gray-400">
-              Showing {serverSide.pageSize} items per page
-            </div>
-            {/* Add pagination controls here */}
-          </div>
-        </div>
-      )}
     </div>
   )
 }
