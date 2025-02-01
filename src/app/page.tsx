@@ -1,4 +1,4 @@
-import BasicTable from "@/components/examples/basic-table";
+// import BasicTable from "@/components/examples/basic-table";
 // import CustomizedTable from "@/components/examples/customized-table";
 // import HeaderGroupsTable from "@/components/examples/header-groups";
 // import BasicSearch from "@/components/examples/basic-search";
@@ -7,13 +7,14 @@ import BasicTable from "@/components/examples/basic-table";
 // import VirtualizedTable from "@/components/examples/virtualized-table";
 // import ColumnPinningTable from "@/components/examples/column-pinning-table";
 // import CustomizedTable from "@/components/examples/customized-table";
-import ColumnResizingTable from "@/components/examples/column-resizing-table";
+// import ColumnResizingTable from "@/components/examples/column-resizing-table";
+import PaginationExample from "@/components/examples/pagination";
 // import ToggleColumnPinningTable from "@/components/examples/toggle-column-pinning-table";
 
 export default function Home() {
   return (
     <main className="min-h-screen p-4">
-      <BasicTable />
+      {/* <BasicTable /> */}
       {/* <BasicSearch /> */}
       {/* <HeaderGroupsTable /> */}
       {/* <FuzzySearchFilter /> */}
@@ -22,7 +23,9 @@ export default function Home() {
       {/* <ColumnVisibilityTable /> */}
       {/* <CustomizedTable /> */}
       {/* <VirtualizedTable /> */}
-      <ColumnResizingTable />
+      {/* <ColumnResizingTable /> */}
+      <PaginationExample />
+
     </main>
   );
 }

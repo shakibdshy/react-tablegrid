@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import themePlugin from "@shakibdshy/tailwind-theme";
 
 export default {
   content: [
@@ -6,6 +7,7 @@ export default {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/styles/**/*.{js,ts,jsx,tsx,mdx}",
+    "node_modules/@shakibdshy/tailwind-theme/dist/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {
@@ -15,5 +17,5 @@ export default {
       },
     },
   },
-  plugins: [],
+  plugins: [themePlugin],
 } satisfies Config;
