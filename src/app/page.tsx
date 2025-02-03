@@ -4,13 +4,13 @@
 // import BasicSearch from "@/components/examples/basic-search";
 // import FuzzySearchFilter from "@/components/examples/fuzzy-search-filter";
 // import ColumnVisibilityTable from "@/components/examples/column-visibility-table";
-// import VirtualizedTable from "@/components/examples/virtualized-table";
+import VirtualizedTable from "@/components/examples/virtualized-table";
 // import ColumnPinningTable from "@/components/examples/column-pinning-table";
 // import CustomizedTable from "@/components/examples/customized-table";
 // import ColumnResizingTable from "@/components/examples/column-resizing-table";
 // import PaginationExample from "@/components/examples/pagination";
 // import ToggleColumnPinningTable from "@/components/examples/toggle-column-pinning-table";
-import NestedTableExample from "@/components/examples/nested-table";
+// import NestedTableExample from "@/components/examples/nested-table";
 
 export default function Home() {
   return (
@@ -23,10 +23,10 @@ export default function Home() {
       {/* <ToggleColumnPinningTable /> */}
       {/* <ColumnVisibilityTable /> */}
       {/* <CustomizedTable /> */}
-      {/* <VirtualizedTable /> */}
+      <VirtualizedTable />
       {/* <ColumnResizingTable /> */}
       {/* <PaginationExample /> */}
-      <NestedTableExample />
+      {/* <NestedTableExample /> */}
 
     </main>
   );

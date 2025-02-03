@@ -5,7 +5,7 @@ import dummyData from "@/data/dummy.json";
 import { createColumnHelper } from "@/utils/column-helper";
 import type { Column } from "@/types/column.types";
 
-interface DataItem extends Record<string, unknown> {
+type DataItem = {
   id: number;
   name: string;
   age: number;
@@ -83,6 +83,7 @@ const VirtualizedTable = () => {
             overscan: 5,
             scrollingDelay: 500,
           }}
+          maxHeight="100%"
           styleConfig={{
             header: {
               className: "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200",
