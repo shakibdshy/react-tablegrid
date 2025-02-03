@@ -5,13 +5,15 @@ import { TableContainer } from "@/components/containers/table-container/table-co
 import nestedData from "@/data/nested-data.json";
 import { ChevronRight, ChevronDown } from "lucide-react";
 import { createColumnHelper } from "@/utils/column-helper";
+import { Column } from "@/types/column.types";
 
-interface NestedRowData extends Record<string, unknown> {
+type NestedRowData = {
   id: string;
   name: string;
   amount: number;
   children?: NestedRowData[];
 }
+
 
 function transformData(): NestedRowData[] {
   return Object.values(nestedData.balanceSheet) as NestedRowData[];
@@ -29,10 +31,11 @@ export default function NestedTableExample() {
   const allData: NestedRowData[] = transformData();
 
   const columnHelper = createColumnHelper<NestedRowData>();
-  const columns = [
+  const columns: Column<NestedRowData>[] = [
     columnHelper.accessor("id", {
       header: "Id",
       cell: ({ row }) => row.id,
+
     }),
     columnHelper.accessor("name", { header: "Name" }),
     columnHelper.accessor("amount", { header: "Amount" }),
@@ -86,7 +89,7 @@ export default function NestedTableExample() {
 
   return (
     <div className="space-y-4">
-      <TableContainer<NestedRowData>
+      <TableContainer
         data={allData}
         columns={columns}
         maxHeight="800px"
