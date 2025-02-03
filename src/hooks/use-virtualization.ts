@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface VirtualizationConfig {
   rowHeight: number;
@@ -18,7 +18,7 @@ interface VirtualItem<T> {
   item: T;
   index: number;
   style: {
-    position: 'absolute';
+    position: "absolute";
     top: number;
     width: string;
     height: number;
@@ -41,30 +41,28 @@ export function useVirtualization<T>(
     scrollTop: 0,
   });
 
-  // Treat virtualization as enabled unless explicitly set to false
   const isEnabled = config.enabled !== false;
 
   const calculateVisibleRange = useCallback(() => {
     const container = containerRef.current;
     if (!container || !isEnabled) return;
 
-    // Get the container's height and scroll position
     const containerHeight = container.clientHeight;
     const scrollTop = container.scrollTop;
 
-    // Calculate the range of visible items
     const visibleItems = Math.ceil(containerHeight / config.rowHeight);
-    
-    // Calculate start and end indices with overscan
+
     let startIndex = Math.floor(scrollTop / config.rowHeight);
     startIndex = Math.max(0, startIndex - config.overscan);
 
     let endIndex = startIndex + visibleItems + 2 * config.overscan;
     endIndex = Math.min(items.length - 1, endIndex);
 
-    // Update state only if indices have changed
-    setState(prevState => {
-      if (prevState.startIndex !== startIndex || prevState.endIndex !== endIndex) {
+    setState((prevState) => {
+      if (
+        prevState.startIndex !== startIndex ||
+        prevState.endIndex !== endIndex
+      ) {
         return {
           startIndex,
           endIndex,
@@ -76,7 +74,6 @@ export function useVirtualization<T>(
     });
   }, [isEnabled, config.overscan, config.rowHeight, items.length]);
 
-  // Set up scroll event listener
   useEffect(() => {
     const container = containerRef.current;
     if (!container || !isEnabled) return;
@@ -89,33 +86,28 @@ export function useVirtualization<T>(
       }
     };
 
-    // Initial calculation
     calculateVisibleRange();
 
-    // Add scroll listener
-    container.addEventListener('scroll', handleScroll, { passive: true });
+    container.addEventListener("scroll", handleScroll, { passive: true });
 
-    // Cleanup
     return () => {
-      container.removeEventListener('scroll', handleScroll);
+      container.removeEventListener("scroll", handleScroll);
     };
   }, [calculateVisibleRange, isEnabled, config.scrollingDelay]);
 
-  // Recalculate on items or config change
   useEffect(() => {
     calculateVisibleRange();
   }, [calculateVisibleRange, items, config.rowHeight]);
 
-  // Generate virtual items
   const virtualItems = useCallback((): VirtualItem<T>[] => {
     if (!isEnabled) {
       return items.map((item, index) => ({
         item,
         index,
         style: {
-          position: 'absolute',
+          position: "absolute",
           top: index * config.rowHeight,
-          width: '100%',
+          width: "100%",
           height: config.rowHeight,
         },
       }));
@@ -127,9 +119,9 @@ export function useVirtualization<T>(
         item,
         index: state.startIndex + index,
         style: {
-          position: 'absolute',
+          position: "absolute",
           top: (state.startIndex + index) * config.rowHeight,
-          width: '100%',
+          width: "100%",
           height: config.rowHeight,
         },
       }));
