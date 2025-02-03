@@ -114,6 +114,52 @@
       "id": "4000",
       "name": "Total (Credit)",
       "amount": 243033.0
+    },
+    "expenses": {
+      "id": "5000",
+      "name": "Expenses",
+      "amount": 50000.0,
+      "children": [
+        {
+          "id": "5100",
+          "name": "Operating Expenses",
+          "amount": 30000.0,
+          "children": [
+            {
+              "id": "5110",
+              "name": "Salaries",
+              "amount": 15000.0
+            },
+            {
+              "id": "5120",
+              "name": "Rent",
+              "amount": 15000.0
+            }
+          ]
+        },
+        {
+          "id": "5200",
+          "name": "Administrative Expenses",
+          "amount": 20000.0,
+          "children": [
+            {
+              "id": "5210",
+              "name": "Office Supplies",
+              "amount": 5000.0
+            },
+            {
+              "id": "5220",
+              "name": "Utilities",
+              "amount": 5000.0
+            },
+            {
+              "id": "5230",
+              "name": "Insurance",
+              "amount": 10000.0
+            }
+          ]
+        }
+      ]
     }
   }
 }
