@@ -8,8 +8,9 @@
 // import ColumnPinningTable from "@/components/examples/column-pinning-table";
 // import CustomizedTable from "@/components/examples/customized-table";
 // import ColumnResizingTable from "@/components/examples/column-resizing-table";
-import PaginationExample from "@/components/examples/pagination";
+// import PaginationExample from "@/components/examples/pagination";
 // import ToggleColumnPinningTable from "@/components/examples/toggle-column-pinning-table";
+import NestedTableExample from "@/components/examples/nested-table";
 
 export default function Home() {
   return (
@@ -24,7 +25,8 @@ export default function Home() {
       {/* <CustomizedTable /> */}
       {/* <VirtualizedTable /> */}
       {/* <ColumnResizingTable /> */}
-      <PaginationExample />
+      {/* <PaginationExample /> */}
+      <NestedTableExample />
 
     </main>
   );
