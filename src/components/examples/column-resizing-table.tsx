@@ -4,10 +4,10 @@ import { TableContainer } from "@/components/containers/table-container/table-co
 import dummyData from "@/data/dummy.json";
 import { createColumnHelper } from "@/utils/column-helper";
 import type { Column } from "@/types/column.types";
-import { useMemo, useCallback } from "react";
+import { useCallback } from "react";
 import type { TableState } from "@/types/table.types";
 
-interface DataItem extends Record<string, unknown> {
+type DataItem = {
   id: number;
   name: string;
   age: number;
@@ -15,44 +15,38 @@ interface DataItem extends Record<string, unknown> {
   department: string;
   role: string;
   salary: number;
-}
+};
 
 const columnHelper = createColumnHelper<DataItem>();
 
 const ColumnResizingTable = () => {
-  const columns = useMemo<Column<DataItem>[]>(() => [
+  const columns: Column<DataItem>[] = [
     columnHelper.accessor("id", {
       header: "ID",
-      sortable: true,
-      width: "80px",
+      sortable: true
     }),
     columnHelper.accessor("name", {
       header: "Name",
-      sortable: true,
-      width: "150px",
+      sortable: true
     }),
     columnHelper.accessor("email", {
       header: "Email",
-      sortable: true,
-      width: "250px",
+      sortable: true
     }),
     columnHelper.accessor("department", {
       header: "Department",
-      sortable: true,
-      width: "150px",
+      sortable: true
     }),
     columnHelper.accessor("role", {
       header: "Role",
-      sortable: true,
-      width: "150px",
+      sortable: true
     }),
     columnHelper.accessor("salary", {
       header: "Salary",
       sortable: true,
-      width: "120px",
       cell: ({ value }) => `$${(value as number).toLocaleString()}`,
     }),
-  ], []);
+  ];
 
   const handleStateChange = useCallback((state: TableState<DataItem>) => {
     console.log("Table state changed:", state);
@@ -68,10 +62,11 @@ const ColumnResizingTable = () => {
         data={dummyData}
         maxHeight="400px"
         variant="classic"
-        columnResizeMode="onChange"
+        enableColumnResize
         onStateChange={handleStateChange}
       />
     </div>
+
   );
 };
 
