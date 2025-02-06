@@ -4,11 +4,11 @@ import { tableStyles } from "@/styles/table.style";
 import { TableResizer } from "@/components/ui/table-resizer";
 import { SortIcon } from "@/components/ui/sort-icon";
 import type { Column } from "@/types/column.types";
-import type { useTable } from "@/hooks/use-table-context";
+import type { useTableGrid } from "@/hooks/use-table-grid";
 import type { TableCustomComponents } from "@/types/table.types";
 
 interface HeaderCellProps<T extends Record<string, unknown>> {
-  tableInstance: ReturnType<typeof useTable<T>>;
+  tableInstance: ReturnType<typeof useTableGrid<T>>;
   column: Column<T>;
   className?: string;
   width?: number;
