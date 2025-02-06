@@ -3,7 +3,7 @@ import { cn } from "@/utils/cn";
 import { tableStyles } from "@/styles/table.style";
 import { TableCell } from "@/components/ui/table-cell";
 import type { Column } from "@/types/column.types";
-import type { useTable } from "@/hooks/use-table-context";
+import type { useTableGrid } from "@/hooks/use-table-grid";
 import { getGridTemplateColumns, reorderColumns } from "@/utils/table-helper";
 import { useMemo } from "react";
 
@@ -12,7 +12,7 @@ interface TableRowProps<T extends Record<string, unknown>> {
   rowIndex: number;
   className?: string;
   style?: React.CSSProperties;
-  tableInstance: ReturnType<typeof useTable<T>>;
+  tableInstance: ReturnType<typeof useTableGrid<T>>;
   components?: {
     Cell?: React.ComponentType<{
       column: Column<T>;
