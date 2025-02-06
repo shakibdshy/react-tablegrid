@@ -1,7 +1,7 @@
 import { cn } from '@/utils/cn'
 import { tableStyles } from '@/styles/table.style'
 import type { Column, HeaderGroup } from '@/types/column.types'
-import type { useTable } from '@/hooks/use-table-context'
+import type { useTable } from '@/hooks/use-table-grid'
 import { useMemo } from 'react'
 import { getGridTemplateColumns, reorderColumns } from '@/utils/table-helper'
 
