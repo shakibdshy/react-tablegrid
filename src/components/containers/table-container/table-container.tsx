@@ -34,7 +34,6 @@ function TableContainerComponent<T extends Record<string, unknown>>(
     style,
     maxHeight = '400px',
     enableFiltering = false,
-    enableFuzzySearch = false,
     headerGroups = false,
     virtualization,
     components,
@@ -57,7 +56,6 @@ function TableContainerComponent<T extends Record<string, unknown>>(
     data,
     columns,
     onStateChange,
-    enableFuzzySearch,
     isLoading,
     serverSide,
     initialState: state,
@@ -66,11 +64,10 @@ function TableContainerComponent<T extends Record<string, unknown>>(
 
   return (
     <div ref={ref} className="space-y-4">
-      {(enableFiltering || enableFuzzySearch) && (
+      {enableFiltering && (
         <TableSearch
           className={cn(styles.searchContainer(), styleConfig?.searchContainer?.className)}
           style={styleConfig?.searchContainer?.style}
-          enableFuzzySearch={enableFuzzySearch}
           components={components}
           customRender={customRender?.renderSearch}
           tableInstance={tableInstance}
