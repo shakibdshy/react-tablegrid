@@ -1,5 +1,5 @@
 import type { Column } from "@/types/column.types";
-import { useTable } from "@/hooks/use-table-context";
+import { useTableGrid } from "@/hooks/use-table-grid";
 import { cn } from "@/utils/cn";
 import { tableStyles } from "@/styles/table.style";
 import type { TableCustomComponents } from "@/types/table.types";
@@ -8,7 +8,7 @@ import { getGridTemplateColumns, reorderColumns } from "@/utils/table-helper";
 import { useMemo } from "react";
 
 interface TableHeaderProps<T extends Record<string, unknown>> {
-  tableInstance: ReturnType<typeof useTable<T>>;
+  tableInstance: ReturnType<typeof useTableGrid<T>>;
   className?: string;
   components?: TableCustomComponents<T>;
   enableColumnResize?: boolean;
