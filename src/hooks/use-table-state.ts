@@ -95,7 +95,9 @@ export function useTableState<T extends Record<string, unknown>>({
           typeof updates === "function"
             ? updates(current)
             : { ...current, ...updates };
-        onStateChange?.(newState);
+        if (JSON.stringify(current) !== JSON.stringify(newState)) {
+          onStateChange?.(newState);
+        }
         return newState;
       });
     },
