@@ -3,6 +3,9 @@ import { TableContainer } from "@/components/containers/table-container/table-co
 import dummyData from "@/data/dummy.json";
 import { createColumnHelper } from "@/utils/column-helper";
 import type { Column } from "@/types/column.types";
+import { useCallback } from "react";
+import type { TableState } from "@/types/table.types";
+import { useDebouncedSearch } from "@/hooks/use-debounced-search";
 
 interface DataItem extends Record<string, unknown> {
   id: number;
@@ -29,22 +32,35 @@ const columns: Column<DataItem>[] = [
 ];
 
 const FuzzySearchFilter = () => {
+  const { query, results, handleSearch } = useDebouncedSearch<DataItem>(dummyData, {
+    keys: ["name", "age"],
+    threshold: 0.3,
+    distance: 100,
+  });
+
+  // Handle state changes
+  const handleStateChange = useCallback((state: TableState<DataItem>) => {
+    console.log("Table state changed:", state);
+    handleSearch(state.filterValue || "");
+  }, [handleSearch]);
+
   return (
     <div className="p-4">
       <div className="flex flex-col gap-4 mb-4">
         <h2 className="text-xl font-semibold">Fuzzy Search with Debouncing</h2>
+        <p className="text-sm text-gray-600">
+          Try searching for partial names or approximate matches
+        </p>
       </div>
 
       <TableContainer
         columns={columns}
-        data={dummyData}
+        data={results}
         maxHeight="600px"
         variant="modern"
-        enableFuzzySearch={true}
-        fuzzySearchKeys={["name", "age"]}
-        onStateChange={(state) => {
-          console.log("Table state changed:", state);
-        }}
+        enableFiltering={true}
+        filterValue={query}
+        onStateChange={handleStateChange}
       />
     </div>
   );
