@@ -12,9 +12,6 @@ interface UseTableContextOptions<T extends Record<string, unknown>> {
   initialState?: Partial<TableState<T>>;
   onStateChange?: (state: TableState<T>) => void;
   events?: Partial<TableEventMap<T>>;
-  enableFuzzySearch?: boolean;
-  fuzzySearchKeys?: Array<keyof T>;
-  fuzzySearchThreshold?: number;
   columnResizeMode?: "onChange" | "onResize";
   columnResizeDirection?: "ltr" | "rtl";
   debounceMs?: number;
@@ -32,9 +29,6 @@ export function useTableContext<T extends Record<string, unknown>>({
   initialState,
   onStateChange,
   events,
-  enableFuzzySearch,
-  fuzzySearchKeys,
-  fuzzySearchThreshold,
   columnResizeMode,
   columnResizeDirection,
   debounceMs,
@@ -54,8 +48,6 @@ export function useTableContext<T extends Record<string, unknown>>({
     handleColumnResizeEnd,
     columnResizeMode: currentResizeMode,
     columnResizeDirection: currentResizeDirection,
-    debouncedFilterValue,
-    fuse,
   } = useTableState({
     data,
     columns,
@@ -64,9 +56,6 @@ export function useTableContext<T extends Record<string, unknown>>({
       loading: isLoading || serverSide?.loading,
     },
     onStateChange,
-    enableFuzzySearch,
-    fuzzySearchKeys,
-    fuzzySearchThreshold,
     columnResizeMode,
     columnResizeDirection,
     debounceMs,
@@ -101,20 +90,9 @@ export function useTableContext<T extends Record<string, unknown>>({
       return state.data;
     }
 
-    let processed = state.data;
-
-    // Apply fuzzy search if enabled
-    if (debouncedFilterValue && enableFuzzySearch && fuse) {
-      processed = fuse
-        .search(debouncedFilterValue)
-        .map((result) => result.item);
-    } else {
-      // Use regular processTableData for non-fuzzy search
-      processed = processTableData(processed, state, columns);
-    }
-
-    return processed;
-  }, [state, columns, debouncedFilterValue, enableFuzzySearch, fuse, serverSide?.enabled]);
+    // Use regular processTableData for filtering and sorting
+    return processTableData(state.data, state, columns);
+  }, [state, columns, serverSide?.enabled]);
 
   // Handle server-side pagination
   useEffect(() => {
