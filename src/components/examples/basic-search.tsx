@@ -1,15 +1,18 @@
 "use client";
-import { TableContainer } from "@/components/containers/table-container/table-container";
 import dummyData from "@/data/dummy.json";
-import { createColumnHelper } from "@/utils/column-helper";
-import type { Column } from "@/types/column.types";
+import {
+  createColumnHelper,
+  Column,
+  TableGrid,
+} from "@shakibdshy/react-tablegrid";
 
-interface DataItem extends Record<string, unknown> {
+type DataItem = {
   id: number;
   name: string;
   age: number;
   email: string;
 }
+
 
 const columnHelper = createColumnHelper<DataItem>();
 
@@ -35,7 +38,7 @@ const BasicSearch = () => {
         <h2 className="text-xl font-semibold">Basic Search</h2>
       </div>
 
-      <TableContainer
+      <TableGrid
         columns={columns}
         data={dummyData}
         maxHeight="400px"

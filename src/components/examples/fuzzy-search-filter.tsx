@@ -1,18 +1,21 @@
 "use client";
-import { TableContainer } from "@/components/containers/table-container/table-container";
 import dummyData from "@/data/dummy.json";
-import { createColumnHelper } from "@/utils/column-helper";
-import type { Column } from "@/types/column.types";
+import {
+  createColumnHelper,
+  TableGrid,
+  Column,
+} from "@shakibdshy/react-tablegrid";
 import { useCallback } from "react";
 import type { TableState } from "@/types/table.types";
+
 import { useDebouncedSearch } from "@/hooks/use-debounced-search";
 
-interface DataItem extends Record<string, unknown> {
+type DataItem = {
   id: number;
   name: string;
   age: number;
   email: string;
-}
+};
 
 const columnHelper = createColumnHelper<DataItem>();
 
@@ -32,17 +35,23 @@ const columns: Column<DataItem>[] = [
 ];
 
 const FuzzySearchFilter = () => {
-  const { query, results, handleSearch } = useDebouncedSearch<DataItem>(dummyData, {
-    keys: ["name", "age"],
-    threshold: 0.3,
-    distance: 100,
-  });
+  const { query, results, handleSearch } = useDebouncedSearch<DataItem>(
+    dummyData,
+    {
+      keys: ["name", "age"],
+      threshold: 0.3,
+      distance: 100,
+    }
+  );
 
   // Handle state changes
-  const handleStateChange = useCallback((state: TableState<DataItem>) => {
-    console.log("Table state changed:", state);
-    handleSearch(state.filterValue || "");
-  }, [handleSearch]);
+  const handleStateChange = useCallback(
+    (state: TableState<DataItem>) => {
+      console.log("Table state changed:", state);
+      handleSearch(state.filterValue || "");
+    },
+    [handleSearch]
+  );
 
   return (
     <div className="p-4">
@@ -53,7 +62,7 @@ const FuzzySearchFilter = () => {
         </p>
       </div>
 
-      <TableContainer
+      <TableGrid
         columns={columns}
         data={results}
         maxHeight="600px"

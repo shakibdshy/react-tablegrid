@@ -1,19 +1,20 @@
 "use client";
 
 import React, { useState } from "react";
-import { TableContainer } from "@/components/containers/table-container/table-container";
+import {
+  TableGrid,
+  Column,
+  createColumnHelper,
+} from "@shakibdshy/react-tablegrid";
 import nestedData from "@/data/nested-data.json";
 import { ChevronRight, ChevronDown } from "lucide-react";
-import { createColumnHelper } from "@/utils/column-helper";
-import { Column } from "@/types/column.types";
 
 type NestedRowData = {
   id: string;
   name: string;
   amount: number;
   children?: NestedRowData[];
-}
-
+};
 
 function transformData(): NestedRowData[] {
   return Object.values(nestedData.balanceSheet) as NestedRowData[];
@@ -35,7 +36,6 @@ export default function NestedTableExample() {
     columnHelper.accessor("id", {
       header: "Id",
       cell: ({ row }) => row.id,
-
     }),
     columnHelper.accessor("name", { header: "Name" }),
     columnHelper.accessor("amount", { header: "Amount" }),
@@ -89,7 +89,7 @@ export default function NestedTableExample() {
 
   return (
     <div className="space-y-4">
-      <TableContainer
+      <TableGrid
         data={allData}
         columns={columns}
         maxHeight="800px"

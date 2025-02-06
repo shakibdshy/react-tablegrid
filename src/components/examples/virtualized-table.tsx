@@ -1,9 +1,11 @@
-"use client"
+"use client";
 import { useState } from "react";
-import { TableContainer } from "@/components/containers/table-container/table-container";
 import dummyData from "@/data/dummy.json";
-import { createColumnHelper } from "@/utils/column-helper";
-import type { Column } from "@/types/column.types";
+import {
+  createColumnHelper,
+  TableGrid,
+  Column,
+} from "@shakibdshy/react-tablegrid";
 
 type DataItem = {
   id: number;
@@ -14,7 +16,7 @@ type DataItem = {
   role: string;
   salary: number;
   status: string;
-}
+};
 
 const columnHelper = createColumnHelper<DataItem>();
 
@@ -45,7 +47,7 @@ const columns: Column<DataItem>[] = [
 const generateMoreData = () => {
   const moreData = [];
   const baseData = dummyData.slice(0, 10);
-  
+
   for (let i = 0; i < 100; i++) {
     moreData.push(
       ...baseData.map((item) => ({
@@ -67,16 +69,16 @@ const VirtualizedTable = () => {
       <div className="flex flex-col gap-4 mb-4">
         <h2 className="text-2xl font-bold">Virtualized Table</h2>
         <p className="text-gray-600 dark:text-gray-400">
-          Displaying {virtualData.length.toLocaleString()} rows with virtualization
+          Displaying {virtualData.length.toLocaleString()} rows with
+          virtualization
         </p>
       </div>
 
       <div className="border rounded-lg overflow-hidden shadow-sm">
-        <TableContainer
+        <TableGrid
           columns={columns}
           data={virtualData}
           variant="modern"
-          // isLoading={true}
           virtualization={{
             enabled: true,
             rowHeight: 52,
@@ -86,10 +88,12 @@ const VirtualizedTable = () => {
           maxHeight="100%"
           styleConfig={{
             header: {
-              className: "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200",
+              className:
+                "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200",
             },
             row: {
-              className: "hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors",
+              className:
+                "hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors",
             },
             cell: {
               className: "px-4 py-3 text-sm text-gray-600 dark:text-gray-300",
@@ -104,4 +108,4 @@ const VirtualizedTable = () => {
   );
 };
 
-export default VirtualizedTable; 
+export default VirtualizedTable;

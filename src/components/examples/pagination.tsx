@@ -2,12 +2,14 @@
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { TableContainer } from "@/components/containers/table-container/table-container";
 import { Pagination } from "@shakibdshy/react-pagination-pro";
-import type { Column } from "@/types/column.types";
-import { createColumnHelper } from "@/utils/column-helper";
+import {
+  createColumnHelper,
+  TableGrid,
+  Column,
+} from "@shakibdshy/react-tablegrid";
 
-interface Product extends Record<string, unknown> {
+type Product = {
   id: number;
   title: string;
   description: string;
@@ -16,7 +18,7 @@ interface Product extends Record<string, unknown> {
   category: string;
   rating: number;
   stock: number;
-}
+};
 
 interface ApiResponse {
   statusCode: number;
@@ -104,7 +106,7 @@ export default function PaginationExample() {
 
   return (
     <div className="space-y-4">
-      <TableContainer
+      <TableGrid
         data={apiResponse?.data?.data ?? []}
         columns={columns}
         maxHeight="600px"

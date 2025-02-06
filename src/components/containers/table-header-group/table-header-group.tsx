@@ -1,17 +1,18 @@
 import { cn } from '@/utils/cn'
 import { tableStyles } from '@/styles/table.style'
 import type { Column, HeaderGroup } from '@/types/column.types'
-import type { useTable } from '@/hooks/use-table-grid'
+import type { useTableGrid } from '@/hooks/use-table-grid'
 import { useMemo } from 'react'
 import { getGridTemplateColumns, reorderColumns } from '@/utils/table-helper'
 
 interface TableHeaderGroupProps<T extends Record<string, unknown>> {
   className?: string
   style?: React.CSSProperties
-  tableInstance: ReturnType<typeof useTable<T>>
+  tableInstance: ReturnType<typeof useTableGrid<T>>
   customRender?: {
     group: (group: HeaderGroup<T>) => React.ReactNode
   }
+
 }
 
 function generateHeaderGroups<T extends Record<string, unknown>>(

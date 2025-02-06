@@ -1,8 +1,10 @@
 "use client";
-import { TableContainer } from "@/components/containers/table-container/table-container";
 import dummyData from "@/data/dummy.json";
-import { createColumnHelper } from "@/utils/column-helper";
-import type { Column } from "@/types/column.types";
+import {
+  createColumnHelper,
+  TableGrid,
+  Column,
+} from "@shakibdshy/react-tablegrid";
 
 interface DataItem {
   id: number;
@@ -76,7 +78,7 @@ const ColumnPinningTable = () => {
       <div className="flex flex-col gap-4 mb-4">
         <h2 className="text-2xl font-bold">Column Pinning</h2>
       </div>
-      <TableContainer
+      <TableGrid
         columns={columns}
         data={dummyData}
         maxHeight="400px"

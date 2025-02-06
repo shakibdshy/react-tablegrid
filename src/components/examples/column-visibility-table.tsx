@@ -1,10 +1,13 @@
-"use client"
+"use client";
 import { useState, useCallback } from "react";
-import { TableContainer } from "@/components/containers/table-container/table-container";
 import dummyData from "@/data/dummy.json";
-import { createColumnHelper } from "@/utils/column-helper";
-import type { Column } from "@/types/column.types";
+import {
+  createColumnHelper,
+  TableGrid,
+  Column,
+} from "@shakibdshy/react-tablegrid";
 import type { TableState } from "@/types/table.types";
+
 
 interface DataItem {
   id: number;
@@ -184,7 +187,7 @@ const ColumnVisibilityTable = () => {
       </div>
 
       <div className="border rounded-lg overflow-hidden shadow-sm">
-        <TableContainer
+        <TableGrid
           columns={columns.filter(col => tableState.visibleColumns.includes(col.accessorKey))}
           data={dummyData}
           maxHeight="600px"

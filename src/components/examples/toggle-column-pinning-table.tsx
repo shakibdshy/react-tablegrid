@@ -1,12 +1,14 @@
 "use client";
 import { useState, useCallback, useMemo } from "react";
-import { TableContainer } from "@/components/containers/table-container/table-container";
 import dummyData from "@/data/dummy.json";
-import { createColumnHelper } from "@/utils/column-helper";
-import type { Column } from "@/types/column.types";
-import type { TableState } from "@/types/table.types";
+import {
+  createColumnHelper,
+  TableGrid,
+  TableState,
+  Column,
+} from "@shakibdshy/react-tablegrid";
 
-interface DataItem extends Record<string, unknown> {
+type DataItem = {
   id: number;
   name: string;
   age: number;
@@ -18,7 +20,7 @@ interface DataItem extends Record<string, unknown> {
   location: string;
   joinDate: string;
   phone: string;
-}
+};
 
 const columnHelper = createColumnHelper<DataItem>();
 
@@ -223,7 +225,7 @@ const ToggleColumnPinningTable = () => {
         </div>
       </div>
       <div className="border rounded-lg overflow-hidden">
-        <TableContainer
+        <TableGrid
           key={`${tableState.pinnedColumns.left.join(
             "_"
           )}_${tableState.pinnedColumns.right.join("_")}`}

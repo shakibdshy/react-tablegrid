@@ -1,9 +1,9 @@
 "use client"
-import { TableContainer } from "@/components/containers/table-container/table-container";
 import dummyData from "@/data/dummy.json";
-import { createColumnHelper } from "@/utils/column-helper";
-import type { Column } from "@/types/column.types";
+import { createColumnHelper, TableGrid, Column } from "@shakibdshy/react-tablegrid";
 import { useState } from "react"
+
+
 import { PiCaretDownFill, PiCaretUpFill, PiMagnifyingGlass } from "react-icons/pi"
 import { FiAlertCircle } from "react-icons/fi"
 
@@ -182,7 +182,7 @@ const CustomizedTable = () => {
         </div>
       </div>
 
-      <TableContainer
+      <TableGrid
         columns={columns}
         data={dummyData}
         isLoading={isLoading}

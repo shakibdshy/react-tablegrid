@@ -1,15 +1,17 @@
-"use client"
-import { TableContainer } from "@/components/containers/table-container/table-container";
+"use client";
 import dummyData from "@/data/dummy.json";
-import { createColumnHelper } from "@/utils/column-helper";
-import type { Column } from "@/types/column.types";
+import {
+  createColumnHelper,
+  TableGrid,
+  Column,
+} from "@shakibdshy/react-tablegrid";
 
-interface DataItem extends Record<string, unknown> {
+type DataItem = {
   id: number;
   name: string;
   age: number;
   email: string;
-}
+};
 
 const columnHelper = createColumnHelper<DataItem>();
 
@@ -37,8 +39,8 @@ const HeaderGroupsTable = () => {
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-semibold">Header Groups</h2>
       </div>
-      
-      <TableContainer
+
+      <TableGrid
         columns={columns}
         data={dummyData}
         maxHeight="800px"

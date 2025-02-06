@@ -1,8 +1,14 @@
-"use client"
-import { TableContainer } from "@/components/containers/table-container/table-container";
+"use client";
 import dummyData from "@/data/dummy.json";
-import { createColumnHelper } from "@/utils/column-helper";
-import type { Column } from "@/types/column.types";
+import {
+  createColumnHelper,
+  Column,
+  TableGrid,
+} from "@shakibdshy/react-tablegrid";
+// import { TableContainer } from "@/components/containers/table-container/table-container";
+// import { createColumnHelper } from "@/utils/column-helper";
+// import type { Column } from "@/types/column.types";
+
 
 type DataItem = {
   id: number;
@@ -30,8 +36,8 @@ const columns: Column<DataItem>[] = [
 
 const BasicTable = () => {
   return (
-    <div className="p-4">      
-      <TableContainer
+    <div className="p-4">
+      <TableGrid
         columns={columns}
         data={dummyData}
         maxHeight="400px"
