@@ -7,13 +7,14 @@ import { useState } from "react"
 import { PiCaretDownFill, PiCaretUpFill, PiMagnifyingGlass } from "react-icons/pi"
 import { FiAlertCircle } from "react-icons/fi"
 
-interface DataItem extends Record<string, unknown> {
+type DataItem = {
   id: number;
   name: string;
   age: number;
   email: string;
   department: string;
   role: string;
+
   status: string;
 }
 
@@ -188,6 +189,7 @@ const CustomizedTable = () => {
         maxHeight="600px"
         variant="modern"
         enableFuzzySearch={true}
+        enableColumnResize
         components={{
           Header: CustomHeader,
           Cell: CustomCell,
