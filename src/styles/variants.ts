@@ -1,4 +1,4 @@
-import { TableVariant } from '../components/ui/table-grid/types'
+import { TableVariant } from "@/types/table.types"
 
 export interface TableVariantStyles {
   wrapper: string
