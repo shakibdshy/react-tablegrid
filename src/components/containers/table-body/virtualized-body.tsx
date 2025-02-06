@@ -2,7 +2,7 @@ import { cn } from '@/utils/cn'
 import { tableStyles } from '@/styles/table.style'
 import { TableRow } from '@/components/core/table-row/table-row'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
-import type { useTable } from '@/hooks/use-table-context'
+import type { useTableGrid } from '@/hooks/use-table-grid'
 import { useVirtualization } from '@/hooks/use-virtualization'
 
 interface VirtualizationConfig {
@@ -17,7 +17,7 @@ interface VirtualizedBodyProps<T extends Record<string, unknown>> {
   className?: string
   style?: React.CSSProperties
   config: VirtualizationConfig
-  tableInstance: ReturnType<typeof useTable<T>>
+  tableInstance: ReturnType<typeof useTableGrid<T>>
   customRender?: {
     row?: typeof TableRow
     loading?: () => React.ReactNode
