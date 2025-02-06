@@ -1,29 +1,32 @@
-import BasicTable from "@/components/containers/basic-table";
-import HeaderGroupsTable from "@/components/containers/header-groups";
-import BasicSearch from "@/components/containers/basic-search";
-import FuzzySearchFilter from "@/components/containers/fuzzy-search-filter";
-import ColumnVisibilityTable from "@/components/containers/column-visibility-table";
-import ColumnPinningTable from "@/components/containers/toggle-column-pinning-table";
-import CustomizedTable from "@/components/containers/customized-table";
-import ColumnResizingTable from "@/components/containers/column-resizing-table";
-import VirtualizedTable from "@/components/containers/virtualized-table";
+import BasicTable from "@/components/examples/basic-table";
+import BasicSearch from "@/components/examples/basic-search";
+import HeaderGroupsTable from "@/components/examples/header-groups";
+// import FuzzySearchFilter from "@/components/examples/fuzzy-search-filter";
+// import NestedTableExample from "@/components/examples/nested-table";
+// import ToggleColumnPinningTable from "@/components/examples/toggle-column-pinning-table";
+// import ColumnPinningTable from "@/components/examples/column-pinning-table";
+// import ColumnVisibilityTable from "@/components/examples/column-visibility-table";
+// import VirtualizedTable from "@/components/examples/virtualized-table";
+// import ColumnResizingTable from "@/components/examples/column-resizing-table";
+import CustomizedTable from "@/components/examples/customized-table";
+import PaginationExample from "@/components/examples/pagination";
 
 export default function Home() {
   return (
     <main className="min-h-screen p-4">
-      <VirtualizedTable />
-      {/* <BasicTable />
-      <ColumnResizingTable />
-      <div className="space-y-8">
-        <div className="border rounded-lg">
-          <CustomizedTable />
-        </div>
-        <ColumnPinningTable />
-        <ColumnVisibilityTable />
-        <HeaderGroupsTable />
-        <BasicSearch />
-        <FuzzySearchFilter />
-      </div> */}
+      <BasicTable />
+      <BasicSearch />
+      <HeaderGroupsTable />
+      {/* <FuzzySearchFilter /> */}
+      {/* <NestedTableExample /> */}
+      {/* <ToggleColumnPinningTable /> */}
+      {/* <ColumnPinningTable /> */}
+      {/* <ColumnVisibilityTable /> */}
+      {/* <VirtualizedTable /> */}
+      {/* <ColumnResizingTable /> */}
+      <CustomizedTable />
+      <PaginationExample />
+
     </main>
   );
 }

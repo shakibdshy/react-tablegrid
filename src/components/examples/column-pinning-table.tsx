@@ -1,8 +1,10 @@
 "use client";
-import TableGrid from "@/components/ui/table-grid/table-grid";
 import dummyData from "@/data/dummy.json";
-import { useTableGrid } from "@/hooks/use-table-grid";
-import { createColumnHelper } from "@/components/ui/table-grid/column-helper";
+import {
+  createColumnHelper,
+  TableGrid,
+  Column,
+} from "@shakibdshy/react-tablegrid";
 
 interface DataItem {
   id: number;
@@ -20,7 +22,7 @@ interface DataItem {
 
 const columnHelper = createColumnHelper<DataItem>();
 
-const columns = [
+const columns: Column<DataItem>[] = [
   columnHelper.accessor("id", {
     header: "ID",
     sortable: true,
@@ -51,33 +53,39 @@ const columns = [
     header: "Phone",
     sortable: true,
   }),
+  columnHelper.accessor("email", {
+    header: "Email",
+    sortable: true,
+  }),
+  columnHelper.accessor("department", {
+    header: "Department",
+    sortable: true,
+  }),
+  columnHelper.accessor("role", {
+    header: "Role",
+    sortable: true,
+  }),
+  columnHelper.accessor("joinDate", {
+    header: "Join Date",
+    sortable: true,
+    pinned: "right",
+  }),
 ];
 
 const ColumnPinningTable = () => {
-  const { filteredData, handleSort, sortColumn, sortDirection } =
-    useTableGrid<DataItem>({
-      data: dummyData,
-      columns,
-      initialState: {
-        sortColumn: "name",
-        sortDirection: "asc",
-      },
-    });
-
   return (
     <div className="p-4">
       <div className="flex flex-col gap-4 mb-4">
         <h2 className="text-2xl font-bold">Column Pinning</h2>
       </div>
-      <TableGrid<DataItem>
+      <TableGrid
         columns={columns}
-        data={filteredData}
-        gridTemplateColumns="1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr"
+        data={dummyData}
         maxHeight="400px"
         variant="classic"
-        onSort={handleSort}
-        sortColumn={sortColumn}
-        sortDirection={sortDirection}
+        onStateChange={(state) => {
+          console.log("Table state changed:", state);
+        }}
       />
     </div>
   );

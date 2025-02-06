@@ -1,54 +1,47 @@
 "use client"
-import TableGrid from "@/components/ui/table-grid/table-grid"
-import dummyData from "@/data/dummy.json"
-import type { Column } from "@/components/ui/table-grid/table-grid"
-import { useTableGrid } from "@/hooks/use-table-grid"
-import { useState, useEffect } from "react"
+import dummyData from "@/data/dummy.json";
+import { createColumnHelper, TableGrid, Column } from "@shakibdshy/react-tablegrid";
+import { useState } from "react"
+
+
 import { PiCaretDownFill, PiCaretUpFill, PiMagnifyingGlass } from "react-icons/pi"
 import { FiAlertCircle } from "react-icons/fi"
 
-interface DataItem extends Record<string, unknown> {
-  id: number
-  name: string
-  age: number
-  email: string
-  department: string
-  role: string
-  status: string
+type DataItem = {
+  id: number;
+  name: string;
+  age: number;
+  email: string;
+  department: string;
+  role: string;
+
+  status: string;
 }
 
+const columnHelper = createColumnHelper<DataItem>();
+
 const columns: Column<DataItem>[] = [
-  {
-    id: "name",
+  columnHelper.accessor("name", {
     header: "Name",
-    accessorKey: "name",
     sortable: true,
-  },
-  {
-    id: "department",
+  }),
+  columnHelper.accessor("department", {
     header: "Department",
-    accessorKey: "department",
     sortable: true,
-  },
-  {
-    id: "role",
+  }),
+  columnHelper.accessor("role", {
     header: "Role",
-    accessorKey: "role",
     sortable: true,
-  },
-  {
-    id: "status",
+  }),
+  columnHelper.accessor("status", {
     header: "Status",
-    accessorKey: "status",
     sortable: true,
-  },
-  {
-    id: "email",
+  }),
+  columnHelper.accessor("email", {
     header: "Email",
-    accessorKey: "email",
     sortable: true,
-  },
-]
+  }),
+];
 
 // Custom Components
 const CustomHeader = ({ 
@@ -64,7 +57,7 @@ const CustomHeader = ({
   
   return (
     <div className="flex items-center justify-between px-4 py-3">
-      <span className="font-medium text-gray-700 dark:text-gray-200">
+      <span className="font-medium text-gray-700 dark:text-red-200">
         {typeof column.header === 'function' ? column.header() : column.header}
       </span>
       {column.sortable && (
@@ -116,7 +109,7 @@ const CustomCell = ({ value, column }: { value: unknown; column: Column<DataItem
 }
 
 const CustomEmptyState = () => (
-  <div className="flex flex-col items-center justify-center p-8 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+  <div className="flex flex-col items-center justify-center p-8 bg-white dark:bg-gray-800 shadow-sm">
     <FiAlertCircle className="w-12 h-12 text-gray-400 mb-4" />
     <h3 className="text-lg font-medium text-gray-900 dark:text-white">No Results Found</h3>
     <p className="text-gray-500 dark:text-gray-400 text-center mt-2 max-w-sm">
@@ -163,28 +156,7 @@ const CustomSearchInput = ({
 )
 
 const CustomizedTable = () => {
-  const [isLoading, setIsLoading] = useState(true)
-  const [showEmpty, setShowEmpty] = useState(false)
-
-  const {
-    filteredData,
-    handleSort,
-    sortColumn,
-    sortDirection,
-    setFilterValue,
-    filterValue,
-  } = useTableGrid<DataItem>({
-    data: showEmpty ? [] : dummyData,
-    columns,
-    enableFuzzySearch: true,
-  })
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false)
-    }, 2000)
-    return () => clearTimeout(timer)
-  }, [])
+  const [isLoading, setIsLoading] = useState(false)
 
   return (
     <div className="p-6 space-y-6">
@@ -207,33 +179,17 @@ const CustomizedTable = () => {
           >
             Toggle Loading
           </button>
-          <button
-            onClick={() => setShowEmpty((prev) => !prev)}
-            className="inline-flex items-center px-4 py-2 border border-gray-300 
-                     dark:border-gray-600 text-sm font-medium rounded-lg shadow-sm 
-                     text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 
-                     hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none 
-                     focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 
-                     transition-colors"
-          >
-            Toggle Empty
-          </button>
         </div>
       </div>
 
-      <TableGrid<DataItem>
+      <TableGrid
         columns={columns}
-        data={filteredData}
-        gridTemplateColumns="repeat(5, 1fr)"
+        data={dummyData}
+        isLoading={isLoading}
         maxHeight="600px"
         variant="modern"
-        onSort={handleSort}
-        sortColumn={sortColumn}
-        sortDirection={sortDirection}
         enableFuzzySearch={true}
-        filterValue={filterValue}
-        onFilterChange={setFilterValue}
-        isLoading={isLoading}
+        enableColumnResize
         components={{
           Header: CustomHeader,
           Cell: CustomCell,
@@ -246,7 +202,7 @@ const CustomizedTable = () => {
             className: "border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden bg-white dark:bg-gray-800 shadow-sm",
           },
           headerCell: {
-            className: "border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800",
+            className: "border-b border-gray-200 dark:border-gray-500 bg-gray-50 dark:bg-gray-800",
           },
           row: {
             className: "border-b border-gray-100 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors",

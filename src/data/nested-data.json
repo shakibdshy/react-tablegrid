@@ -1,0 +1,165 @@
+{
+  "balanceSheet": {
+    "assets": {
+      "id": "1000",
+      "name": "Application of Funds (Assets)",
+      "amount": 243033.0,
+      "children": [
+        {
+          "id": "1100",
+          "name": "Current Assets",
+          "amount": 223033.0,
+          "children": [
+            {
+              "id": "1200",
+              "name": "Bank Accounts",
+              "amount": 291854.0,
+              "children": [
+                {
+                  "id": "1201",
+                  "name": "Bank Account",
+                  "amount": 291854.0
+                }
+              ]
+            },
+            {
+              "id": "1300",
+              "name": "Accounts Receivable",
+              "amount": 405000.0,
+              "children": [
+                {
+                  "id": "1310",
+                  "name": "Debtors",
+                  "amount": 405000.0
+                }
+              ]
+            },
+            {
+              "id": "1400",
+              "name": "Stock Assets",
+              "amount": 109887.0,
+              "children": [
+                {
+                  "id": "1410",
+                  "name": "Stock In Hand",
+                  "amount": 109887.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "1700",
+          "name": "Fixed Assets",
+          "amount": 20000.0,
+          "children": [
+            {
+              "id": "1730",
+              "name": "Furnitures and Fixtures",
+              "amount": 25000.0
+            },
+            {
+              "id": "1780",
+              "name": "Accumulated Depreciation",
+              "amount": -5000.0
+            }
+          ]
+        }
+      ]
+    },
+    "liabilities": {
+      "id": "2000",
+      "name": "Source of Funds (Liabilities)",
+      "amount": 144293.0,
+      "children": [
+        {
+          "id": "2100",
+          "name": "Current Liabilities",
+          "amount": 144293.0,
+          "children": [
+            {
+              "id": "2110",
+              "name": "Accounts Payable",
+              "amount": 119293.0,
+              "children": [
+                {
+                  "id": "2111",
+                  "name": "Creditors",
+                  "amount": 119293.0
+                }
+              ]
+            },
+            {
+              "id": "2200",
+              "name": "Stock Liabilities",
+              "amount": 25000.0,
+              "children": [
+                {
+                  "id": "2211",
+                  "name": "Asset Received But Not Billed",
+                  "amount": 25000.0
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "profitAndLoss": {
+      "id": "3000",
+      "name": "Profit and Loss (Credit)",
+      "amount": 98740.0
+    },
+    "total": {
+      "id": "4000",
+      "name": "Total (Credit)",
+      "amount": 243033.0
+    },
+    "expenses": {
+      "id": "5000",
+      "name": "Expenses",
+      "amount": 50000.0,
+      "children": [
+        {
+          "id": "5100",
+          "name": "Operating Expenses",
+          "amount": 30000.0,
+          "children": [
+            {
+              "id": "5110",
+              "name": "Salaries",
+              "amount": 15000.0
+            },
+            {
+              "id": "5120",
+              "name": "Rent",
+              "amount": 15000.0
+            }
+          ]
+        },
+        {
+          "id": "5200",
+          "name": "Administrative Expenses",
+          "amount": 20000.0,
+          "children": [
+            {
+              "id": "5210",
+              "name": "Office Supplies",
+              "amount": 5000.0
+            },
+            {
+              "id": "5220",
+              "name": "Utilities",
+              "amount": 5000.0
+            },
+            {
+              "id": "5230",
+              "name": "Insurance",
+              "amount": 10000.0
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
