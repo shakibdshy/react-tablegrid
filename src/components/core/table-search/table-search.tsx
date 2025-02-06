@@ -2,11 +2,11 @@ import { useCallback } from 'react'
 import { cn } from '@/utils/cn'
 import { tableStyles } from '@/styles/table.style'
 import { Input } from '@/components/ui/input'
-import type { useTable } from '@/hooks/use-table-context'
+import type { useTableGrid } from '@/hooks/use-table-grid'
 
 interface TableSearchProps<T extends Record<string, unknown>> {
   className?: string
-  tableInstance: ReturnType<typeof useTable<T>>;
+  tableInstance: ReturnType<typeof useTableGrid<T>>;
   style?: React.CSSProperties
   enableFuzzySearch?: boolean
   placeholder?: string
