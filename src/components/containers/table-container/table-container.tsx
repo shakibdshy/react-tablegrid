@@ -11,7 +11,7 @@ import 'simplebar-react/dist/simplebar.min.css'
 import type { TableProps, TableCustomRender, TableState } from '@/types/table.types'
 import type { ServerSideConfig } from '@/types/events.types'
 import type { Column, ColumnResizeInfoState } from "@/types/column.types"
-import { useTable } from '@/hooks/use-table-context'
+import { useTableGrid } from '@/hooks/use-table-grid'
 
 interface TableContainerProps<T extends Record<string, unknown>> extends Omit<TableProps<T>, 'columns'> {
   style?: React.CSSProperties
@@ -24,6 +24,7 @@ interface TableContainerProps<T extends Record<string, unknown>> extends Omit<Ta
   isLoading?: boolean
   serverSide?: ServerSideConfig<T>
   enableColumnResize?: boolean
+  state?: TableState<T>
 }
 
 function TableContainerComponent<T extends Record<string, unknown>>(
@@ -45,17 +46,19 @@ function TableContainerComponent<T extends Record<string, unknown>>(
     isLoading,
     serverSide,
     enableColumnResize,
+    state,
   }: TableContainerProps<T>,
   ref: React.ForwardedRef<HTMLDivElement>
 ) {
   const styles = tableStyles({ variant })
-  const tableInstance = useTable<T>({
+  const tableInstance = useTableGrid<T>({
     data,
     columns,
     onStateChange,
     enableFuzzySearch,
     isLoading,
     serverSide,
+    initialState: state,
   })
 
   return (
@@ -105,7 +108,7 @@ function TableContainerComponent<T extends Record<string, unknown>>(
                 )}
                 style={styleConfig?.header?.style}
                 customRender={{
-                  group: (group) => customRender?.renderHeader?.(group.columns[0]),
+                  group: (group) => customRender?.renderHeader?.(group.columns[0] as Column<T>),
                 }}
                 tableInstance={tableInstance}
               />
