@@ -1,8 +1,7 @@
-import { useState, useCallback, useEffect, useMemo } from "react";
+import { useState, useCallback, useEffect } from "react";
 import type { TableState } from "@/types/table.types";
 import type { Column, ColumnResizeInfoState } from "@/types/column.types";
 import { createInitialTableState } from "@/utils/table-helper";
-import Fuse from "fuse.js";
 
 interface UseTableStateOptions<T> {
   data: T[];
@@ -10,9 +9,6 @@ interface UseTableStateOptions<T> {
   initialState?: Partial<TableState<T>>;
   onStateChange?: (state: TableState<T>) => void;
   debounceMs?: number;
-  enableFuzzySearch?: boolean;
-  fuzzySearchKeys?: Array<keyof T>;
-  fuzzySearchThreshold?: number;
   columnResizeMode?: "onChange" | "onResize";
   columnResizeDirection?: "ltr" | "rtl";
 }
@@ -27,9 +23,6 @@ export function useTableState<T extends Record<string, unknown>>({
   initialState,
   onStateChange,
   debounceMs = 300,
-  enableFuzzySearch = false,
-  fuzzySearchKeys,
-  fuzzySearchThreshold = 0.3,
   columnResizeMode = "onChange",
   columnResizeDirection = "ltr",
 }: UseTableStateOptions<T>) {
@@ -62,23 +55,6 @@ export function useTableState<T extends Record<string, unknown>>({
 
     return () => clearTimeout(timer);
   }, [state.filterValue, debounceMs]);
-
-  // Initialize Fuse instance for fuzzy search
-  const fuse = useMemo(() => {
-    if (!enableFuzzySearch) return null;
-    return new Fuse(state.data, {
-      keys: (fuzzySearchKeys || columns.map((col) => col.accessorKey)).map(
-        (key) => String(key)
-      ),
-      threshold: fuzzySearchThreshold,
-    });
-  }, [
-    state.data,
-    enableFuzzySearch,
-    fuzzySearchKeys,
-    columns,
-    fuzzySearchThreshold,
-  ]);
 
   /**
    * Updates table state and notifies parent of changes
@@ -265,6 +241,5 @@ export function useTableState<T extends Record<string, unknown>>({
     columnResizeMode,
     columnResizeDirection,
     debouncedFilterValue,
-    fuse,
   };
 }
