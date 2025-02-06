@@ -3,12 +3,12 @@ import { tableStyles } from '@/styles/table.style'
 import { TableRow } from '@/components/core/table-row/table-row'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { Empty } from '@/components/ui/empty'
-import type { useTable } from '@/hooks/use-table-context'
+import type { useTableGrid } from '@/hooks/use-table-grid'
 
 interface TableBodyProps<T extends Record<string, unknown>> {
   className?: string
   style?: React.CSSProperties
-  tableInstance: ReturnType<typeof useTable<T>>
+  tableInstance: ReturnType<typeof useTableGrid<T>>
   components?: {
     EmptyState?: React.ComponentType
     LoadingState?: React.ComponentType
