@@ -1,12 +1,12 @@
 "use client"
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { TableContainer } from "@/components/containers/table-container/table-container";
 import dummyData from "@/data/dummy.json";
 import { createColumnHelper } from "@/utils/column-helper";
 import type { Column } from "@/types/column.types";
 import type { TableState } from "@/types/table.types";
 
-interface DataItem extends Record<string, unknown> {
+interface DataItem {
   id: number;
   name: string;
   age: number;
@@ -133,6 +133,14 @@ const ColumnVisibilityTable = () => {
     }));
   };
 
+  const handleTableStateChange = useCallback((state: Partial<TableState<DataItem>>) => {
+    setTableState(prevState => {
+      const newState = { ...prevState, ...state, visibleColumns: prevState.visibleColumns };
+      // Only update state if there is a change
+      return JSON.stringify(prevState) === JSON.stringify(newState) ? prevState : newState;
+    });
+  }, []);
+
   return (
     <div className="p-4">   
       <div className="flex flex-col gap-4 mb-4">
@@ -192,13 +200,7 @@ const ColumnVisibilityTable = () => {
               className: "px-4 py-3 text-sm text-gray-600 dark:text-gray-300",
             },
           }}
-          onStateChange={(state) => {
-            setTableState(prevState => ({
-              ...prevState,
-              ...state,
-              visibleColumns: prevState.visibleColumns
-            }));
-          }}
+          onStateChange={handleTableStateChange}
         />
       </div>
     </div>
