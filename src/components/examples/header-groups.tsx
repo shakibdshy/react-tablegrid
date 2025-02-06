@@ -18,19 +18,16 @@ const columns: Column<DataItem>[] = [
     header: "Name",
     sortable: true,
     group: "Personal Information",
-    width: "200px",
   }),
   columnHelper.accessor("age", {
     header: "Age",
     sortable: true,
     group: "Personal Information",
-    width: "100px",
   }),
   columnHelper.accessor("email", {
     header: "Email",
     sortable: true,
     group: "Contact Information",
-    width: "250px",
   }),
 ];
 
