@@ -8,7 +8,6 @@ interface TableSearchProps<T extends Record<string, unknown>> {
   className?: string
   tableInstance: ReturnType<typeof useTableGrid<T>>;
   style?: React.CSSProperties
-  enableFuzzySearch?: boolean
   placeholder?: string
   components?: {
     SearchInput?: React.ComponentType<{
@@ -29,8 +28,7 @@ export function TableSearch<T extends Record<string, unknown>>({
   className,
   tableInstance,
   style,
-  enableFuzzySearch = false,
-  placeholder,
+  placeholder = 'Search...',
   components,
   customRender,
   onFilterChange,
@@ -46,8 +44,6 @@ export function TableSearch<T extends Record<string, unknown>>({
     [setFilterValue, onFilterChange]
   )
 
-  const defaultPlaceholder = enableFuzzySearch ? 'Fuzzy search...' : 'Search...'
-
   // Custom render function takes precedence
   if (customRender) {
     return (
@@ -55,7 +51,7 @@ export function TableSearch<T extends Record<string, unknown>>({
         {customRender({
           value: filterValue,
           onChange: handleChange,
-          placeholder: placeholder ?? defaultPlaceholder,
+          placeholder,
         })}
       </div>
     )
@@ -68,7 +64,7 @@ export function TableSearch<T extends Record<string, unknown>>({
         <components.SearchInput
           value={filterValue}
           onChange={handleChange}
-          placeholder={placeholder ?? defaultPlaceholder}
+          placeholder={placeholder}
         />
       </div>
     )
@@ -81,7 +77,7 @@ export function TableSearch<T extends Record<string, unknown>>({
         type="text"
         value={filterValue}
         onChange={(e) => handleChange(e.target.value)}
-        placeholder={placeholder ?? defaultPlaceholder}
+        placeholder={placeholder}
         className={styles.searchInput()}
       />
     </div>
