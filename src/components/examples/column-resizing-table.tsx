@@ -6,6 +6,7 @@ import { createColumnHelper } from "@/utils/column-helper";
 import type { Column } from "@/types/column.types";
 import { useCallback } from "react";
 import type { TableState } from "@/types/table.types";
+import { useDirection } from "@/hooks/use-direction";
 
 type DataItem = {
   id: number;
@@ -20,6 +21,7 @@ type DataItem = {
 const columnHelper = createColumnHelper<DataItem>();
 
 const ColumnResizingTable = () => {
+  const { direction } = useDirection();
   const columns: Column<DataItem>[] = [
     columnHelper.accessor("id", {
       header: "ID",
@@ -64,9 +66,9 @@ const ColumnResizingTable = () => {
         variant="classic"
         enableColumnResize
         onStateChange={handleStateChange}
+        columnResizeDirection={direction as "ltr" | "rtl"}
       />
     </div>
-
   );
 };
 

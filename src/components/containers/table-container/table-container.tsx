@@ -25,6 +25,7 @@ interface TableContainerProps<T extends Record<string, unknown>> extends Omit<Ta
   serverSide?: ServerSideConfig<T>
   enableColumnResize?: boolean
   state?: TableState<T>
+  columnResizeDirection?: "ltr" | "rtl"
 }
 
 function TableContainerComponent<T extends Record<string, unknown>>(
@@ -47,6 +48,7 @@ function TableContainerComponent<T extends Record<string, unknown>>(
     serverSide,
     enableColumnResize,
     state,
+    columnResizeDirection = 'ltr',
   }: TableContainerProps<T>,
   ref: React.ForwardedRef<HTMLDivElement>
 ) {
@@ -59,6 +61,7 @@ function TableContainerComponent<T extends Record<string, unknown>>(
     isLoading,
     serverSide,
     initialState: state,
+    columnResizeDirection,
   })
 
   return (

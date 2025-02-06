@@ -3,7 +3,6 @@ import type { TableState } from "@/types/table.types";
 import type { Column, ColumnResizeInfoState } from "@/types/column.types";
 import { createInitialTableState } from "@/utils/table-helper";
 import Fuse from "fuse.js";
-import { useDirection } from "@/hooks/use-direction";
 
 interface UseTableStateOptions<T> {
   data: T[];
@@ -15,6 +14,7 @@ interface UseTableStateOptions<T> {
   fuzzySearchKeys?: Array<keyof T>;
   fuzzySearchThreshold?: number;
   columnResizeMode?: "onChange" | "onResize";
+  columnResizeDirection?: "ltr" | "rtl";
 }
 
 /**
@@ -31,9 +31,8 @@ export function useTableState<T extends Record<string, unknown>>({
   fuzzySearchKeys,
   fuzzySearchThreshold = 0.3,
   columnResizeMode = "onChange",
+  columnResizeDirection = "ltr",
 }: UseTableStateOptions<T>) {
-  const { direction } = useDirection();
-
   // Initialize state with default values and initial state
   const [state, setState] = useState<TableState<T>>(() => ({
     ...createInitialTableState(data, columns),
@@ -264,7 +263,7 @@ export function useTableState<T extends Record<string, unknown>>({
     handleColumnResizeMove,
     handleColumnResizeEnd,
     columnResizeMode,
-    columnResizeDirection: direction as "ltr" | "rtl",
+    columnResizeDirection,
     debouncedFilterValue,
     fuse,
   };

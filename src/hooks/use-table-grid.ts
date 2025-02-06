@@ -16,6 +16,7 @@ interface UseTableContextOptions<T extends Record<string, unknown>> {
   fuzzySearchKeys?: Array<keyof T>;
   fuzzySearchThreshold?: number;
   columnResizeMode?: "onChange" | "onResize";
+  columnResizeDirection?: "ltr" | "rtl";
   debounceMs?: number;
   isLoading?: boolean;
   serverSide?: ServerSideConfig<T>;
@@ -35,6 +36,7 @@ export function useTableContext<T extends Record<string, unknown>>({
   fuzzySearchKeys,
   fuzzySearchThreshold,
   columnResizeMode,
+  columnResizeDirection,
   debounceMs,
   isLoading,
   serverSide,
@@ -51,7 +53,7 @@ export function useTableContext<T extends Record<string, unknown>>({
     handleColumnResizeMove,
     handleColumnResizeEnd,
     columnResizeMode: currentResizeMode,
-    columnResizeDirection,
+    columnResizeDirection: currentResizeDirection,
     debouncedFilterValue,
     fuse,
   } = useTableState({
@@ -66,6 +68,7 @@ export function useTableContext<T extends Record<string, unknown>>({
     fuzzySearchKeys,
     fuzzySearchThreshold,
     columnResizeMode,
+    columnResizeDirection,
     debounceMs,
   });
 
@@ -162,7 +165,7 @@ export function useTableContext<T extends Record<string, unknown>>({
     columnSizing: state.columnSizing,
     columnResizeInfo,
     columnResizeMode: currentResizeMode,
-    columnResizeDirection,
+    columnResizeDirection: currentResizeDirection,
     handleColumnResize,
     handleColumnResizeStart,
     handleColumnResizeMove,
