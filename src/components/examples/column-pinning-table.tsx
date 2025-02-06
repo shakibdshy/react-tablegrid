@@ -66,6 +66,7 @@ const columns: Column<DataItem>[] = [
   columnHelper.accessor("joinDate", {
     header: "Join Date",
     sortable: true,
+    pinned: "right",
   }),
 ];
 
