@@ -51,7 +51,7 @@ export function VirtualizedBody<T extends Record<string, unknown>>({
 
     return (
       <div 
-        className={cn("flex items-center justify-center p-8", className)} 
+        className={cn("rtg-loading flex items-center justify-center p-8", className)} 
         style={style}
       >
         <LoadingSpinner />
@@ -65,6 +65,7 @@ export function VirtualizedBody<T extends Record<string, unknown>>({
     <div
       ref={containerRef}
       className={cn(
+        "rtg-table-virtualized-body",
         "relative overflow-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600",
         "overscroll-none",
         className
@@ -78,7 +79,7 @@ export function VirtualizedBody<T extends Record<string, unknown>>({
 
     >
       <div
-        className={cn("relative will-change-transform", styles.body())}
+        className={cn("rtg-table-body relative will-change-transform", styles.body())}
         style={{ 
           height: totalHeight,
           contain: 'strict',
