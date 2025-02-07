@@ -8,11 +8,14 @@ import type { useTableGrid } from '@/hooks/use-table-grid'
 interface TableBodyProps<T extends Record<string, unknown>> {
   className?: string
   style?: React.CSSProperties
+  bodyRowClassName?: string
+  bodyCellClassName?: string
   tableInstance: ReturnType<typeof useTableGrid<T>>
   components?: {
     EmptyState?: React.ComponentType
     LoadingState?: React.ComponentType
   }
+
   customRender?: {
     empty?: () => React.ReactNode
     loading?: () => React.ReactNode
@@ -26,9 +29,12 @@ export function TableBody<T extends Record<string, unknown>>({
   tableInstance,
   components,
   customRender,
+  bodyRowClassName,
+  bodyCellClassName,
 }: TableBodyProps<T>) {
   const styles = tableStyles()
   const {
+
     filteredData,
     state: { loading },
   } = tableInstance;
@@ -44,7 +50,7 @@ export function TableBody<T extends Record<string, unknown>>({
 
     return (
       <div 
-        className={cn("flex items-center justify-center p-8", className)} 
+        className={cn("rtg-loading flex items-center justify-center p-8", className)} 
         style={style}
       >
         <LoadingSpinner />
@@ -74,13 +80,15 @@ export function TableBody<T extends Record<string, unknown>>({
   const RowComponent = customRender?.row || TableRow
 
   return (
-    <div className={cn(styles.body(), className)} style={style}>
+    <div className={cn("rtg-table-body", styles.body(), className)} style={style}>
       {filteredData.map((row: T, index: number) => (
         <RowComponent
           key={`row-${index}-${(row as { id?: string }).id || ''}`}
           row={row}
           rowIndex={index}
           tableInstance={tableInstance}
+          className={bodyRowClassName}
+          cellClassName={bodyCellClassName}
         />
       ))}
     </div>
