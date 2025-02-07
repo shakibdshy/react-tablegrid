@@ -58,7 +58,7 @@ export function TableCell<T extends Record<string, unknown>>({
   if (customRender) {
     return (
       <div
-        className={cn(styles.cell(), className)}
+        className={cn("rtg-table-cell", styles.cell(), className)}
         style={{
           width: width ? `${width}px` : undefined,
           minWidth: width ? `${width}px` : undefined,
@@ -74,12 +74,13 @@ export function TableCell<T extends Record<string, unknown>>({
   if (components?.Cell) {
     return (
       <div
-        className={cn(styles.cell(), className)}
+        className={cn("rtg-table-cell", styles.cell(), className)}
         style={{
           width: width ? `${width}px` : undefined,
           minWidth: width ? `${width}px` : undefined,
           ...style,
         }}
+
       >
         <components.Cell column={column} row={row} value={value} />
       </div>
@@ -90,7 +91,7 @@ export function TableCell<T extends Record<string, unknown>>({
   if (column.cell) {
     return (
       <div
-        className={cn(styles.cell(), className)}
+        className={cn("rtg-table-cell", styles.cell(), className)}
         style={{
           width: width ? `${width}px` : undefined,
           minWidth: width ? `${width}px` : undefined,
@@ -117,7 +118,7 @@ export function TableCell<T extends Record<string, unknown>>({
   // Default cell renderer
   return (
     <div
-      className={cn(styles.cell(), className)}
+      className={cn("rtg-table-cell", styles.cell(), className)}
       style={{
         width: width ? `${width}px` : undefined,
         minWidth: width ? `${width}px` : undefined,
