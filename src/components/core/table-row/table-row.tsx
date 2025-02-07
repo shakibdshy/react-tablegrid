@@ -11,6 +11,7 @@ interface TableRowProps<T extends Record<string, unknown>> {
   row: T;
   rowIndex: number;
   className?: string;
+  cellClassName?: string;
   style?: React.CSSProperties;
   tableInstance: ReturnType<typeof useTableGrid<T>>;
   components?: {
@@ -39,6 +40,7 @@ export function TableRow<T extends Record<string, unknown>>({
   customRender,
   isVirtual,
   virtualStyle,
+  cellClassName,
 }: TableRowProps<T>) {
   const styles = tableStyles();
   const {
@@ -58,9 +60,12 @@ export function TableRow<T extends Record<string, unknown>>({
 
   return (
     <div
-      className={cn(styles.row(), className)}
+      className={cn("rtg-table-row", styles.row(), className)}
       style={{
-        gridTemplateColumns: getGridTemplateColumns(orderedColumns, columnSizing),
+        gridTemplateColumns: getGridTemplateColumns(
+          orderedColumns,
+          columnSizing
+        ),
         ...(isVirtual ? virtualStyle : {}),
         ...style,
       }}
@@ -79,16 +84,24 @@ export function TableRow<T extends Record<string, unknown>>({
         if (isPinnedLeft) {
           leftOffset = orderedColumns
             .slice(0, columnIndex)
-            .filter(col => pinnedColumns.left.includes(col.accessorKey))
-            .reduce((sum, col) => sum + (columnSizing.columnSizes[String(col.id)] || 0), 0);
+            .filter((col) => pinnedColumns.left.includes(col.accessorKey))
+            .reduce(
+              (sum, col) =>
+                sum + (columnSizing.columnSizes[String(col.id)] || 0),
+              0
+            );
         }
 
         let rightOffset = 0;
         if (isPinnedRight) {
           rightOffset = orderedColumns
             .slice(columnIndex + 1)
-            .filter(col => pinnedColumns.right.includes(col.accessorKey))
-            .reduce((sum, col) => sum + (columnSizing.columnSizes[String(col.id)] || 0), 0);
+            .filter((col) => pinnedColumns.right.includes(col.accessorKey))
+            .reduce(
+              (sum, col) =>
+                sum + (columnSizing.columnSizes[String(col.id)] || 0),
+              0
+            );
         }
 
         return (
@@ -100,16 +113,17 @@ export function TableRow<T extends Record<string, unknown>>({
             value={value}
             width={width}
             className={cn(
+              cellClassName,
               column.className,
-              isPinnedLeft && "sticky left-0 z-[25] shadow-[1px_0_0_0_theme(colors.gray.200)]",
-              isPinnedRight && "sticky right-0 z-[25] shadow-[-1px_0_0_0_theme(colors.gray.200)]",
-              "dark:shadow-[0_0_0_1px_theme(colors.gray.600)]"
+              isPinnedLeft &&
+                "sticky left-0 z-[25] shadow-[1px_0_0_0_theme(colors.gray.200)]",
+              isPinnedRight &&
+                "sticky right-0 z-[25] shadow-[-1px_0_0_0_theme(colors.gray.200)]",
+              isPinnedLeft || isPinnedRight ? "bg-background" : undefined
             )}
             style={{
               ...(isPinnedLeft && { left: `${leftOffset}px` }),
               ...(isPinnedRight && { right: `${rightOffset}px` }),
-              backgroundColor: isPinnedLeft || isPinnedRight ? "var(--background)" : undefined,
-              position: isPinnedLeft || isPinnedRight ? "sticky" : undefined,
             }}
             components={components}
             customRender={customRender}

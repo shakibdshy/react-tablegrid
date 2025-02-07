@@ -44,14 +44,18 @@ function HeaderCellBase<T extends Record<string, unknown>>({
     handleSort(column);
   }, [column, handleSort]);
 
-  const headerContent = typeof column.header === "function" 
-    ? column.header()
-    : column.header;
+  const headerContent =
+    typeof column.header === "function" ? column.header() : column.header;
 
   return (
     <div
       data-column-id={String(column.id)}
-      className={cn(styles.headerCell(), className, "group relative")}
+      className={cn(
+        "rtg-table-header-cell",
+        styles.headerCell(),
+        className,
+        "group relative"
+      )}
       style={{
         width: width ? `${width}px` : undefined,
         minWidth: width ? `${width}px` : undefined,

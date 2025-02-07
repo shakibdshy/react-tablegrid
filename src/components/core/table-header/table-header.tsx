@@ -10,13 +10,19 @@ import { useMemo } from "react";
 interface TableHeaderProps<T extends Record<string, unknown>> {
   tableInstance: ReturnType<typeof useTableGrid<T>>;
   className?: string;
+  style?: React.CSSProperties;
   components?: TableCustomComponents<T>;
   enableColumnResize?: boolean;
+  headerCellClassName?: string;
+  headerRowClassName?: string;
 }
 
 export function TableHeader<T extends Record<string, unknown>>({
   tableInstance,
   className,
+  headerCellClassName,
+  headerRowClassName,
+  style,
   components,
   enableColumnResize = false,
 }: TableHeaderProps<T>) {
@@ -29,9 +35,9 @@ export function TableHeader<T extends Record<string, unknown>>({
   }, [columns, pinnedColumns]);
 
   return (
-    <div className={cn(styles.header(), className)}>
+    <div className={cn(styles.header(), className)} style={style}>
       <div
-        className={styles.headerRow()}
+        className={cn(styles.headerRow(), headerRowClassName)}
         style={{ gridTemplateColumns: getGridTemplateColumns(orderedColumns, columnSizing) }}
       >
         {orderedColumns.map((column: Column<T>, columnIndex) => {
@@ -66,12 +72,11 @@ export function TableHeader<T extends Record<string, unknown>>({
                 column.className,
                 isPinnedLeft && "sticky left-0 z-[35] shadow-[1px_0_0_0_theme(colors.gray.200)]",
                 isPinnedRight && "sticky right-0 z-[35] shadow-[-1px_0_0_0_theme(colors.gray.200)]",
-                "dark:shadow-[0_0_0_1px_theme(colors.gray.600)]"
+                headerCellClassName,
               )}
               style={{
                 ...(isPinnedLeft && { left: `${leftOffset}px` }),
                 ...(isPinnedRight && { right: `${rightOffset}px` }),
-                // backgroundColor: isPinnedLeft || isPinnedRight ? "bg-gray-100 dark:bg-gray-700" : undefined,
                 position: isPinnedLeft || isPinnedRight ? "sticky" : undefined,
               }}
               components={components}

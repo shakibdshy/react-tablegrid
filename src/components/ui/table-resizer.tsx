@@ -80,6 +80,7 @@ export function TableResizer({
       <div
         ref={resizerRef}
         className={cn(
+          "rtg-table-resizer",
           styles.resizer(),
           direction,
           isDragging && "cursor-col-resize"
@@ -92,9 +93,14 @@ export function TableResizer({
       {isResizing && (
         <div
           ref={indicatorRef}
-          className={cn(styles.resizerIndicator(), direction)}
+          className={cn(
+            "rtg-table-resizer-indicator",
+            styles.resizerIndicator(),
+            direction
+          )}
           data-resize-indicator-id={columnId}
         />
+
       )}
     </>
   );

@@ -57,28 +57,48 @@ export interface TableCustomComponents<T> {
 }
 
 export interface TableStyleConfig {
-  header?: {
-    className?: string;
-    style?: React.CSSProperties;
-  };
-  row?: {
-    className?: string;
-    style?: React.CSSProperties;
-  };
-  cell?: {
-    className?: string;
-    style?: React.CSSProperties;
-  };
-  headerCell?: {
-    className?: string;
-    style?: React.CSSProperties;
-  };
   container?: {
     className?: string;
     style?: React.CSSProperties;
+    wrapperClassName?: string;
+    scrollContainerClassName?: string;
+    tableClassName?: string;
   };
-  searchContainer?: {
+  header?: {
     className?: string;
+    style?: React.CSSProperties;
+    headerRowClassName?: string;
+    headerCellClassName?: string;
+    headerGroupClassName?: string;
+  };
+
+  body?: {
+    style?: React.CSSProperties;
+    className?: string;
+    rowClassName?: string;
+    cellClassName?: string;
+  };
+
+  resizer?: {
+    className?: string;
+    style?: React.CSSProperties;
+  };
+
+  resizerIndicator?: {
+    className?: string;
+    style?: React.CSSProperties;
+  };
+
+  sortButton?: {
+    className?: string;
+    style?: React.CSSProperties;
+  };
+
+  utilityStyles?: {
+    emptyClassName?: string;
+    searchContainerClassName?: string;
+    searchInputClassName?: string;
+    loadingClassName?: string;
     style?: React.CSSProperties;
   };
 }
