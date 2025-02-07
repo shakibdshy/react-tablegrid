@@ -213,25 +213,45 @@ interface TableStyleConfig {
   container?: {
     className?: string;
     style?: React.CSSProperties;
+    wrapperClassName?: string;
+    scrollContainerClassName?: string;
+    tableClassName?: string;
   };
   header?: {
     className?: string;
     style?: React.CSSProperties;
+    headerRowClassName?: string;
+    headerCellClassName?: string;
+    headerGroupClassName?: string;
   };
-  row?: {
+
+  body?: {
+    style?: React.CSSProperties;
+    className?: string;
+    rowClassName?: string;
+    cellClassName?: string;
+  };
+
+  resizer?: {
     className?: string;
     style?: React.CSSProperties;
   };
-  cell?: {
+
+  resizerIndicator?: {
     className?: string;
     style?: React.CSSProperties;
   };
-  selectedRow?: {
+
+  sortButton?: {
     className?: string;
     style?: React.CSSProperties;
   };
-  groupRow?: {
-    className?: string;
+
+  utilityStyles?: {
+    emptyClassName?: string;
+    searchContainerClassName?: string;
+    searchInputClassName?: string;
+    loadingClassName?: string;
     style?: React.CSSProperties;
   };
 }
