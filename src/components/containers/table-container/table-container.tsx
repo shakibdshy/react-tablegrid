@@ -166,9 +166,10 @@ function TableContainerComponent<T extends Record<string, unknown>>(
                 }}
                 className={cn(
                   styleConfig?.body?.className,
-                  styleConfig?.body?.rowClassName,
                   "transition-colors"
                 )}
+                bodyRowClassName={styleConfig?.body?.rowClassName}
+                bodyCellClassName={styleConfig?.body?.cellClassName}
                 style={styleConfig?.body?.style}
                 tableInstance={tableInstance}
               />
