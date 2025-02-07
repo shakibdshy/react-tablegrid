@@ -6,7 +6,7 @@ A powerful and flexible table grid component for React applications with Tailwin
 [![npm downloads](https://img.shields.io/npm/dm/@shakibdshy/react-tablegrid.svg)](https://www.npmjs.com/package/@shakibdshy/react-tablegrid)
 [![License](https://img.shields.io/npm/l/@shakibdshy/react-tablegrid.svg)](https://github.com/shakibdshy/react-tablegrid/blob/main/LICENSE)
 
-## Demo
+## Demo & Documentation (Updated)
 
 [Example Demo](https://react-packages-doc.vercel.app/docs/react-tablegrid-pro)
 
@@ -250,6 +250,13 @@ interface TableStyleConfig {
 | `onGroupChange` | `(groups: string[]) => void` | - | Row grouping change handler |
 
 ## Version History
+
+- v2.1.0 - Enhance table component styling and customization
+  - Added new className and style props for more granular styling control
+  - Introduced rtg-* class names for better semantic targeting
+  - Updated TableStyleConfig to support more detailed styling options
+  - Improved hover and transition effects across table components
+  - Added support for custom row and cell styling in table body
 
 - v2.0.0 - Major Release
   - Added server-side data handling
