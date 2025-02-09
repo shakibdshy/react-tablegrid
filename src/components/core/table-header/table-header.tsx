@@ -75,10 +75,11 @@ export function TableHeader<T extends Record<string, unknown>>({
                 headerCellClassName,
               )}
               style={{
-                ...(isPinnedLeft && { left: `${leftOffset}px` }),
-                ...(isPinnedRight && { right: `${rightOffset}px` }),
+                ...(isPinnedLeft && { left: `${leftOffset}px`, zIndex: 35 }),
+                ...(isPinnedRight && { right: `${rightOffset}px`, zIndex: 35 }),
                 position: isPinnedLeft || isPinnedRight ? "sticky" : undefined,
               }}
+
               components={components}
             />
           );
