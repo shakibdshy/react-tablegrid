@@ -74,15 +74,24 @@ export function TableSearch<T extends Record<string, unknown>>({
 
   // Default search input
   return (
-    <div className={cn("rtg-table-search-container", styles.searchContainer(), className)} style={style}>
+    <div 
+      className={cn("rtg-table-search-container", styles.searchContainer(), className)} 
+      style={style}
+      role="search"
+    >
       <Input
         type="text"
         value={filterValue}
         onChange={(e) => handleChange(e.target.value)}
         placeholder={placeholder}
         className={cn(styles.searchInput(), searchInputClassName)}
+        aria-label="Search table content"
+        aria-controls="table-content"
+        aria-describedby="search-description"
       />
+      <span id="search-description" className="sr-only">
+        Type to filter table content. Results will update as you type.
+      </span>
     </div>
-
   );
 }
