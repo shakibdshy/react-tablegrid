@@ -35,10 +35,12 @@ export function TableHeader<T extends Record<string, unknown>>({
   }, [columns, pinnedColumns]);
 
   return (
-    <div className={cn(styles.header(), className)} style={style}>
+    <div className={cn(styles.header(), className)} style={style} role="rowgroup">
       <div
         className={cn(styles.headerRow(), headerRowClassName)}
         style={{ gridTemplateColumns: getGridTemplateColumns(orderedColumns, columnSizing) }}
+        role="row"
+        aria-rowindex={1}
       >
         {orderedColumns.map((column: Column<T>, columnIndex) => {
           const width = columnSizing.columnSizes[String(column.id)];
