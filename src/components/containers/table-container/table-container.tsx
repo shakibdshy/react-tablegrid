@@ -113,6 +113,10 @@ function TableContainerComponent<T extends Record<string, unknown>>(
               "will-change-transform",
               "backface-visibility-hidden"
             )}
+            role="table"
+            aria-label="Data Grid"
+            aria-rowcount={data.length}
+            aria-colcount={columns.length}
           >
             {/* Header Groups */}
             {headerGroups && (
@@ -127,7 +131,6 @@ function TableContainerComponent<T extends Record<string, unknown>>(
                   group: (group) =>
                     customRender?.renderHeader?.(group.columns[0] as Column<T>),
                 }}
-
                 tableInstance={tableInstance}
               />
             )}
