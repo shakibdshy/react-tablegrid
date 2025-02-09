@@ -67,6 +67,9 @@ export function VirtualizedBody<T extends Record<string, unknown>>({
           className
         )}
         style={style}
+        role="status"
+        aria-busy="true"
+        aria-live="polite"
       >
         <LoadingSpinner />
       </div>
@@ -90,6 +93,8 @@ export function VirtualizedBody<T extends Record<string, unknown>>({
         overscrollBehavior: "contain",
         WebkitOverflowScrolling: "touch",
       }}
+      role="rowgroup"
+      aria-label="Virtualized table body"
     >
       <div
         className={cn(
@@ -101,6 +106,7 @@ export function VirtualizedBody<T extends Record<string, unknown>>({
           contain: "strict",
           contentVisibility: "auto",
         }}
+        role="presentation"
       >
         {virtualItems.map((virtualItem) => (
           <RowComponent
