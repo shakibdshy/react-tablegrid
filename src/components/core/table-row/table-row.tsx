@@ -71,8 +71,16 @@ export function TableRow<T extends Record<string, unknown>>({
       }}
       onClick={handleClick}
       role="row"
+      aria-rowindex={rowIndex + 1}
       data-row-index={rowIndex}
       data-row-id={(row as { id?: string }).id}
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleClick();
+        }
+      }}
     >
       {orderedColumns.map((column, columnIndex) => {
         const value = row[column.accessorKey];
