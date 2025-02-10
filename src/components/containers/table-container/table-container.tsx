@@ -1,4 +1,4 @@
-import { forwardRef } from "react";
+import { forwardRef, useRef, useImperativeHandle } from "react";
 import { cn } from "@/utils/cn";
 import { tableStyles } from "@/styles/table.style";
 import { TableHeader } from "@/components/core/table-header/table-header";
@@ -17,6 +17,15 @@ import type { ServerSideConfig } from "@/types/events.types";
 import type { Column, ColumnResizeInfoState } from "@/types/column.types";
 import { useTableGrid } from "@/hooks/use-table-grid";
 
+interface VirtualizationConfig {
+  enabled: boolean;
+  rowHeight: number;
+  overscan: number;
+  scrollingDelay?: number;
+  onEndReached?: () => void;
+  getRowHeight?: (index: number) => number;
+}
+
 interface TableContainerProps<T extends Record<string, unknown>>
   extends Omit<TableProps<T>, "columns"> {
   style?: React.CSSProperties;
@@ -31,6 +40,11 @@ interface TableContainerProps<T extends Record<string, unknown>>
   enableColumnResize?: boolean;
   state?: TableState<T>;
   columnResizeDirection?: "ltr" | "rtl";
+  virtualization?: VirtualizationConfig;
+}
+
+export interface TableContainerHandle {
+  scrollTo: (index: number) => void;
 }
 
 function TableContainerComponent<T extends Record<string, unknown>>(
@@ -54,7 +68,7 @@ function TableContainerComponent<T extends Record<string, unknown>>(
     state,
     columnResizeDirection = "ltr",
   }: TableContainerProps<T>,
-  ref: React.ForwardedRef<HTMLDivElement>
+  ref: React.ForwardedRef<TableContainerHandle>
 ) {
   const styles = tableStyles({ variant });
   const tableInstance = useTableGrid<T>({
@@ -66,9 +80,17 @@ function TableContainerComponent<T extends Record<string, unknown>>(
     initialState: state,
     columnResizeDirection,
   });
+  const virtualBodyRef = useRef<{ scrollTo: (index: number) => void }>(null);
+
+  // Expose scrollTo method via ref
+  useImperativeHandle(ref, () => ({
+    scrollTo: (index: number) => {
+      virtualBodyRef.current?.scrollTo(index);
+    }
+  }), []);
 
   return (
-    <div ref={ref} className="space-y-4">
+    <div className="space-y-4">
       {enableFiltering && (
         <TableSearch
           className={cn(
@@ -80,7 +102,6 @@ function TableContainerComponent<T extends Record<string, unknown>>(
           components={components}
           customRender={customRender?.renderSearch}
           tableInstance={tableInstance}
-
         />
       )}
 
@@ -152,6 +173,7 @@ function TableContainerComponent<T extends Record<string, unknown>>(
             {/* Body */}
             {virtualization?.enabled ? (
               <VirtualizedBody
+                ref={virtualBodyRef}
                 config={virtualization}
                 customRender={{
                   row: customRender?.renderCell
@@ -176,7 +198,6 @@ function TableContainerComponent<T extends Record<string, unknown>>(
                 style={styleConfig?.body?.style}
                 tableInstance={tableInstance}
               />
-
             ) : (
               <TableBody
                 components={{
@@ -207,7 +228,6 @@ function TableContainerComponent<T extends Record<string, unknown>>(
                 bodyCellClassName={styleConfig?.body?.cellClassName}
                 style={styleConfig?.body?.style}
                 tableInstance={tableInstance}
-
               />
             )}
           </div>
@@ -217,10 +237,8 @@ function TableContainerComponent<T extends Record<string, unknown>>(
   );
 }
 
-const TableContainer = forwardRef(TableContainerComponent) as unknown as (<
-  T extends Record<string, unknown>
->(
-  props: TableContainerProps<T> & { ref?: React.ForwardedRef<HTMLDivElement> }
+const TableContainer = forwardRef(TableContainerComponent) as (<T extends Record<string, unknown>>(
+  props: TableContainerProps<T> & { ref?: React.ForwardedRef<TableContainerHandle> }
 ) => React.ReactElement) & { displayName?: string };
 
 TableContainer.displayName = "TableContainer";

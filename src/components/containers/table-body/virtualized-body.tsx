@@ -4,6 +4,7 @@ import { TableRow } from "@/components/core/table-row/table-row";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import type { useTableGrid } from "@/hooks/use-table-grid";
 import { useVirtualization } from "@/hooks/use-virtualization";
+import { useCallback, useEffect, forwardRef, useImperativeHandle } from "react";
 
 interface VirtualizationConfig {
   enabled: boolean;
@@ -11,6 +12,7 @@ interface VirtualizationConfig {
   overscan: number;
   scrollingDelay?: number;
   onEndReached?: () => void;
+  getRowHeight?: (index: number) => number;
 }
 
 interface VirtualizedBodyProps<T extends Record<string, unknown>> {
@@ -30,25 +32,69 @@ interface VirtualizedBodyProps<T extends Record<string, unknown>> {
   };
 }
 
-export function VirtualizedBody<T extends Record<string, unknown>>({
-  className,
-  bodyRowClassName,
-  bodyCellClassName,
-  style,
-  config,
-  tableInstance,
-  customRender,
-  components,
-}: VirtualizedBodyProps<T>) {
+export interface VirtualizedBodyHandle {
+  scrollTo: (index: number) => void;
+}
+
+export const VirtualizedBody = forwardRef(function VirtualizedBody<T extends Record<string, unknown>>(
+  props: VirtualizedBodyProps<T>,
+  ref: React.ForwardedRef<VirtualizedBodyHandle>
+) {
+  const {
+    className,
+    bodyRowClassName,
+    bodyCellClassName,
+    style,
+    config,
+    tableInstance,
+    customRender,
+    components,
+  } = props;
+
   const styles = tableStyles();
   const {
     filteredData,
     state: { loading },
   } = tableInstance;
+
   const { containerRef, virtualItems, totalHeight } = useVirtualization(
     filteredData,
-    config
+    {
+      ...config,
+      getRowHeight: config.getRowHeight,
+    }
   );
+
+  // Expose scrollTo method
+  useImperativeHandle(ref, () => ({
+    scrollTo: (index: number) => {
+      if (!containerRef.current) return;
+      const rowHeight = config.rowHeight;
+      const scrollTop = index * rowHeight;
+      containerRef.current.scrollTop = scrollTop;
+    }
+  }), [config.rowHeight]);
+
+  // Handle scroll to end for infinite loading
+  const handleScroll = useCallback((e: Event) => {
+    const target = e.target as HTMLDivElement;
+    if (!config.onEndReached) return;
+
+    const scrolledToBottom =
+      target.scrollHeight - target.scrollTop <= target.clientHeight + 100;
+
+    if (scrolledToBottom && !loading) {
+      config.onEndReached();
+    }
+  }, [config.onEndReached, loading]);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container || !config.onEndReached) return;
+
+    container.addEventListener("scroll", handleScroll, { passive: true });
+    return () => container.removeEventListener("scroll", handleScroll);
+  }, [handleScroll, config.onEndReached]);
 
   // Handle loading state
   if (loading) {
@@ -125,4 +171,6 @@ export function VirtualizedBody<T extends Record<string, unknown>>({
       </div>
     </div>
   );
-}
+}) as <T extends Record<string, unknown>>(
+  props: VirtualizedBodyProps<T> & { ref?: React.ForwardedRef<VirtualizedBodyHandle> }
+) => React.ReactElement;
