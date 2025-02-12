@@ -5,6 +5,7 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import type { useTableGrid } from "@/hooks/use-table-grid";
 import { useVirtualization } from "@/hooks/use-virtualization";
 import { useCallback, useEffect, forwardRef, useImperativeHandle } from "react";
+import "./virtualized-body.css";
 
 interface VirtualizationConfig {
   enabled: boolean;
@@ -36,8 +37,10 @@ export interface VirtualizedBodyHandle {
   scrollTo: (index: number) => void;
 }
 
-export const VirtualizedBody = forwardRef(function VirtualizedBody<T extends Record<string, unknown>>(
-  props: VirtualizedBodyProps<T>,
+export const VirtualizedBody = forwardRef(function VirtualizedBody<
+  T extends Record<string, unknown>
+>(
+  props: VirtualizedBodyProps<T> & { withoutTailwind?: boolean },
   ref: React.ForwardedRef<VirtualizedBodyHandle>
 ) {
   const {
@@ -49,6 +52,7 @@ export const VirtualizedBody = forwardRef(function VirtualizedBody<T extends Rec
     tableInstance,
     customRender,
     components,
+    withoutTailwind = false,
   } = props;
 
   const styles = tableStyles();
@@ -109,7 +113,9 @@ export const VirtualizedBody = forwardRef(function VirtualizedBody<T extends Rec
     return (
       <div
         className={cn(
-          "rtg-loading flex items-center justify-center p-8",
+          withoutTailwind
+            ? "rtg-virtualized-loading"
+            : "rtg-loading flex items-center justify-center p-8",
           className
         )}
         style={style}
@@ -128,9 +134,13 @@ export const VirtualizedBody = forwardRef(function VirtualizedBody<T extends Rec
     <div
       ref={containerRef}
       className={cn(
-        "rtg-table-virtualized-body",
-        "relative overflow-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600",
-        "overscroll-none",
+        withoutTailwind
+          ? "rtg-virtualized-body"
+          : [
+              "rtg-table-virtualized-body",
+              "relative overflow-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600",
+              "overscroll-none",
+            ],
         className
       )}
       style={{
@@ -144,8 +154,12 @@ export const VirtualizedBody = forwardRef(function VirtualizedBody<T extends Rec
     >
       <div
         className={cn(
-          "rtg-table-body relative will-change-transform",
-          styles.body()
+          withoutTailwind
+            ? "rtg-virtualized-content"
+            : cn(
+                "rtg-table-body relative will-change-transform",
+                styles.body()
+              )
         )}
         style={{
           height: totalHeight,
@@ -166,11 +180,15 @@ export const VirtualizedBody = forwardRef(function VirtualizedBody<T extends Rec
             tableInstance={tableInstance}
             className={bodyRowClassName}
             cellClassName={bodyCellClassName}
+            withoutTailwind={withoutTailwind}
           />
         ))}
       </div>
     </div>
   );
 }) as <T extends Record<string, unknown>>(
-  props: VirtualizedBodyProps<T> & { ref?: React.ForwardedRef<VirtualizedBodyHandle> }
+  props: VirtualizedBodyProps<T> & {
+    ref?: React.ForwardedRef<VirtualizedBodyHandle>;
+    withoutTailwind?: boolean;
+  }
 ) => React.ReactElement;
