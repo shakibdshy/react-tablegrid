@@ -1,4 +1,5 @@
-import { forwardRef } from "react";
+"use client";
+import { forwardRef, useRef, useImperativeHandle } from "react";
 import { cn } from "@/utils/cn";
 import { tableStyles } from "@/styles/table.style";
 import { TableHeader } from "@/components/core/table-header/table-header";
@@ -16,8 +17,18 @@ import type {
 import type { ServerSideConfig } from "@/types/events.types";
 import type { Column, ColumnResizeInfoState } from "@/types/column.types";
 import { useTableGrid } from "@/hooks/use-table-grid";
+import "./table-grid.css";
 
-interface TableContainerProps<T extends Record<string, unknown>>
+interface VirtualizationConfig {
+  enabled: boolean;
+  rowHeight: number;
+  overscan: number;
+  scrollingDelay?: number;
+  onEndReached?: () => void;
+  getRowHeight?: (index: number) => number;
+}
+
+interface TableGridProps<T extends Record<string, unknown>>
   extends Omit<TableProps<T>, "columns"> {
   style?: React.CSSProperties;
   customRender?: TableCustomRender<T>;
@@ -31,9 +42,15 @@ interface TableContainerProps<T extends Record<string, unknown>>
   enableColumnResize?: boolean;
   state?: TableState<T>;
   columnResizeDirection?: "ltr" | "rtl";
+  virtualization?: VirtualizationConfig;
+  withoutTailwind?: boolean;
 }
 
-function TableContainerComponent<T extends Record<string, unknown>>(
+export interface TableGridHandle {
+  scrollTo: (index: number) => void;
+}
+
+function TableGridComponent<T extends Record<string, unknown>>(
   {
     className,
     style,
@@ -53,8 +70,9 @@ function TableContainerComponent<T extends Record<string, unknown>>(
     enableColumnResize,
     state,
     columnResizeDirection = "ltr",
-  }: TableContainerProps<T>,
-  ref: React.ForwardedRef<HTMLDivElement>
+    withoutTailwind = false,
+  }: TableGridProps<T>,
+  ref: React.ForwardedRef<TableGridHandle>
 ) {
   const styles = tableStyles({ variant });
   const tableInstance = useTableGrid<T>({
@@ -66,13 +84,23 @@ function TableContainerComponent<T extends Record<string, unknown>>(
     initialState: state,
     columnResizeDirection,
   });
+  const virtualBodyRef = useRef<{ scrollTo: (index: number) => void }>(null);
+
+  // Expose scrollTo method via ref
+  useImperativeHandle(ref, () => ({
+    scrollTo: (index: number) => {
+      virtualBodyRef.current?.scrollTo(index);
+    }
+  }), []);
 
   return (
-    <div ref={ref} className="space-y-4">
+    <div className={withoutTailwind ? "rtg-grid-container" : "space-y-4"}>
       {enableFiltering && (
         <TableSearch
           className={cn(
-            styles.searchContainer(),
+            withoutTailwind 
+              ? undefined
+              : styles.searchContainer(),
             styleConfig?.utilityStyles?.searchContainerClassName
           )}
           searchInputClassName={styleConfig?.utilityStyles?.searchInputClassName}
@@ -80,14 +108,16 @@ function TableContainerComponent<T extends Record<string, unknown>>(
           components={components}
           customRender={customRender?.renderSearch}
           tableInstance={tableInstance}
-
+          withoutTailwind={withoutTailwind}
         />
       )}
 
       {/* Table Container */}
       <div
         className={cn(
-          styles.wrapper(),
+          withoutTailwind
+            ? "rtg-grid-wrapper"
+            : cn("rtg-table-grid-wrapper", styles.wrapper()),
           styleConfig?.container?.wrapperClassName,
           className
         )}
@@ -99,56 +129,65 @@ function TableContainerComponent<T extends Record<string, unknown>>(
         <SimpleBar
           style={{ maxHeight }}
           className={cn(
-            styles.scrollContainer(),
-            styleConfig?.container?.scrollContainerClassName,
-            "scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600"
+            withoutTailwind
+              ? "rtg-grid-scroll-container"
+              : cn(
+                  styles.scrollContainer(),
+                  "scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600"
+                ),
+            styleConfig?.container?.scrollContainerClassName
           )}
           autoHide={false}
         >
           <div
             className={cn(
-              styles.table(),
-              styleConfig?.container?.tableClassName,
-              "relative",
-              "will-change-transform",
-              "backface-visibility-hidden"
+              withoutTailwind
+                ? "rtg-grid"
+                : cn(
+                    "rtg-table-grid",
+                    styles.table(),
+                    "relative",
+                    "will-change-transform",
+                    "backface-visibility-hidden"
+                  ),
+              styleConfig?.container?.tableClassName
             )}
+            role="table"
+            aria-label="Data Grid"
+            aria-rowcount={data.length}
+            aria-colcount={columns.length}
           >
             {/* Header Groups */}
             {headerGroups && (
               <TableHeaderGroup
-                className={cn(
-                  styleConfig?.header?.className,
-                  "sticky top-0 z-20"
-                )}
+                className={styleConfig?.header?.className}
                 headerGroupClassName={styleConfig?.header?.headerGroupClassName}
                 style={styleConfig?.header?.style}
                 customRender={{
                   group: (group) =>
                     customRender?.renderHeader?.(group.columns[0] as Column<T>),
                 }}
-
                 tableInstance={tableInstance}
+                withoutTailwind={withoutTailwind}
               />
             )}
 
             {/* Header */}
             <TableHeader
-              className={cn(
-                styleConfig?.header?.className,
-                "sticky top-0 z-10"
-              )}
-              headerCellClassName={styleConfig?.header?.headerCellClassName}
+              className={styleConfig?.header?.className}
+              TableColumnClassName={styleConfig?.header?.TableColumnClassName}
               headerRowClassName={styleConfig?.header?.headerRowClassName}
               style={styleConfig?.header?.style}
               components={components}
               tableInstance={tableInstance}
               enableColumnResize={enableColumnResize}
+              withoutTailwind={withoutTailwind}
             />
 
             {/* Body */}
             {virtualization?.enabled ? (
               <VirtualizedBody
+                ref={virtualBodyRef}
                 config={virtualization}
                 customRender={{
                   row: customRender?.renderCell
@@ -164,16 +203,13 @@ function TableContainerComponent<T extends Record<string, unknown>>(
                       }
                     : undefined,
                 }}
-                className={cn(
-                  styleConfig?.body?.className,
-                  "transition-colors"
-                )}
+                className={styleConfig?.body?.className}
                 bodyRowClassName={styleConfig?.body?.rowClassName}
                 bodyCellClassName={styleConfig?.body?.cellClassName}
                 style={styleConfig?.body?.style}
                 tableInstance={tableInstance}
+                withoutTailwind={withoutTailwind}
               />
-
             ) : (
               <TableBody
                 components={{
@@ -196,15 +232,12 @@ function TableContainerComponent<T extends Record<string, unknown>>(
                       }
                     : undefined,
                 }}
-                className={cn(
-                  styleConfig?.body?.className,
-                  "transition-colors"
-                )}
+                className={styleConfig?.body?.className}
                 bodyRowClassName={styleConfig?.body?.rowClassName}
                 bodyCellClassName={styleConfig?.body?.cellClassName}
                 style={styleConfig?.body?.style}
                 tableInstance={tableInstance}
-
+                withoutTailwind={withoutTailwind}
               />
             )}
           </div>
@@ -214,13 +247,11 @@ function TableContainerComponent<T extends Record<string, unknown>>(
   );
 }
 
-const TableContainer = forwardRef(TableContainerComponent) as unknown as (<
-  T extends Record<string, unknown>
->(
-  props: TableContainerProps<T> & { ref?: React.ForwardedRef<HTMLDivElement> }
+const TableGrid = forwardRef(TableGridComponent) as (<T extends Record<string, unknown>>(
+  props: TableGridProps<T> & { ref?: React.ForwardedRef<TableGridHandle> }
 ) => React.ReactElement) & { displayName?: string };
 
-TableContainer.displayName = "TableContainer";
+TableGrid.displayName = "TableGrid";
 
-export type { TableContainerProps };
-export { TableContainer };
+export type { TableGridProps };
+export { TableGrid };

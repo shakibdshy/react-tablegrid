@@ -31,15 +31,15 @@ const headerStyles = {
     "bg-gray-100 dark:bg-gray-700 sticky top-0 z-30",
     "after:absolute after:bottom-0 after:left-0 after:right-0",
     "after:h-px after:bg-gray-200 dark:after:bg-gray-600",
-    // "transition-colors duration-200",
+    "transition-colors duration-200",
   ],
   headerRow: [
     "grid items-center",
     "relative",
     "isolate",
-    // "transition-colors duration-200",
+    "transition-colors duration-200",
   ],
-  headerCell: [
+  TableColumn: [
     "px-3 py-3",
     "bg-gray-100 dark:bg-gray-700",
     "text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-100",

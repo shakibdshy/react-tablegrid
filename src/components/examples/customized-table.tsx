@@ -1,11 +1,13 @@
 "use client"
 import dummyData from "@/data/dummy.json";
-import { createColumnHelper, TableGrid, Column } from "@shakibdshy/react-tablegrid";
 import { useState } from "react"
 
 
 import { PiCaretDownFill, PiCaretUpFill, PiMagnifyingGlass } from "react-icons/pi"
 import { FiAlertCircle } from "react-icons/fi"
+import { createColumnHelper } from "@/utils/column-helper";
+import { Column } from "@/types/column.types";
+import { TableGrid } from "@/components/containers/table-grid/table-grid";
 
 type DataItem = {
   id: number;
@@ -201,14 +203,11 @@ const CustomizedTable = () => {
           container: {
             className: "border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden bg-white dark:bg-gray-800 shadow-sm",
           },
-          headerCell: {
+          header: {
             className: "border-b border-gray-200 dark:border-gray-500 bg-gray-50 dark:bg-gray-800",
           },
-          row: {
+          body: {
             className: "border-b border-gray-100 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors",
-          },
-          searchContainer: {
-            className: "mb-4",
           },
         }}
       />

@@ -1,0 +1,85 @@
+.rtg-resizer {
+  --rtg-resizer-width: 4px;
+  --rtg-resizer-color: rgba(59, 130, 246, 0.2);
+  --rtg-resizer-color-active: rgba(59, 130, 246, 0.4);
+  --rtg-resizer-border-color: #e5e7eb;
+
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: var(--rtg-resizer-width);
+  cursor: col-resize;
+  user-select: none;
+  touch-action: none;
+  opacity: 0;
+  background-color: var(--rtg-resizer-color);
+  transition: opacity 0.2s ease, background-color 0.2s ease;
+}
+
+/* Direction styles */
+.rtg-resizer.ltr {
+  right: 0;
+}
+
+.rtg-resizer.rtl {
+  left: 0;
+}
+
+/* Resizer states */
+.rtg-resizer:hover,
+.rtg-resizer.is-dragging {
+  opacity: 1;
+  background-color: var(--rtg-resizer-color-active);
+}
+
+/* Border line */
+.rtg-resizer::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 1px;
+  background-color: var(--rtg-resizer-border-color);
+}
+
+/* Resizer indicator */
+.rtg-resizer-indicator {
+  position: fixed;
+  top: 0;
+  width: 2px;
+  height: 100%;
+  background-color: var(--rtg-resizer-color-active);
+  z-index: 50;
+  transition: transform 0.2s ease;
+}
+
+.rtg-resizer-indicator.ltr {
+  transform: translateX(0);
+}
+
+.rtg-resizer-indicator.rtl {
+  transform: translateX(-100%);
+}
+
+/* Group hover effect */
+.rtg-column:hover .rtg-resizer {
+  opacity: 1;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .rtg-resizer {
+    --rtg-resizer-color: rgba(59, 130, 246, 0.3);
+    --rtg-resizer-color-active: rgba(59, 130, 246, 0.5);
+    --rtg-resizer-border-color: #374151;
+  }
+}
+
+/* Custom theme variables */
+:root {
+  --rtg-resizer-width: 4px;
+  --rtg-resizer-color: rgba(59, 130, 246, 0.2);
+  --rtg-resizer-color-active: rgba(59, 130, 246, 0.4);
+  --rtg-resizer-border-color: #e5e7eb;
+}

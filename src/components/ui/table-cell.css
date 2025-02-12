@@ -1,0 +1,98 @@
+/* Custom theme variables */
+:root {
+  --rtg-cell-text: #374151;
+  --rtg-cell-bg: transparent;
+  --rtg-cell-border: #e5e7eb;
+  --rtg-cell-hover-bg: rgba(243, 244, 246, 0.8);
+  --rtg-cell-focus-ring: #3b82f6;
+}
+
+.rtg-cell {
+  --rtg-cell-padding: 0.75rem;
+  --rtg-cell-text: #374151;
+  --rtg-cell-bg: transparent;
+  --rtg-cell-border: #e5e7eb;
+  --rtg-cell-hover-bg: rgba(243, 244, 246, 0.8);
+  --rtg-cell-transition: all 0.2s ease;
+  --rtg-cell-shadow: 0 0 0 1px var(--rtg-cell-border);
+
+  padding: var(--rtg-cell-padding);
+  color: var(--rtg-cell-text);
+  background-color: var(--rtg-cell-bg);
+  position: relative;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: var(--rtg-cell-transition);
+  box-shadow: var(--rtg-cell-shadow);
+}
+
+.rtg-cell:hover {
+  background-color: var(--rtg-cell-hover-bg);
+}
+
+.rtg-cell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: var(--rtg-cell-bg);
+  z-index: -10;
+}
+
+/* Pinned cell styles */
+.rtg-cell--pinned-left {
+  position: sticky;
+  left: 0;
+  z-index: 25;
+  box-shadow: 1px 0 0 0 var(--rtg-cell-border);
+}
+
+.rtg-cell--pinned-right {
+  position: sticky;
+  right: 0;
+  z-index: 25;
+  box-shadow: -1px 0 0 0 var(--rtg-cell-border);
+}
+
+/* Cell content */
+.rtg-cell-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  height: 100%;
+}
+
+/* Editable cell */
+.rtg-cell--editable {
+  cursor: pointer;
+}
+
+.rtg-cell--editing {
+  padding: 0;
+}
+
+.rtg-cell-input {
+  width: 100%;
+  height: 100%;
+  padding: var(--rtg-cell-padding);
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+
+.rtg-cell-input:focus {
+  outline: 2px solid var(--rtg-cell-focus-ring, #3b82f6);
+  outline-offset: -2px;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .rtg-cell {
+    --rtg-cell-text: #e5e7eb;
+    --rtg-cell-border: #374151;
+    --rtg-cell-hover-bg: rgba(55, 65, 81, 0.8);
+    --rtg-cell-bg: #1f2937;
+  }
+}
