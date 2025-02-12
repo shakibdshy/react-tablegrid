@@ -109,6 +109,7 @@ function TableGridComponent<T extends Record<string, unknown>>(
       {/* Table Container */}
       <div
         className={cn(
+          "rtg-table-grid-wrapper",
           styles.wrapper(),
           styleConfig?.container?.wrapperClassName,
           className
@@ -129,6 +130,7 @@ function TableGridComponent<T extends Record<string, unknown>>(
         >
           <div
             className={cn(
+              "rtg-table-grid",
               styles.table(),
               styleConfig?.container?.tableClassName,
               "relative",
@@ -169,6 +171,7 @@ function TableGridComponent<T extends Record<string, unknown>>(
               components={components}
               tableInstance={tableInstance}
               enableColumnResize={enableColumnResize}
+              withoutTailwind
             />
 
             {/* Body */}
