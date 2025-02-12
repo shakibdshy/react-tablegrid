@@ -4,6 +4,7 @@ import type { Column, HeaderGroup } from "@/types/column.types";
 import type { useTableGrid } from "@/hooks/use-table-grid";
 import { useMemo } from "react";
 import { getGridTemplateColumns, reorderColumns } from "@/utils/table-helper";
+import "./table-header-group.css";
 
 interface TableHeaderGroupProps<T extends Record<string, unknown>> {
   className?: string;
@@ -14,6 +15,7 @@ interface TableHeaderGroupProps<T extends Record<string, unknown>> {
     group: (group: HeaderGroup<T>) => React.ReactNode;
   };
   headerGroupClassName?: string;
+  withoutTailwind?: boolean;
 }
 
 function generateHeaderGroups<T extends Record<string, unknown>>(
@@ -44,6 +46,7 @@ export function TableHeaderGroup<T extends Record<string, unknown>>({
   customRender,
   TableColumnClassName,
   headerGroupClassName,
+  withoutTailwind = false,
 }: TableHeaderGroupProps<T>) {
   const styles = tableStyles();
   const {
@@ -75,10 +78,14 @@ export function TableHeaderGroup<T extends Record<string, unknown>>({
 
   return (
     <div
-      className={cn("rtg-table-header-group", styles.headerGroup(), className)}
+      className={cn(
+        withoutTailwind 
+          ? "rtg-header-group"
+          : cn("rtg-table-header-group grid", styles.headerGroup()),
+        className
+      )}
       style={{
         ...style,
-        display: "grid",
         gridTemplateColumns: getGridTemplateColumns(
           orderedColumns,
           columnSizing
@@ -91,10 +98,14 @@ export function TableHeaderGroup<T extends Record<string, unknown>>({
         <div
           key={group.id}
           className={cn(
-            "rtg-table-header-cell",
-            styles.TableColumn(),
+            withoutTailwind
+              ? "rtg-header-group-cell"
+              : cn(
+                  "rtg-table-header-cell",
+                  styles.TableColumn(),
+                  "text-center font-bold"
+                ),
             TableColumnClassName,
-            "text-center font-bold",
             headerGroupClassName
           )}
           style={{

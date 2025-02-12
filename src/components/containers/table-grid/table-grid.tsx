@@ -157,6 +157,7 @@ function TableGridComponent<T extends Record<string, unknown>>(
                     customRender?.renderHeader?.(group.columns[0] as Column<T>),
                 }}
                 tableInstance={tableInstance}
+                withoutTailwind
               />
             )}
 
