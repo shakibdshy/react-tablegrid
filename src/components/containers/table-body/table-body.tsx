@@ -4,6 +4,7 @@ import { TableRow } from "@/components/core/table-row/table-row";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Empty } from "@/components/ui/empty";
 import type { useTableGrid } from "@/hooks/use-table-grid";
+import "./table-body.css";
 
 interface TableBodyProps<T extends Record<string, unknown>> {
   className?: string;
@@ -21,6 +22,7 @@ interface TableBodyProps<T extends Record<string, unknown>> {
     loading?: () => React.ReactNode;
     row?: (props: { row: T; rowIndex: number }) => React.ReactNode;
   };
+  withoutTailwind?: boolean;
 }
 
 export function TableBody<T extends Record<string, unknown>>({
@@ -31,6 +33,7 @@ export function TableBody<T extends Record<string, unknown>>({
   customRender,
   bodyRowClassName,
   bodyCellClassName,
+  withoutTailwind = false,
 }: TableBodyProps<T>) {
   const styles = tableStyles();
   const {
@@ -50,7 +53,9 @@ export function TableBody<T extends Record<string, unknown>>({
     return (
       <div
         className={cn(
-          "rtg-loading flex items-center justify-center p-8",
+          withoutTailwind 
+            ? "rtg-body-loading"
+            : cn("rtg-loading flex items-center justify-center p-8", className),
           className
         )}
         style={style}
@@ -58,7 +63,9 @@ export function TableBody<T extends Record<string, unknown>>({
         aria-busy="true"
         aria-live="polite"
       >
-        <LoadingSpinner />
+        <div className={withoutTailwind ? "rtg-loading-spinner" : undefined}>
+          <LoadingSpinner />
+        </div>
       </div>
     );
   }
@@ -74,7 +81,12 @@ export function TableBody<T extends Record<string, unknown>>({
 
     return (
       <div
-        className={cn("flex items-center justify-center p-8", className)}
+        className={cn(
+          withoutTailwind 
+            ? "rtg-body-empty"
+            : cn("flex items-center justify-center p-8", className),
+          className
+        )}
         style={style}
         role="status"
         aria-label="No data available"
@@ -88,7 +100,12 @@ export function TableBody<T extends Record<string, unknown>>({
 
   return (
     <div
-      className={cn("rtg-table-body", styles.body(), className)}
+      className={cn(
+        withoutTailwind 
+          ? "rtg-body"
+          : cn("rtg-table-body", styles.body()),
+        className
+      )}
       style={style}
       role="rowgroup"
       aria-label="Table body"
@@ -99,8 +116,12 @@ export function TableBody<T extends Record<string, unknown>>({
           row={row}
           rowIndex={index}
           tableInstance={tableInstance}
-          className={bodyRowClassName}
+          className={cn(
+            withoutTailwind ? "rtg-body-row" : undefined,
+            bodyRowClassName
+          )}
           cellClassName={bodyCellClassName}
+          withoutTailwind={withoutTailwind}
         />
       ))}
     </div>

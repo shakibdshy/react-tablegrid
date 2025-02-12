@@ -234,6 +234,7 @@ function TableGridComponent<T extends Record<string, unknown>>(
                 bodyCellClassName={styleConfig?.body?.cellClassName}
                 style={styleConfig?.body?.style}
                 tableInstance={tableInstance}
+                withoutTailwind
               />
             )}
           </div>
