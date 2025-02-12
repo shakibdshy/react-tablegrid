@@ -3,7 +3,7 @@ import { useTableGrid } from "@/hooks/use-table-grid";
 import { cn } from "@/utils/cn";
 import { tableStyles } from "@/styles/table.style";
 import type { TableCustomComponents } from "@/types/table.types";
-import { HeaderCell } from "./header-cell";
+import { TableColumn } from "./header-cell";
 import { getGridTemplateColumns, reorderColumns } from "@/utils/table-helper";
 import { useMemo } from "react";
 
@@ -13,14 +13,14 @@ interface TableHeaderProps<T extends Record<string, unknown>> {
   style?: React.CSSProperties;
   components?: TableCustomComponents<T>;
   enableColumnResize?: boolean;
-  headerCellClassName?: string;
+  TableColumnClassName?: string;
   headerRowClassName?: string;
 }
 
 export function TableHeader<T extends Record<string, unknown>>({
   tableInstance,
   className,
-  headerCellClassName,
+  TableColumnClassName,
   headerRowClassName,
   style,
   components,
@@ -64,7 +64,7 @@ export function TableHeader<T extends Record<string, unknown>>({
           }
 
           return (
-            <HeaderCell<T>
+            <TableColumn<T>
               key={String(column.id)}
               tableInstance={tableInstance}
               column={column}
@@ -74,7 +74,7 @@ export function TableHeader<T extends Record<string, unknown>>({
                 column.className,
                 isPinnedLeft && "sticky left-0 z-[35] shadow-[1px_0_0_0_theme(colors.gray.200)]",
                 isPinnedRight && "sticky right-0 z-[35] shadow-[-1px_0_0_0_theme(colors.gray.200)]",
-                headerCellClassName,
+                TableColumnClassName,
               )}
               style={{
                 ...(isPinnedLeft && { left: `${leftOffset}px`, zIndex: 35 }),

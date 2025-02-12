@@ -9,7 +9,7 @@ interface TableHeaderGroupProps<T extends Record<string, unknown>> {
   className?: string;
   style?: React.CSSProperties;
   tableInstance: ReturnType<typeof useTableGrid<T>>;
-  headerCellClassName?: string;
+  TableColumnClassName?: string;
   customRender?: {
     group: (group: HeaderGroup<T>) => React.ReactNode;
   };
@@ -42,7 +42,7 @@ export function TableHeaderGroup<T extends Record<string, unknown>>({
   style,
   tableInstance,
   customRender,
-  headerCellClassName,
+  TableColumnClassName,
   headerGroupClassName,
 }: TableHeaderGroupProps<T>) {
   const styles = tableStyles();
@@ -92,8 +92,8 @@ export function TableHeaderGroup<T extends Record<string, unknown>>({
           key={group.id}
           className={cn(
             "rtg-table-header-cell",
-            styles.headerCell(),
-            headerCellClassName,
+            styles.TableColumn(),
+            TableColumnClassName,
             "text-center font-bold",
             headerGroupClassName
           )}

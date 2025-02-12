@@ -1,3 +1,4 @@
+"use client";
 import { forwardRef, useRef, useImperativeHandle } from "react";
 import { cn } from "@/utils/cn";
 import { tableStyles } from "@/styles/table.style";
@@ -162,7 +163,7 @@ function TableGridComponent<T extends Record<string, unknown>>(
                 styleConfig?.header?.className,
                 "sticky top-0 z-10"
               )}
-              headerCellClassName={styleConfig?.header?.headerCellClassName}
+              TableColumnClassName={styleConfig?.header?.TableColumnClassName}
               headerRowClassName={styleConfig?.header?.headerRowClassName}
               style={styleConfig?.header?.style}
               components={components}

@@ -39,7 +39,7 @@ const headerStyles = {
     "isolate",
     // "transition-colors duration-200",
   ],
-  headerCell: [
+  TableColumn: [
     "px-3 py-3",
     "bg-gray-100 dark:bg-gray-700",
     "text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-100",

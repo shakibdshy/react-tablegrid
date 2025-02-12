@@ -7,7 +7,7 @@ import type { Column } from "@/types/column.types";
 import type { useTableGrid } from "@/hooks/use-table-grid";
 import type { TableCustomComponents } from "@/types/table.types";
 
-interface HeaderCellProps<T extends Record<string, unknown>> {
+interface TableColumnProps<T extends Record<string, unknown>> {
   tableInstance: ReturnType<typeof useTableGrid<T>>;
   column: Column<T>;
   className?: string;
@@ -17,14 +17,14 @@ interface HeaderCellProps<T extends Record<string, unknown>> {
   enableColumnResize?: boolean;
 }
 
-function HeaderCellBase<T extends Record<string, unknown>>({
+function TableColumnBase<T extends Record<string, unknown>>({
   tableInstance,
   column,
   className,
   width,
   style,
   enableColumnResize = false,
-}: HeaderCellProps<T>) {
+}: TableColumnProps<T>) {
   const styles = tableStyles();
   const {
     state: { sortColumn, sortDirection },
@@ -52,7 +52,7 @@ function HeaderCellBase<T extends Record<string, unknown>>({
       data-column-id={String(column.id)}
       className={cn(
         "rtg-table-header-cell",
-        styles.headerCell(),
+        styles.TableColumn(),
         className,
         "group relative"
       )}
@@ -101,4 +101,4 @@ function HeaderCellBase<T extends Record<string, unknown>>({
   );
 }
 
-export const HeaderCell = memo(HeaderCellBase) as typeof HeaderCellBase;
+export const TableColumn = memo(TableColumnBase) as typeof TableColumnBase;
