@@ -5,7 +5,7 @@
   --rtg-header-hover-bg: rgba(229, 231, 235, 0.5);
   --rtg-header-shadow: 1px 0 0 0 var(--rtg-header-border);
   --rtg-header-z-index: 30;
-  --rtg-header-padding: 12px;
+  --rtg-header-padding: 14px;
   --rtg-header-font-size: 12px;
   --rtg-header-font-weight: 600;
   --rtg-header-transition: all 0.2s ease;
@@ -66,4 +66,15 @@
   right: 0;
   z-index: 35;
   box-shadow: calc(var(--rtg-header-shadow) * -1);
+}
+
+/* Dark mode support - Updated with more distinct colors */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --rtg-header-bg: #111827;  /* Darker background */
+    --rtg-header-border: #1f2937;  /* Darker border */
+    --rtg-header-text: #f3f4f6;  /* Brighter text */
+    --rtg-header-hover-bg: rgba(31, 41, 55, 0.7);  /* More visible hover */
+    --rtg-header-shadow: 1px 0 0 0 var(--rtg-header-border);
+  }
 }
