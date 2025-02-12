@@ -3,6 +3,7 @@ import { cn } from "@/utils/cn";
 import { tableStyles } from "@/styles/table.style";
 import type { Column } from "@/types/column.types";
 import type { UpdateDataFn } from "@/types/table.types";
+import "./table-cell.css";
 
 interface TableCellProps<T> {
   column: Column<T>;
@@ -26,6 +27,8 @@ interface TableCellProps<T> {
     row: T,
     value: T[keyof T]
   ) => React.ReactNode;
+  withoutTailwind?: boolean;
+  isEditing?: boolean;
 }
 
 export function TableCell<T extends Record<string, unknown>>({
@@ -40,6 +43,8 @@ export function TableCell<T extends Record<string, unknown>>({
   style,
   components,
   customRender,
+  withoutTailwind = false,
+  isEditing = false,
 }: TableCellProps<T>) {
   const styles = tableStyles();
 
@@ -58,7 +63,10 @@ export function TableCell<T extends Record<string, unknown>>({
   if (customRender) {
     return (
       <div
-        className={cn("rtg-table-cell", styles.cell(), className)}
+        className={cn(
+          withoutTailwind ? "rtg-cell" : cn("rtg-table-cell", styles.cell()),
+          className
+        )}
         style={{
           width: width ? `${width}px` : undefined,
           minWidth: width ? `${width}px` : undefined,
@@ -77,7 +85,10 @@ export function TableCell<T extends Record<string, unknown>>({
   if (components?.Cell) {
     return (
       <div
-        className={cn("rtg-table-cell", styles.cell(), className)}
+        className={cn(
+          withoutTailwind ? "rtg-cell" : cn("rtg-table-cell", styles.cell()),
+          className
+        )}
         style={{
           width: width ? `${width}px` : undefined,
           minWidth: width ? `${width}px` : undefined,
@@ -96,7 +107,12 @@ export function TableCell<T extends Record<string, unknown>>({
   if (column.cell) {
     return (
       <div
-        className={cn("rtg-table-cell", styles.cell(), className)}
+        className={cn(
+          withoutTailwind
+            ? ["rtg-cell", isEditing && "rtg-cell--editing"]
+            : cn("rtg-table-cell", styles.cell()),
+          className
+        )}
         style={{
           width: width ? `${width}px` : undefined,
           minWidth: width ? `${width}px` : undefined,
@@ -126,7 +142,10 @@ export function TableCell<T extends Record<string, unknown>>({
   // Default cell renderer
   return (
     <div
-      className={cn("rtg-table-cell", styles.cell(), className)}
+      className={cn(
+        withoutTailwind ? "rtg-cell" : cn("rtg-table-cell", styles.cell()),
+        className
+      )}
       style={{
         width: width ? `${width}px` : undefined,
         minWidth: width ? `${width}px` : undefined,
@@ -136,7 +155,13 @@ export function TableCell<T extends Record<string, unknown>>({
       aria-colindex={Number(column.id) + 1}
       data-column-id={String(column.id)}
     >
-      {String(value)}
+      <div
+        className={
+          withoutTailwind ? "rtg-cell-content" : "flex items-center gap-2"
+        }
+      >
+        {String(value)}
+      </div>
     </div>
   );
 }
