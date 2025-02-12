@@ -103,6 +103,7 @@ function TableGridComponent<T extends Record<string, unknown>>(
           components={components}
           customRender={customRender?.renderSearch}
           tableInstance={tableInstance}
+          // withoutTailwind
         />
       )}
 

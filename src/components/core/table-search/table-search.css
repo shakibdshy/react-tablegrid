@@ -1,0 +1,76 @@
+.rtg-search-container {
+  --rtg-search-margin-bottom: 1rem;
+  --rtg-search-transition: all 0.2s ease;
+  --rtg-search-bg: #ffffff;
+  --rtg-search-border: #e5e7eb;
+  --rtg-search-text: #111827;
+  --rtg-search-placeholder: #9ca3af;
+  --rtg-search-focus-ring: rgba(59, 130, 246, 0.5);
+  --rtg-search-padding: 0.5rem 1rem;
+  --rtg-search-border-radius: 0.5rem;
+  --rtg-search-font-size: 0.875rem;
+
+  margin-bottom: var(--rtg-search-margin-bottom);
+  transition: var(--rtg-search-transition);
+}
+
+.rtg-search-input {
+  width: 100%;
+  padding: var(--rtg-search-padding);
+  background-color: var(--rtg-search-bg);
+  border: 1px solid var(--rtg-search-border);
+  border-radius: var(--rtg-search-border-radius);
+  color: var(--rtg-search-text);
+  font-size: var(--rtg-search-font-size);
+  transition: var(--rtg-search-transition);
+}
+
+.rtg-search-input::placeholder {
+  color: var(--rtg-search-placeholder);
+}
+
+.rtg-search-input:focus {
+  outline: none;
+  border-color: transparent;
+  box-shadow: 0 0 0 2px var(--rtg-search-focus-ring);
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .rtg-search-container {
+    --rtg-search-bg: #1f2937;
+    --rtg-search-border: #374151;
+    --rtg-search-text: #f9fafb;
+    --rtg-search-placeholder: #6b7280;
+  }
+}
+
+/* Loading state */
+.rtg-search-loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+/* Error state */
+.rtg-search-error {
+  --rtg-search-error-border: #ef4444;
+  --rtg-search-error-bg: #fee2e2;
+  --rtg-search-error-text: #b91c1c;
+
+  border-color: var(--rtg-search-error-border);
+  background-color: var(--rtg-search-error-bg);
+  color: var(--rtg-search-error-text);
+}
+
+/* Screen reader only text */
+.rtg-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
