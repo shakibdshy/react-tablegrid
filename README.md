@@ -8,7 +8,7 @@ A powerful and flexible table grid component for React applications with Tailwin
 
 ## Demo & Documentation (Updated)
 
-[Example Demo](https://react-packages-doc.vercel.app/docs/react-tablegrid-pro)
+[Example Demo](https://react-packages-doc.vercel.app/docs/react-tablegrid)
 
 ## Prerequisites
 
