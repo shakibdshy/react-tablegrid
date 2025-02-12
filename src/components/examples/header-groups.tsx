@@ -49,6 +49,7 @@ const HeaderGroupsTable = () => {
         maxHeight="800px"
         variant="classic"
         headerGroups={true}
+        withoutTailwind
         onStateChange={(state) => {
           console.log("Table state changed:", state);
         }}

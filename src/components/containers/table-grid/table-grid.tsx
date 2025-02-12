@@ -17,6 +17,7 @@ import type {
 import type { ServerSideConfig } from "@/types/events.types";
 import type { Column, ColumnResizeInfoState } from "@/types/column.types";
 import { useTableGrid } from "@/hooks/use-table-grid";
+import "./table-grid.css";
 
 interface VirtualizationConfig {
   enabled: boolean;
@@ -42,6 +43,7 @@ interface TableGridProps<T extends Record<string, unknown>>
   state?: TableState<T>;
   columnResizeDirection?: "ltr" | "rtl";
   virtualization?: VirtualizationConfig;
+  withoutTailwind?: boolean;
 }
 
 export interface TableGridHandle {
@@ -68,6 +70,7 @@ function TableGridComponent<T extends Record<string, unknown>>(
     enableColumnResize,
     state,
     columnResizeDirection = "ltr",
+    withoutTailwind = false,
   }: TableGridProps<T>,
   ref: React.ForwardedRef<TableGridHandle>
 ) {
@@ -91,11 +94,13 @@ function TableGridComponent<T extends Record<string, unknown>>(
   }), []);
 
   return (
-    <div className="space-y-4">
+    <div className={withoutTailwind ? "rtg-grid-container" : "space-y-4"}>
       {enableFiltering && (
         <TableSearch
           className={cn(
-            styles.searchContainer(),
+            withoutTailwind 
+              ? undefined
+              : styles.searchContainer(),
             styleConfig?.utilityStyles?.searchContainerClassName
           )}
           searchInputClassName={styleConfig?.utilityStyles?.searchInputClassName}
@@ -103,15 +108,16 @@ function TableGridComponent<T extends Record<string, unknown>>(
           components={components}
           customRender={customRender?.renderSearch}
           tableInstance={tableInstance}
-          // withoutTailwind
+          withoutTailwind={withoutTailwind}
         />
       )}
 
       {/* Table Container */}
       <div
         className={cn(
-          "rtg-table-grid-wrapper",
-          styles.wrapper(),
+          withoutTailwind
+            ? "rtg-grid-wrapper"
+            : cn("rtg-table-grid-wrapper", styles.wrapper()),
           styleConfig?.container?.wrapperClassName,
           className
         )}
@@ -123,20 +129,28 @@ function TableGridComponent<T extends Record<string, unknown>>(
         <SimpleBar
           style={{ maxHeight }}
           className={cn(
-            styles.scrollContainer(),
-            styleConfig?.container?.scrollContainerClassName,
-            "scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600"
+            withoutTailwind
+              ? "rtg-grid-scroll-container"
+              : cn(
+                  styles.scrollContainer(),
+                  "scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600"
+                ),
+            styleConfig?.container?.scrollContainerClassName
           )}
           autoHide={false}
         >
           <div
             className={cn(
-              "rtg-table-grid",
-              styles.table(),
-              styleConfig?.container?.tableClassName,
-              "relative",
-              "will-change-transform",
-              "backface-visibility-hidden"
+              withoutTailwind
+                ? "rtg-grid"
+                : cn(
+                    "rtg-table-grid",
+                    styles.table(),
+                    "relative",
+                    "will-change-transform",
+                    "backface-visibility-hidden"
+                  ),
+              styleConfig?.container?.tableClassName
             )}
             role="table"
             aria-label="Data Grid"
@@ -146,10 +160,7 @@ function TableGridComponent<T extends Record<string, unknown>>(
             {/* Header Groups */}
             {headerGroups && (
               <TableHeaderGroup
-                className={cn(
-                  styleConfig?.header?.className,
-                  "sticky top-0 z-20"
-                )}
+                className={styleConfig?.header?.className}
                 headerGroupClassName={styleConfig?.header?.headerGroupClassName}
                 style={styleConfig?.header?.style}
                 customRender={{
@@ -157,23 +168,20 @@ function TableGridComponent<T extends Record<string, unknown>>(
                     customRender?.renderHeader?.(group.columns[0] as Column<T>),
                 }}
                 tableInstance={tableInstance}
-                withoutTailwind
+                withoutTailwind={withoutTailwind}
               />
             )}
 
             {/* Header */}
             <TableHeader
-              className={cn(
-                styleConfig?.header?.className,
-                "sticky top-0 z-10"
-              )}
+              className={styleConfig?.header?.className}
               TableColumnClassName={styleConfig?.header?.TableColumnClassName}
               headerRowClassName={styleConfig?.header?.headerRowClassName}
               style={styleConfig?.header?.style}
               components={components}
               tableInstance={tableInstance}
               enableColumnResize={enableColumnResize}
-              withoutTailwind
+              withoutTailwind={withoutTailwind}
             />
 
             {/* Body */}
@@ -195,14 +203,12 @@ function TableGridComponent<T extends Record<string, unknown>>(
                       }
                     : undefined,
                 }}
-                className={cn(
-                  styleConfig?.body?.className,
-                  "transition-colors"
-                )}
+                className={styleConfig?.body?.className}
                 bodyRowClassName={styleConfig?.body?.rowClassName}
                 bodyCellClassName={styleConfig?.body?.cellClassName}
                 style={styleConfig?.body?.style}
                 tableInstance={tableInstance}
+                withoutTailwind={withoutTailwind}
               />
             ) : (
               <TableBody
@@ -226,15 +232,12 @@ function TableGridComponent<T extends Record<string, unknown>>(
                       }
                     : undefined,
                 }}
-                className={cn(
-                  styleConfig?.body?.className,
-                  "transition-colors"
-                )}
+                className={styleConfig?.body?.className}
                 bodyRowClassName={styleConfig?.body?.rowClassName}
                 bodyCellClassName={styleConfig?.body?.cellClassName}
                 style={styleConfig?.body?.style}
                 tableInstance={tableInstance}
-                withoutTailwind
+                withoutTailwind={withoutTailwind}
               />
             )}
           </div>

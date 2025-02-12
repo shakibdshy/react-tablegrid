@@ -1,0 +1,77 @@
+/* Custom theme variables */
+:root {
+  --rtg-grid-bg: #ffffff;
+  --rtg-grid-border: #e5e7eb;
+  --rtg-grid-border-radius: 0.5rem;
+  --rtg-grid-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  --rtg-grid-max-height: 400px;
+  --rtg-grid-spacing: 1rem;
+  
+  /* Scrollbar */
+  --rtg-scrollbar-width: 6px;
+  --rtg-scrollbar-track: #f1f1f1;
+  --rtg-scrollbar-thumb: #c1c1c1;
+  --rtg-scrollbar-thumb-hover: #a1a1a1;
+}
+
+.rtg-grid-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rtg-grid-spacing);
+}
+
+.rtg-grid-wrapper {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--rtg-grid-border);
+  border-radius: var(--rtg-grid-border-radius);
+  background-color: var(--rtg-grid-bg);
+  box-shadow: var(--rtg-grid-shadow);
+  transition: all 0.2s ease;
+}
+
+.rtg-grid-scroll-container {
+  max-height: var(--rtg-grid-max-height);
+  overflow: auto;
+}
+
+/* Scrollbar styling */
+.rtg-grid-scroll-container::-webkit-scrollbar {
+  width: var(--rtg-scrollbar-width);
+  height: var(--rtg-scrollbar-width);
+}
+
+.rtg-grid-scroll-container::-webkit-scrollbar-track {
+  background: var(--rtg-scrollbar-track);
+}
+
+.rtg-grid-scroll-container::-webkit-scrollbar-thumb {
+  background: var(--rtg-scrollbar-thumb);
+  border-radius: var(--rtg-scrollbar-width);
+}
+
+.rtg-grid-scroll-container::-webkit-scrollbar-thumb:hover {
+  background: var(--rtg-scrollbar-thumb-hover);
+}
+
+.rtg-grid {
+  position: relative;
+  width: 100%;
+  min-width: max-content;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --rtg-grid-bg: #1f2937;
+    --rtg-grid-border: #374151;
+    --rtg-grid-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
+    
+    /* Scrollbar dark mode */
+    --rtg-scrollbar-track: #111827;
+    --rtg-scrollbar-thumb: #4b5563;
+    --rtg-scrollbar-thumb-hover: #6b7280;
+  }
+} 
