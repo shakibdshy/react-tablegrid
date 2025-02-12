@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef } from "react";
 import { cn } from "@/utils/cn";
 import { tableStyles } from "@/styles/table.style";
+import "./table-resizer.css";
 
 interface TableResizerProps {
   columnId: string;
@@ -11,6 +12,7 @@ interface TableResizerProps {
   direction?: "ltr" | "rtl";
   isDragging?: boolean;
   width?: number;
+  withoutTailwind?: boolean;
 }
 
 export function TableResizer({
@@ -22,6 +24,7 @@ export function TableResizer({
   direction = "ltr",
   isDragging = false,
   width,
+  withoutTailwind = false,
 }: TableResizerProps) {
   const styles = tableStyles();
   const resizerRef = useRef<HTMLDivElement>(null);
@@ -82,10 +85,14 @@ export function TableResizer({
       <div
         ref={resizerRef}
         className={cn(
-          "rtg-table-resizer",
-          styles.resizer(),
-          direction,
-          isDragging && "cursor-col-resize"
+          withoutTailwind
+            ? ["rtg-resizer", direction, isDragging && "is-dragging"]
+            : [
+                "rtg-table-resizer",
+                styles.resizer(),
+                direction,
+                isDragging && "cursor-col-resize",
+              ]
         )}
         onMouseDown={handleMouseDown}
         onTouchStart={handleTouchStart}
@@ -97,7 +104,7 @@ export function TableResizer({
         aria-valuenow={width}
         tabIndex={0}
         onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
+          if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
             onResizeStart(columnId, e.currentTarget.getBoundingClientRect().x);
           }
@@ -107,9 +114,13 @@ export function TableResizer({
         <div
           ref={indicatorRef}
           className={cn(
-            "rtg-table-resizer-indicator",
-            styles.resizerIndicator(),
-            direction
+            withoutTailwind
+              ? ["rtg-resizer-indicator", direction]
+              : [
+                  "rtg-table-resizer-indicator",
+                  styles.resizerIndicator(),
+                  direction,
+                ]
           )}
           data-resize-indicator-id={columnId}
           role="presentation"
