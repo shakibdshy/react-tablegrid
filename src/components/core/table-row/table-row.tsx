@@ -6,6 +6,7 @@ import type { Column } from "@/types/column.types";
 import type { useTableGrid } from "@/hooks/use-table-grid";
 import { getGridTemplateColumns, reorderColumns } from "@/utils/table-helper";
 import { useMemo } from "react";
+import "./table-row.css";
 
 interface TableRowProps<T extends Record<string, unknown>> {
   row: T;
@@ -28,6 +29,8 @@ interface TableRowProps<T extends Record<string, unknown>> {
   ) => React.ReactNode;
   isVirtual?: boolean;
   virtualStyle?: React.CSSProperties;
+  withoutTailwind?: boolean;
+  isSelected?: boolean;
 }
 
 export function TableRow<T extends Record<string, unknown>>({
@@ -41,6 +44,8 @@ export function TableRow<T extends Record<string, unknown>>({
   isVirtual,
   virtualStyle,
   cellClassName,
+  withoutTailwind = false,
+  isSelected = false,
 }: TableRowProps<T>) {
   const styles = tableStyles();
   const {
@@ -60,7 +65,11 @@ export function TableRow<T extends Record<string, unknown>>({
 
   return (
     <div
-      className={cn("rtg-table-row", styles.row(), className)}
+      className={cn(
+        withoutTailwind
+          ? ["rtg-row", isSelected && "rtg-row--selected"]
+          : ["rtg-table-row", styles.row(), className]
+      )}
       style={{
         gridTemplateColumns: getGridTemplateColumns(
           orderedColumns,
@@ -76,7 +85,7 @@ export function TableRow<T extends Record<string, unknown>>({
       data-row-id={(row as { id?: string }).id}
       tabIndex={0}
       onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
+        if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
           handleClick();
         }
@@ -121,13 +130,21 @@ export function TableRow<T extends Record<string, unknown>>({
             value={value}
             width={width}
             className={cn(
-              cellClassName,
-              column.className,
-              isPinnedLeft &&
-                "sticky left-0 z-[25] shadow-[1px_0_0_0_theme(colors.gray.200)]",
-              isPinnedRight &&
-                "sticky right-0 z-[25] shadow-[-1px_0_0_0_theme(colors.gray.200)]",
-              isPinnedLeft || isPinnedRight ? "bg-background" : undefined
+              withoutTailwind
+                ? [
+                    "rtg-row-cell",
+                    isPinnedLeft && "rtg-row-cell--pinned-left",
+                    isPinnedRight && "rtg-row-cell--pinned-right",
+                  ]
+                : [
+                    cellClassName,
+                    column.className,
+                    isPinnedLeft &&
+                      "sticky left-0 z-[25] shadow-[1px_0_0_0_theme(colors.gray.200)]",
+                    isPinnedRight &&
+                      "sticky right-0 z-[25] shadow-[-1px_0_0_0_theme(colors.gray.200)]",
+                    isPinnedLeft || isPinnedRight ? "bg-background" : undefined,
+                  ]
             )}
             style={{
               ...(isPinnedLeft && { left: `${leftOffset}px` }),
@@ -135,6 +152,7 @@ export function TableRow<T extends Record<string, unknown>>({
             }}
             components={components}
             customRender={customRender}
+            withoutTailwind={withoutTailwind}
           />
         );
       })}
