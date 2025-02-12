@@ -1,0 +1,87 @@
+.rtg-column {
+  --rtg-column-padding: 12px;
+  --rtg-column-bg: var(--rtg-header-bg, #f3f4f6);
+  --rtg-column-text: var(--rtg-header-text, #6b7280);
+  --rtg-column-hover-bg: var(--rtg-header-hover-bg, rgba(229, 231, 235, 0.5));
+  --rtg-column-border: var(--rtg-header-border, #e5e7eb);
+  --rtg-column-font-size: var(--rtg-header-font-size, 12px);
+  --rtg-column-font-weight: var(--rtg-header-font-weight, 600);
+  --rtg-column-transition: var(--rtg-header-transition, all 0.2s ease);
+  
+  position: relative;
+  padding: var(--rtg-column-padding);
+  background-color: var(--rtg-column-bg);
+  color: var(--rtg-column-text);
+  font-size: var(--rtg-column-font-size);
+  font-weight: var(--rtg-column-font-weight);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  box-shadow: 0 0 0 1px var(--rtg-column-border);
+  transition: var(--rtg-column-transition);
+}
+
+.rtg-column:hover {
+  background-color: var(--rtg-column-hover-bg);
+}
+
+.rtg-column-content {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.rtg-column-content-inner {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+.rtg-column-sort-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 8px;
+  color: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: var(--rtg-column-transition);
+}
+
+.rtg-column-sort-button:hover {
+  color: var(--rtg-column-text-hover, #111827);
+}
+
+.rtg-column-resizer {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 4px;
+  cursor: col-resize;
+  background-color: transparent;
+  transition: background-color 0.2s ease;
+}
+
+.rtg-column-resizer:hover,
+.rtg-column-resizer.resizing {
+  background-color: var(--rtg-column-resizer-color, rgba(59, 130, 246, 0.5));
+}
+
+/* Pinned column styles */
+.rtg-column--pinned-left {
+  position: sticky;
+  left: 0;
+  z-index: 35;
+  box-shadow: 1px 0 0 0 var(--rtg-column-border);
+}
+
+.rtg-column--pinned-right {
+  position: sticky;
+  right: 0;
+  z-index: 35;
+  box-shadow: -1px 0 0 0 var(--rtg-column-border);
+}

@@ -3,6 +3,7 @@ import { cn } from "@/utils/cn";
 import { tableStyles } from "@/styles/table.style";
 import { TableResizer } from "@/components/ui/table-resizer";
 import { SortIcon } from "@/components/ui/sort-icon";
+import "./table-column.css";
 import type { Column } from "@/types/column.types";
 import type { useTableGrid } from "@/hooks/use-table-grid";
 import type { TableCustomComponents } from "@/types/table.types";
@@ -15,6 +16,7 @@ interface TableColumnProps<T extends Record<string, unknown>> {
   style?: React.CSSProperties;
   components?: TableCustomComponents<T>;
   enableColumnResize?: boolean;
+  withoutTailwind?: boolean;
 }
 
 function TableColumnBase<T extends Record<string, unknown>>({
@@ -24,6 +26,7 @@ function TableColumnBase<T extends Record<string, unknown>>({
   width,
   style,
   enableColumnResize = false,
+  withoutTailwind = false,
 }: TableColumnProps<T>) {
   const styles = tableStyles();
   const {
@@ -51,10 +54,10 @@ function TableColumnBase<T extends Record<string, unknown>>({
     <div
       data-column-id={String(column.id)}
       className={cn(
-        "rtg-table-header-cell",
-        styles.TableColumn(),
-        className,
-        "group relative"
+        withoutTailwind 
+          ? "rtg-column"
+          : cn("rtg-table-column", styles.TableColumn(), "group relative"),
+        className
       )}
       style={{
         width: width ? `${width}px` : undefined,
@@ -62,17 +65,25 @@ function TableColumnBase<T extends Record<string, unknown>>({
         ...style,
       }}
       role="columnheader"
-      aria-sort={isCurrentSortColumn ? (sortDirection === 'asc' ? 'ascending' : 'descending') : "none"}
+      aria-sort={
+        isCurrentSortColumn
+          ? sortDirection === "asc"
+            ? "ascending"
+            : "descending"
+          : "none"
+      }
       aria-colindex={Number(column.id) + 1}
     >
-      <div className="flex items-center w-full h-full">
-        <div className="flex-1 overflow-hidden flex items-center">
+      <div className={withoutTailwind ? "rtg-column-content" : "rtg-table-header-column-content flex items-center w-full h-full"}>
+        <div className={withoutTailwind ? "rtg-column-content-inner" : "rtg-table-header-column-content-inner flex-1 overflow-hidden flex items-center"}>
           <span>{headerContent}</span>
           {column.sortable && (
             <button
               onClick={handleSortClick}
-              className={styles.sortButton()}
-              aria-label={`Sort by ${String(column.header)} ${isCurrentSortColumn ? `(currently ${sortDirection})` : ''}`}
+              className={withoutTailwind ? "rtg-column-sort-button" : styles.sortButton()}
+              aria-label={`Sort by ${String(column.header)} ${
+                isCurrentSortColumn ? `(currently ${sortDirection})` : ""
+              }`}
               type="button"
             >
               <SortIcon
@@ -84,7 +95,7 @@ function TableColumnBase<T extends Record<string, unknown>>({
         </div>
 
         {enableColumnResize && (
-          <div className="absolute right-0 top-0 h-full">
+          <div className={withoutTailwind ? "rtg-column-resizer" : "rtg-table-column-resizer absolute right-0 top-0 h-full"}>
             <TableResizer
               columnId={String(column.id)}
               isResizing={isResizing}
@@ -93,6 +104,7 @@ function TableColumnBase<T extends Record<string, unknown>>({
               onResizeEnd={handleColumnResizeEnd}
               direction={columnResizeDirection}
               isDragging={!!columnResizeInfo.isResizingColumn}
+              withoutTailwind={withoutTailwind}
             />
           </div>
         )}
