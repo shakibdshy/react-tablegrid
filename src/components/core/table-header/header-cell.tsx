@@ -61,6 +61,9 @@ function HeaderCellBase<T extends Record<string, unknown>>({
         minWidth: width ? `${width}px` : undefined,
         ...style,
       }}
+      role="columnheader"
+      aria-sort={isCurrentSortColumn ? (sortDirection === 'asc' ? 'ascending' : 'descending') : "none"}
+      aria-colindex={Number(column.id) + 1}
     >
       <div className="flex items-center w-full h-full">
         <div className="flex-1 overflow-hidden flex items-center">
@@ -69,7 +72,7 @@ function HeaderCellBase<T extends Record<string, unknown>>({
             <button
               onClick={handleSortClick}
               className={styles.sortButton()}
-              aria-label={`Sort by ${String(column.header)}`}
+              aria-label={`Sort by ${String(column.header)} ${isCurrentSortColumn ? `(currently ${sortDirection})` : ''}`}
               type="button"
             >
               <SortIcon

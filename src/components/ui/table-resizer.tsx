@@ -10,6 +10,7 @@ interface TableResizerProps {
   onResizeEnd: () => void;
   direction?: "ltr" | "rtl";
   isDragging?: boolean;
+  width?: number;
 }
 
 export function TableResizer({
@@ -20,6 +21,7 @@ export function TableResizer({
   onResizeEnd,
   direction = "ltr",
   isDragging = false,
+  width,
 }: TableResizerProps) {
   const styles = tableStyles();
   const resizerRef = useRef<HTMLDivElement>(null);
@@ -89,6 +91,17 @@ export function TableResizer({
         onTouchStart={handleTouchStart}
         onClick={(e) => e.stopPropagation()}
         data-resize-column-id={columnId}
+        role="separator"
+        aria-orientation="vertical"
+        aria-label={`Resize column ${columnId}`}
+        aria-valuenow={width}
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            onResizeStart(columnId, e.currentTarget.getBoundingClientRect().x);
+          }
+        }}
       />
       {isResizing && (
         <div
@@ -99,8 +112,9 @@ export function TableResizer({
             direction
           )}
           data-resize-indicator-id={columnId}
+          role="presentation"
+          aria-hidden="true"
         />
-
       )}
     </>
   );

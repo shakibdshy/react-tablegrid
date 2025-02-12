@@ -64,6 +64,9 @@ export function TableCell<T extends Record<string, unknown>>({
           minWidth: width ? `${width}px` : undefined,
           ...style,
         }}
+        role="cell"
+        aria-colindex={Number(column.id) + 1}
+        data-column-id={String(column.id)}
       >
         {customRender(column, row, value)}
       </div>
@@ -80,7 +83,9 @@ export function TableCell<T extends Record<string, unknown>>({
           minWidth: width ? `${width}px` : undefined,
           ...style,
         }}
-
+        role="cell"
+        aria-colindex={Number(column.id) + 1}
+        data-column-id={String(column.id)}
       >
         <components.Cell column={column} row={row} value={value} />
       </div>
@@ -97,6 +102,9 @@ export function TableCell<T extends Record<string, unknown>>({
           minWidth: width ? `${width}px` : undefined,
           ...style,
         }}
+        role="cell"
+        aria-colindex={Number(column.id) + 1}
+        data-column-id={String(column.id)}
       >
         {column.cell({
           value,
@@ -124,6 +132,9 @@ export function TableCell<T extends Record<string, unknown>>({
         minWidth: width ? `${width}px` : undefined,
         ...style,
       }}
+      role="cell"
+      aria-colindex={Number(column.id) + 1}
+      data-column-id={String(column.id)}
     >
       {String(value)}
     </div>

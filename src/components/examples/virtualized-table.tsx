@@ -1,11 +1,14 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import dummyData from "@/data/dummy.json";
-import {
-  createColumnHelper,
-  TableGrid,
-  Column,
-} from "@shakibdshy/react-tablegrid";
+import { createColumnHelper } from "@/utils/column-helper";
+import { Column } from "@/types/column.types";
+import { TableContainer } from "../containers/table-container/table-container";
+// import {
+//   createColumnHelper,
+//   TableGrid,
+//   Column,
+// } from "@shakibdshy/react-tablegrid";
 
 type DataItem = {
   id: number;
@@ -63,45 +66,46 @@ const generateMoreData = () => {
 
 const VirtualizedTable = () => {
   const [virtualData] = useState(() => generateMoreData());
+  const tableRef = useRef<{ scrollTo: (index: number) => void }>(null);
+
+  const handleScrollToMiddle = () => {
+    const middleIndex = Math.floor(virtualData.length / 2);
+    tableRef.current?.scrollTo(middleIndex);
+  };
 
   return (
     <div className="p-4">
       <div className="flex flex-col gap-4 mb-4">
-        <h2 className="text-2xl font-bold">Virtualized Table</h2>
+        <div className="flex justify-between items-center">
+          <h2 className="text-2xl font-bold">Virtualized Table</h2>
+          <button
+            onClick={handleScrollToMiddle}
+            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
+            Scroll to Middle
+          </button>
+        </div>
         <p className="text-gray-600 dark:text-gray-400">
-          Displaying {virtualData.length.toLocaleString()} rows with
-          virtualization
+          Displaying {virtualData.length.toLocaleString()} rows with virtualization
         </p>
       </div>
 
       <div className="border rounded-lg overflow-hidden shadow-sm">
-        <TableGrid
+        <TableContainer
+          ref={tableRef}
           columns={columns}
           data={virtualData}
-          variant="modern"
+          enableFiltering
           virtualization={{
             enabled: true,
-            rowHeight: 52,
+            rowHeight: 60,
             overscan: 5,
-            scrollingDelay: 500,
-          }}
-          maxHeight="100%"
-          styleConfig={{
-            header: {
-              className:
-                "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200",
-            },
-            row: {
-              className:
-                "hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors",
-            },
-            cell: {
-              className: "px-4 py-3 text-sm text-gray-600 dark:text-gray-300",
+            scrollingDelay: 150,
+            onEndReached: () => {
+              console.log("onEndReached");
             },
           }}
-          onStateChange={(state) => {
-            console.log("Table state changed:", state);
-          }}
+          maxHeight="600px"
         />
       </div>
     </div>

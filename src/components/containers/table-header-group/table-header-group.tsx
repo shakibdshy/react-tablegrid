@@ -84,6 +84,8 @@ export function TableHeaderGroup<T extends Record<string, unknown>>({
           columnSizing
         ),
       }}
+      role="rowgroup"
+      aria-label="Column Groups"
     >
       {headerGroups.map((group) => (
         <div
@@ -98,6 +100,9 @@ export function TableHeaderGroup<T extends Record<string, unknown>>({
           style={{
             gridColumn: `span ${group.columns.length}`,
           }}
+          role="columnheader"
+          aria-label={`Column group: ${group.name}`}
+          aria-colspan={group.columns.length}
         >
           {renderGroupContent(group)}
         </div>
