@@ -1,6 +1,6 @@
 "use client";
 import dummyData from "@/data/dummy.json";
-import { TableContainer } from "../containers/table-container/table-container";
+import { TableGrid } from "../containers/table-grid/table-grid";
 import { createColumnHelper } from "@/utils/column-helper";
 import { Column } from "@/types/column.types";
 // import {
@@ -77,7 +77,7 @@ const ColumnPinningTable = () => {
       <div className="flex flex-col gap-4 mb-4">
         <h2 className="text-2xl font-bold">Column Pinning</h2>
       </div>
-      <TableContainer
+      <TableGrid
         columns={columns}
         data={dummyData}
         maxHeight="400px"

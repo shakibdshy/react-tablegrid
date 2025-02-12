@@ -3,7 +3,7 @@ import { useState, useRef } from "react";
 import dummyData from "@/data/dummy.json";
 import { createColumnHelper } from "@/utils/column-helper";
 import { Column } from "@/types/column.types";
-import { TableContainer } from "../containers/table-container/table-container";
+import { TableGrid } from "../containers/table-grid/table-grid";
 // import {
 //   createColumnHelper,
 //   TableGrid,
@@ -86,12 +86,13 @@ const VirtualizedTable = () => {
           </button>
         </div>
         <p className="text-gray-600 dark:text-gray-400">
-          Displaying {virtualData.length.toLocaleString()} rows with virtualization
+          Displaying {virtualData.length.toLocaleString()} rows with
+          virtualization
         </p>
       </div>
 
       <div className="border rounded-lg overflow-hidden shadow-sm">
-        <TableContainer
+        <TableGrid
           ref={tableRef}
           columns={columns}
           data={virtualData}

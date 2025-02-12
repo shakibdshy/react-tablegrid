@@ -26,7 +26,7 @@ interface VirtualizationConfig {
   getRowHeight?: (index: number) => number;
 }
 
-interface TableContainerProps<T extends Record<string, unknown>>
+interface TableGridProps<T extends Record<string, unknown>>
   extends Omit<TableProps<T>, "columns"> {
   style?: React.CSSProperties;
   customRender?: TableCustomRender<T>;
@@ -43,11 +43,11 @@ interface TableContainerProps<T extends Record<string, unknown>>
   virtualization?: VirtualizationConfig;
 }
 
-export interface TableContainerHandle {
+export interface TableGridHandle {
   scrollTo: (index: number) => void;
 }
 
-function TableContainerComponent<T extends Record<string, unknown>>(
+function TableGridComponent<T extends Record<string, unknown>>(
   {
     className,
     style,
@@ -67,8 +67,8 @@ function TableContainerComponent<T extends Record<string, unknown>>(
     enableColumnResize,
     state,
     columnResizeDirection = "ltr",
-  }: TableContainerProps<T>,
-  ref: React.ForwardedRef<TableContainerHandle>
+  }: TableGridProps<T>,
+  ref: React.ForwardedRef<TableGridHandle>
 ) {
   const styles = tableStyles({ variant });
   const tableInstance = useTableGrid<T>({
@@ -237,11 +237,11 @@ function TableContainerComponent<T extends Record<string, unknown>>(
   );
 }
 
-const TableContainer = forwardRef(TableContainerComponent) as (<T extends Record<string, unknown>>(
-  props: TableContainerProps<T> & { ref?: React.ForwardedRef<TableContainerHandle> }
+const TableGrid = forwardRef(TableGridComponent) as (<T extends Record<string, unknown>>(
+  props: TableGridProps<T> & { ref?: React.ForwardedRef<TableGridHandle> }
 ) => React.ReactElement) & { displayName?: string };
 
-TableContainer.displayName = "TableContainer";
+TableGrid.displayName = "TableGrid";
 
-export type { TableContainerProps };
-export { TableContainer };
+export type { TableGridProps };
+export { TableGrid };
