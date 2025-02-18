@@ -5,7 +5,7 @@ import dummyData from "@/data/dummy.json";
 //   TableGrid,
 //   Column,
 // } from "@shakibdshy/react-tablegrid";
-import { TableContainer as TableGrid } from "@/components/containers/table-container/table-container";
+import { TableGrid } from "@/components/containers/table-grid/table-grid";
 import { createColumnHelper } from "@/utils/column-helper";
 import type { Column } from "@/types/column.types";
 
@@ -49,6 +49,7 @@ const HeaderGroupsTable = () => {
         maxHeight="800px"
         variant="classic"
         headerGroups={true}
+        withoutTailwind
         onStateChange={(state) => {
           console.log("Table state changed:", state);
         }}

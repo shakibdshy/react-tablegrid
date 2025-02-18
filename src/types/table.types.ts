@@ -68,7 +68,7 @@ export interface TableStyleConfig {
     className?: string;
     style?: React.CSSProperties;
     headerRowClassName?: string;
-    headerCellClassName?: string;
+    TableColumnClassName?: string;
     headerGroupClassName?: string;
   };
 

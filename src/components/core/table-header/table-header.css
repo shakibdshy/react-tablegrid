@@ -1,0 +1,80 @@
+:root {
+  --rtg-header-bg: #f3f4f6;
+  --rtg-header-border: #e5e7eb;
+  --rtg-header-text: #6b7280;
+  --rtg-header-hover-bg: rgba(229, 231, 235, 0.5);
+  --rtg-header-shadow: 1px 0 0 0 var(--rtg-header-border);
+  --rtg-header-z-index: 30;
+  --rtg-header-padding: 14px;
+  --rtg-header-font-size: 12px;
+  --rtg-header-font-weight: 600;
+  --rtg-header-transition: all 0.2s ease;
+}
+
+.rtg-header {
+  background-color: var(--rtg-header-bg);
+  position: sticky;
+  top: 0;
+  z-index: var(--rtg-header-z-index);
+  transition: var(--rtg-header-transition);
+}
+
+.rtg-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-color: var(--rtg-header-border);
+}
+
+.rtg-header-row {
+  display: grid;
+  align-items: center;
+  position: relative;
+  isolation: isolate;
+  transition: var(--rtg-header-transition);
+}
+
+.rtg-header-column {
+  padding: var(--rtg-header-padding);
+  background-color: var(--rtg-header-bg);
+  color: var(--rtg-header-text);
+  font-size: var(--rtg-header-font-size);
+  font-weight: var(--rtg-header-font-weight);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  position: relative;
+  box-shadow: 0 0 0 1px var(--rtg-header-border);
+  transition: var(--rtg-header-transition);
+}
+
+.rtg-header-column:hover {
+  background-color: var(--rtg-header-hover-bg);
+}
+
+.rtg-header-column--pinned-left {
+  position: sticky;
+  left: 0;
+  z-index: 35;
+  box-shadow: var(--rtg-header-shadow);
+}
+
+.rtg-header-column--pinned-right {
+  position: sticky;
+  right: 0;
+  z-index: 35;
+  box-shadow: calc(var(--rtg-header-shadow) * -1);
+}
+
+/* Dark mode support - Updated with more distinct colors */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --rtg-header-bg: #111827;  /* Darker background */
+    --rtg-header-border: #1f2937;  /* Darker border */
+    --rtg-header-text: #f3f4f6;  /* Brighter text */
+    --rtg-header-hover-bg: rgba(31, 41, 55, 0.7);  /* More visible hover */
+    --rtg-header-shadow: 1px 0 0 0 var(--rtg-header-border);
+  }
+}

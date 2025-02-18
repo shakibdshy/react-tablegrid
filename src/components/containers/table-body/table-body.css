@@ -1,0 +1,109 @@
+/* Custom theme variables */
+:root {
+  --rtg-body-bg: #ffffff;
+  --rtg-body-text: #374151;
+  --rtg-body-border: #e5e7eb;
+  --rtg-body-divide-color: #e5e7eb;
+  --rtg-body-hover-bg: rgba(243, 244, 246, 0.5);
+  --rtg-body-even-bg: rgba(249, 250, 251, 0.3);
+}
+
+.rtg-body {
+  --rtg-body-bg: #ffffff;
+  --rtg-body-text: #374151;
+  --rtg-body-border: #e5e7eb;
+  --rtg-body-transition: all 0.2s ease;
+  --rtg-body-divide-color: #e5e7eb;
+  --rtg-body-hover-bg: rgba(243, 244, 246, 0.5);
+  --rtg-body-even-bg: rgba(249, 250, 251, 0.3);
+
+  position: relative;
+  isolation: isolate;
+  transition: var(--rtg-body-transition);
+  border-top: 1px solid var(--rtg-body-divide-color);
+}
+
+.rtg-body-loading {
+  --rtg-loading-bg: #ffffff;
+  --rtg-loading-text: #6b7280;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background-color: var(--rtg-loading-bg);
+  color: var(--rtg-loading-text);
+}
+
+.rtg-body-empty {
+  --rtg-empty-bg: #ffffff;
+  --rtg-empty-text: #6b7280;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background-color: var(--rtg-empty-bg);
+  color: var(--rtg-empty-text);
+  text-align: center;
+}
+
+.rtg-body-row {
+  display: grid;
+  align-items: center;
+  transition: var(--rtg-body-transition);
+  border-bottom: 1px solid var(--rtg-body-divide-color);
+}
+
+.rtg-body-row:hover {
+  background-color: var(--rtg-body-hover-bg);
+}
+
+.rtg-body-row:nth-child(even) {
+  background-color: var(--rtg-body-even-bg);
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .rtg-body {
+    --rtg-body-bg: #111827;
+    --rtg-body-text: #e5e7eb;
+    --rtg-body-border: #374151;
+    --rtg-body-divide-color: #374151;
+    --rtg-body-hover-bg: rgba(55, 65, 81, 0.5);
+    --rtg-body-even-bg: rgba(31, 41, 55, 0.3);
+  }
+
+  .rtg-body-loading {
+    --rtg-loading-bg: #111827;
+    --rtg-loading-text: #9ca3af;
+  }
+
+  .rtg-body-empty {
+    --rtg-empty-bg: #111827;
+    --rtg-empty-text: #9ca3af;
+  }
+}
+
+/* Loading spinner animation */
+.rtg-loading-spinner {
+  --rtg-spinner-size: 2rem;
+  --rtg-spinner-border: 2px;
+  --rtg-spinner-color: #6b7280;
+
+  width: var(--rtg-spinner-size);
+  height: var(--rtg-spinner-size);
+  border: var(--rtg-spinner-border) solid var(--rtg-spinner-color);
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

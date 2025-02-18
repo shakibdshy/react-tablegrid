@@ -1,10 +1,13 @@
 "use client";
 import dummyData from "@/data/dummy.json";
-import {
-  createColumnHelper,
-  TableGrid,
-  Column,
-} from "@shakibdshy/react-tablegrid";
+import { TableGrid } from "../containers/table-grid/table-grid";
+import { createColumnHelper } from "@/utils/column-helper";
+import { Column } from "@/types/column.types";
+// import {
+//   createColumnHelper,
+//   TableGrid,
+//   Column,
+// } from "@shakibdshy/react-tablegrid";
 
 interface DataItem {
   id: number;
@@ -45,10 +48,6 @@ const columns: Column<DataItem>[] = [
     header: "Location",
     sortable: true,
   }),
-  columnHelper.accessor("joinDate", {
-    header: "Join Date",
-    sortable: true,
-  }),
   columnHelper.accessor("phone", {
     header: "Phone",
     sortable: true,
@@ -82,7 +81,6 @@ const ColumnPinningTable = () => {
         columns={columns}
         data={dummyData}
         maxHeight="400px"
-        variant="classic"
         onStateChange={(state) => {
           console.log("Table state changed:", state);
         }}

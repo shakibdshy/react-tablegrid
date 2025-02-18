@@ -1,0 +1,98 @@
+/* Custom theme variables */
+:root {
+  --rtg-row-bg: #ffffff;
+  --rtg-row-hover-bg: rgba(243, 244, 246, 0.5);
+  --rtg-row-active-bg: rgba(59, 130, 246, 0.1);
+  --rtg-row-even-bg: rgba(249, 250, 251, 0.3);
+  --rtg-row-border: #e5e7eb;
+  --rtg-row-focus-ring: #3b82f6;
+  --rtg-cell-text: #374151;
+}
+
+.rtg-row {
+  --rtg-row-bg: #ffffff;
+  --rtg-row-hover-bg: rgba(243, 244, 246, 0.5);
+  --rtg-row-active-bg: rgba(59, 130, 246, 0.1);
+  --rtg-row-even-bg: rgba(249, 250, 251, 0.3);
+  --rtg-row-border: #e5e7eb;
+  --rtg-row-transition: all 0.2s ease;
+  --rtg-row-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+
+  display: grid;
+  align-items: center;
+  position: relative;
+  background-color: var(--rtg-row-bg);
+  transition: var(--rtg-row-transition);
+  border-bottom: 1px solid var(--rtg-row-border);
+  cursor: pointer;
+}
+
+.rtg-row:hover {
+  background-color: var(--rtg-row-hover-bg);
+}
+
+.rtg-row:active {
+  background-color: var(--rtg-row-active-bg);
+}
+
+.rtg-row:nth-child(even) {
+  background-color: var(--rtg-row-even-bg);
+}
+
+.rtg-row:focus {
+  outline: 2px solid var(--rtg-row-focus-ring, #3b82f6);
+  outline-offset: -2px;
+}
+
+.rtg-row-cell {
+  --rtg-cell-padding: 0.75rem;
+  --rtg-cell-text: #374151;
+  --rtg-cell-bg: transparent;
+  --rtg-cell-border: var(--rtg-row-border);
+
+  padding: var(--rtg-cell-padding);
+  color: var(--rtg-cell-text);
+  background-color: var(--rtg-cell-bg);
+  position: relative;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rtg-row-cell--pinned-left {
+  position: sticky;
+  left: 0;
+  z-index: 25;
+  box-shadow: 1px 0 0 0 var(--rtg-cell-border);
+  background-color: var(--rtg-row-bg);
+}
+
+.rtg-row-cell--pinned-right {
+  position: sticky;
+  right: 0;
+  z-index: 25;
+  box-shadow: -1px 0 0 0 var(--rtg-cell-border);
+  background-color: var(--rtg-row-bg);
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .rtg-row {
+    --rtg-row-bg: #1f2937;
+    --rtg-row-hover-bg: rgba(55, 65, 81, 0.5);
+    --rtg-row-active-bg: rgba(59, 130, 246, 0.2);
+    --rtg-row-even-bg: rgba(31, 41, 55, 0.3);
+    --rtg-row-border: #374151;
+  }
+
+  .rtg-row-cell {
+    --rtg-cell-text: #e5e7eb;
+    --rtg-cell-border: var(--rtg-row-border);
+  }
+}
+
+/* Selected state */
+.rtg-row--selected {
+  --rtg-row-selected-bg: rgba(59, 130, 246, 0.1);
+  background-color: var(--rtg-row-selected-bg);
+}
