@@ -8,19 +8,7 @@ A powerful and flexible table grid component for React applications with Tailwin
 
 ## Demo & Documentation (Updated)
 
-[Example Demo](https://react-packages-doc.vercel.app/docs/react-tablegrid)
-
-## Prerequisites
-
-Before installing this package, make sure you have the following peer dependencies installed in your project:
-
-```bash
-# Required peer dependencies
-npm install react@>=18.0.0 react-dom@>=18.0.0 tailwindcss@^3.4.1
-
-# If using TypeScript (recommended)
-npm install @types/react@^19.0.0
-```
+[Demo](https://react-packages-doc.vercel.app/docs/react-tablegrid)
 
 ## Installation
 
