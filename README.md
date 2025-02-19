@@ -23,6 +23,16 @@ yarn add @shakibdshy/react-tablegrid
 pnpm add @shakibdshy/react-tablegrid
 ```
 
+### Import the CSS styles
+
+ ```tsx
+ // Method 1: Import styles
+ import '@shakibdshy/react-tablegrid/styles';
+
+ // OR Method 2: Import CSS file directly
+ import '@shakibdshy/react-tablegrid/dist/table-grid.css';
+ ```
+
 ## Setup
 
 ```tsx
