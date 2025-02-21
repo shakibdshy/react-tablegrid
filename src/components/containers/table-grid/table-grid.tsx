@@ -17,7 +17,8 @@ import type {
 import type { ServerSideConfig } from "@/types/events.types";
 import type { Column, ColumnResizeInfoState } from "@/types/column.types";
 import { useTableGrid } from "@/hooks/use-table-grid";
-import "./table-grid.css";
+// import "./table-grid.css";
+import "@/styles/table-grid.css";
 
 interface VirtualizationConfig {
   enabled: boolean;

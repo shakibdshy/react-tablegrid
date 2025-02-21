@@ -1,0 +1,507 @@
+/**
+ * @file table-grid.css
+ * @description Core styles and CSS variables for the React Table Grid component.
+ * This file provides a comprehensive set of customizable variables and styles for building
+ * responsive, accessible, and feature-rich data tables.
+ *
+ * Features:
+ * - Customizable theming through CSS variables
+ * - Dark mode support
+ * - Responsive layout with sticky headers
+ * - Column resizing and pinning
+ * - Row hover and active states
+ * - Virtualized scrolling support
+ * - Search functionality styling
+ * - Accessible scrollbar customization
+ */
+
+/* Table Grid - Core Styles and Variables */
+:root {
+  /* Grid Variables
+   * Controls the overall appearance of the grid container
+   * --rtg-grid-bg: Background color of the grid
+   * --rtg-grid-border: Border color for the grid container
+   * --rtg-grid-border-radius: Rounded corners of the grid
+   * --rtg-grid-shadow: Box shadow for depth
+   * --rtg-grid-max-height: Maximum height before scrolling
+   * --rtg-grid-spacing: Gap between grid elements
+   */
+  --rtg-grid-bg: #ffffff;
+  --rtg-grid-border: #e5e7eb;
+  --rtg-grid-border-radius: 0.5rem;
+  --rtg-grid-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  --rtg-grid-max-height: 400px;
+  --rtg-grid-spacing: 1rem;
+
+  /* Header Variables
+   * Defines the appearance of the table header
+   * --rtg-header-bg: Header background color
+   * --rtg-header-text: Header text color
+   * --rtg-header-hover-bg: Background color on hover
+   * --rtg-header-z-index: Stacking context for sticky header
+   */
+  --rtg-header-bg: #f3f4f6;
+  --rtg-header-border: #e5e7eb;
+  --rtg-header-text: #6b7280;
+  --rtg-header-hover-bg: rgba(229, 231, 235, 0.5);
+  --rtg-header-shadow: 1px 0 0 0 var(--rtg-header-border);
+  --rtg-header-z-index: 30;
+  --rtg-header-padding: 14px;
+  --rtg-header-font-size: 12px;
+  --rtg-header-font-weight: 600;
+  --rtg-header-transition: all 0.2s ease;
+
+  /* Header Group Variables
+   * Styles for grouped headers in the table
+   * Provides visual hierarchy for complex data structures
+   */
+  --rtg-header-group-bg: #f9fafb;
+  --rtg-header-group-border: #e5e7eb;
+  --rtg-header-group-text: #111827;
+  --rtg-header-group-cell-bg: var(--rtg-header-group-bg);
+  --rtg-header-group-cell-text: var(--rtg-header-group-text);
+
+  /* Body Variables
+   * Controls the appearance of the table body
+   * Includes styles for alternating rows and hover states
+   */
+  --rtg-body-bg: #ffffff;
+  --rtg-body-text: #374151;
+  --rtg-body-border: #e5e7eb;
+  --rtg-body-divide-color: #e5e7eb;
+  --rtg-body-hover-bg: rgba(243, 244, 246, 0.5);
+  --rtg-body-even-bg: rgba(249, 250, 251, 0.3);
+
+  /* Row Variables
+   * Defines the appearance of table rows
+   * Includes hover, active, and focus states
+   */
+  --rtg-row-bg: #ffffff;
+  --rtg-row-hover-bg: rgba(243, 244, 246, 0.5);
+  --rtg-row-active-bg: rgba(59, 130, 246, 0.1);
+  --rtg-row-even-bg: rgba(249, 250, 251, 0.3);
+  --rtg-row-border: #e5e7eb;
+  --rtg-row-focus-ring: #3b82f6;
+
+  /* Cell Variables
+   * Controls the appearance of individual cells
+   * Includes text, background, and border styles
+   */
+  --rtg-cell-text: #374151;
+  --rtg-cell-bg: transparent;
+  --rtg-cell-border: #e5e7eb;
+  --rtg-cell-hover-bg: rgba(243, 244, 246, 0.8);
+  --rtg-cell-focus-ring: #3b82f6;
+  --rtg-cell-padding: 0.75rem;
+
+  /* Resizer Variables
+   * Styles for the column resizing handle
+   * Includes width and color states
+   */
+  --rtg-resizer-width: 4px;
+  --rtg-resizer-color: rgba(59, 130, 246, 0.2);
+  --rtg-resizer-color-active: rgba(59, 130, 246, 0.4);
+  --rtg-resizer-border-color: #e5e7eb;
+
+  /* Search Variables
+   * Defines the appearance of the search input
+   * Includes spacing, colors, and focus states
+   */
+  --rtg-search-margin-bottom: 1rem;
+  --rtg-search-bg: #ffffff;
+  --rtg-search-border: #e5e7eb;
+  --rtg-search-text: #111827;
+  --rtg-search-placeholder: #9ca3af;
+  --rtg-search-focus-ring: rgba(59, 130, 246, 0.5);
+
+  /* Scrollbar Variables
+   * Customizes the appearance of scrollbars
+   * Supports both webkit and standard scrollbars
+   */
+  --rtg-scrollbar-width: 6px;
+  --rtg-scrollbar-track: #f1f1f1;
+  --rtg-scrollbar-thumb: #c1c1c1;
+  --rtg-scrollbar-thumb-hover: #a1a1a1;
+
+  /* Virtualization Variables
+   * Controls the height for virtualized tables
+   * Optimizes performance for large datasets
+   */
+  --rtg-virtualized-height: 520px;
+}
+
+/* Grid Container */
+.rtg-grid-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rtg-grid-spacing);
+}
+
+.rtg-grid-wrapper {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--rtg-grid-border);
+  border-radius: var(--rtg-grid-border-radius);
+  background-color: var(--rtg-grid-bg);
+  box-shadow: var(--rtg-grid-shadow);
+  transition: all 0.2s ease;
+}
+
+.rtg-grid {
+  position: relative;
+  width: 100%;
+  min-width: max-content;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+/* Header Styles */
+.rtg-header {
+  background-color: var(--rtg-header-bg);
+  position: sticky;
+  top: 0;
+  z-index: var(--rtg-header-z-index);
+  transition: var(--rtg-header-transition);
+}
+
+.rtg-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-color: var(--rtg-header-border);
+}
+
+.rtg-header-row {
+  display: grid;
+  align-items: center;
+  position: relative;
+  isolation: isolate;
+  transition: var(--rtg-header-transition);
+}
+
+/* Header Group Styles */
+.rtg-header-group {
+  padding: 0;
+  border-bottom: 1px solid var(--rtg-header-group-border);
+  background-color: var(--rtg-header-group-bg);
+  color: var(--rtg-header-group-text);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  transition: all 0.2s ease;
+  display: grid;
+}
+
+.rtg-header-group-cell {
+  padding: 0.75rem;
+  font-weight: 700;
+  font-size: 0.875rem;
+  text-align: center;
+  background-color: var(--rtg-header-group-cell-bg);
+  color: var(--rtg-header-group-cell-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Column Styles */
+.rtg-column {
+  position: relative;
+  padding: var(--rtg-header-padding);
+  background-color: var(--rtg-header-bg);
+  color: var(--rtg-header-text);
+  font-size: var(--rtg-header-font-size);
+  font-weight: var(--rtg-header-font-weight);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  box-shadow: 0 0 0 1px var(--rtg-header-border);
+  transition: var(--rtg-header-transition);
+}
+
+.rtg-column:hover {
+  background-color: var(--rtg-header-hover-bg);
+}
+
+.rtg-column-content {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.rtg-column-content-inner {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+.rtg-column-sort-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 8px;
+  color: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+/* Body Styles */
+.rtg-body {
+  position: relative;
+  isolation: isolate;
+  transition: all 0.2s ease;
+  border-top: 1px solid var(--rtg-body-divide-color);
+}
+
+.rtg-body-loading,
+.rtg-body-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background-color: var(--rtg-body-bg);
+  color: var(--rtg-body-text);
+}
+
+.rtg-body-empty {
+  text-align: center;
+}
+
+/* Row Styles */
+.rtg-row {
+  display: grid;
+  align-items: center;
+  position: relative;
+  background-color: var(--rtg-row-bg);
+  transition: all 0.2s ease;
+  border-bottom: 1px solid var(--rtg-row-border);
+  cursor: pointer;
+}
+
+.rtg-row:hover {
+  background-color: var(--rtg-row-hover-bg);
+}
+
+.rtg-row:active {
+  background-color: var(--rtg-row-active-bg);
+}
+
+.rtg-row:nth-child(even) {
+  background-color: var(--rtg-row-even-bg);
+}
+
+.rtg-row:focus {
+  outline: 2px solid var(--rtg-row-focus-ring);
+  outline-offset: -2px;
+}
+
+/* Cell Styles */
+.rtg-cell {
+  padding: var(--rtg-cell-padding);
+  color: var(--rtg-cell-text);
+  background-color: var(--rtg-cell-bg);
+  position: relative;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  box-shadow: 0 0 0 1px var(--rtg-cell-border);
+}
+
+.rtg-cell:hover {
+  background-color: var(--rtg-cell-hover-bg);
+}
+
+.rtg-cell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: var(--rtg-cell-bg);
+  z-index: -10;
+}
+
+/* Pinned Styles */
+.rtg-cell--pinned-left,
+.rtg-column--pinned-left {
+  position: sticky;
+  left: 0;
+  z-index: 25;
+  box-shadow: 1px 0 0 0 var(--rtg-cell-border);
+}
+
+.rtg-cell--pinned-right,
+.rtg-column--pinned-right {
+  position: sticky;
+  right: 0;
+  z-index: 25;
+  box-shadow: -1px 0 0 0 var(--rtg-cell-border);
+}
+
+/* Resizer Styles */
+.rtg-resizer {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: var(--rtg-resizer-width);
+  cursor: col-resize;
+  user-select: none;
+  touch-action: none;
+  opacity: 0;
+  background-color: var(--rtg-resizer-color);
+  transition: opacity 0.2s ease, background-color 0.2s ease;
+}
+
+.rtg-resizer.ltr {
+  right: 0;
+}
+
+.rtg-resizer.rtl {
+  left: 0;
+}
+
+.rtg-resizer:hover,
+.rtg-resizer.is-dragging {
+  opacity: 1;
+  background-color: var(--rtg-resizer-color-active);
+}
+
+/* Search Styles */
+.rtg-search-container {
+  margin-bottom: var(--rtg-search-margin-bottom);
+  transition: all 0.2s ease;
+}
+
+.rtg-search-input {
+  width: 100%;
+  padding: 0.5rem 1rem;
+  background-color: var(--rtg-search-bg);
+  border: 1px solid var(--rtg-search-border);
+  border-radius: 0.5rem;
+  color: var(--rtg-search-text);
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+}
+
+.rtg-search-input::placeholder {
+  color: var(--rtg-search-placeholder);
+}
+
+.rtg-search-input:focus {
+  outline: none;
+  border-color: transparent;
+  box-shadow: 0 0 0 2px var(--rtg-search-focus-ring);
+}
+
+/* Virtualized Styles */
+.rtg-virtualized-body {
+  position: relative;
+  overflow: auto;
+  height: var(--rtg-virtualized-height);
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.rtg-virtualized-content {
+  position: relative;
+  will-change: transform;
+  contain: strict;
+  content-visibility: auto;
+}
+
+/* Scrollbar Styles */
+.rtg-grid-scroll-container,
+.rtg-virtualized-body {
+  scrollbar-width: thin;
+  scrollbar-color: var(--rtg-scrollbar-thumb) var(--rtg-scrollbar-track);
+}
+
+.rtg-grid-scroll-container::-webkit-scrollbar,
+.rtg-virtualized-body::-webkit-scrollbar {
+  width: var(--rtg-scrollbar-width);
+  height: var(--rtg-scrollbar-width);
+}
+
+.rtg-grid-scroll-container::-webkit-scrollbar-track,
+.rtg-virtualized-body::-webkit-scrollbar-track {
+  background: var(--rtg-scrollbar-track);
+}
+
+.rtg-grid-scroll-container::-webkit-scrollbar-thumb,
+.rtg-virtualized-body::-webkit-scrollbar-thumb {
+  background: var(--rtg-scrollbar-thumb);
+  border-radius: var(--rtg-scrollbar-width);
+}
+
+.rtg-grid-scroll-container::-webkit-scrollbar-thumb:hover,
+.rtg-virtualized-body::-webkit-scrollbar-thumb:hover {
+  background: var(--rtg-scrollbar-thumb-hover);
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Grid */
+    --rtg-grid-bg: #1f2937;
+    --rtg-grid-border: #374151;
+    --rtg-grid-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.2);
+
+    /* Header */
+    --rtg-header-bg: #1f2937;
+    --rtg-header-border: #374151;
+    --rtg-header-text: #e5e7eb;
+    --rtg-header-hover-bg: rgba(55, 65, 81, 0.5);
+
+    /* Header Group */
+    --rtg-header-group-bg: #111827;
+    --rtg-header-group-border: #374151;
+    --rtg-header-group-text: #f9fafb;
+    --rtg-header-group-cell-bg: var(--rtg-header-group-bg);
+    --rtg-header-group-cell-text: var(--rtg-header-group-text);
+
+    /* Body */
+    --rtg-body-bg: #1f2937;
+    --rtg-body-text: #e5e7eb;
+    --rtg-body-border: #374151;
+    --rtg-body-divide-color: #374151;
+    --rtg-body-hover-bg: rgba(55, 65, 81, 0.5);
+    --rtg-body-even-bg: rgba(31, 41, 55, 0.3);
+
+    /* Row */
+    --rtg-row-bg: #1f2937;
+    --rtg-row-hover-bg: rgba(55, 65, 81, 0.5);
+    --rtg-row-active-bg: rgba(59, 130, 246, 0.2);
+    --rtg-row-even-bg: rgba(31, 41, 55, 0.3);
+    --rtg-row-border: #374151;
+    --rtg-row-focus-ring: #3b82f6;
+
+    /* Cell */
+    --rtg-cell-text: #e5e7eb;
+    --rtg-cell-bg: transparent;
+    --rtg-cell-border: #374151;
+    --rtg-cell-hover-bg: rgba(55, 65, 81, 0.8);
+    --rtg-cell-focus-ring: #3b82f6;
+
+    /* Resizer */
+    --rtg-resizer-color: rgba(59, 130, 246, 0.3);
+    --rtg-resizer-color-active: rgba(59, 130, 246, 0.5);
+    --rtg-resizer-border-color: #374151;
+
+    /* Search */
+    --rtg-search-bg: #1f2937;
+    --rtg-search-border: #374151;
+    --rtg-search-text: #e5e7eb;
+    --rtg-search-placeholder: #6b7280;
+    --rtg-search-focus-ring: rgba(59, 130, 246, 0.5);
+
+    /* Scrollbar */
+    --rtg-scrollbar-track: #111827;
+    --rtg-scrollbar-thumb: #4b5563;
+    --rtg-scrollbar-thumb-hover: #6b7280;
+  }
+}

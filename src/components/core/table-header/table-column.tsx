@@ -3,7 +3,7 @@ import { cn } from "@/utils/cn";
 import { tableStyles } from "@/styles/table.style";
 import { TableResizer } from "@/components/ui/table-resizer";
 import { SortIcon } from "@/components/ui/sort-icon";
-import "./table-column.css";
+// import "./table-column.css";
 import type { Column } from "@/types/column.types";
 import type { useTableGrid } from "@/hooks/use-table-grid";
 import type { TableCustomComponents } from "@/types/table.types";

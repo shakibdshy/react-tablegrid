@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { cn } from "@/utils/cn";
 import { tableStyles } from "@/styles/table.style";
 import type { useTableGrid } from "@/hooks/use-table-grid";
-import "./table-search.css";
+// import "./table-search.css";
 
 interface TableSearchProps<T extends Record<string, unknown>> {
   className?: string;

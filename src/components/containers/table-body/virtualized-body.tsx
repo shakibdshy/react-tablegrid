@@ -5,7 +5,7 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import type { useTableGrid } from "@/hooks/use-table-grid";
 import { useVirtualization } from "@/hooks/use-virtualization";
 import { useCallback, useEffect, forwardRef, useImperativeHandle } from "react";
-import "./virtualized-body.css";
+// import "./virtualized-body.css";
 
 interface VirtualizationConfig {
   enabled: boolean;

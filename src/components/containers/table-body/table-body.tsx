@@ -4,7 +4,7 @@ import { TableRow } from "@/components/core/table-row/table-row";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Empty } from "@/components/ui/empty";
 import type { useTableGrid } from "@/hooks/use-table-grid";
-import "./table-body.css";
+// import "./table-body.css";
 
 interface TableBodyProps<T extends Record<string, unknown>> {
   className?: string;

@@ -1,12 +1,11 @@
-import { useCallback } from "react";
+import { useMemo, useCallback } from "react";
 import { cn } from "@/utils/cn";
 import { tableStyles } from "@/styles/table.style";
 import { TableCell } from "@/components/ui/table-cell";
 import type { Column } from "@/types/column.types";
 import type { useTableGrid } from "@/hooks/use-table-grid";
 import { getGridTemplateColumns, reorderColumns } from "@/utils/table-helper";
-import { useMemo } from "react";
-import "./table-row.css";
+// import "./table-row.css";
 
 interface TableRowProps<T extends Record<string, unknown>> {
   row: T;

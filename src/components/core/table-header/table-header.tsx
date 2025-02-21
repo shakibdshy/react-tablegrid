@@ -6,7 +6,7 @@ import type { TableCustomComponents } from "@/types/table.types";
 import { TableColumn } from "./table-column";
 import { getGridTemplateColumns, reorderColumns } from "@/utils/table-helper";
 import { useMemo } from "react";
-import "./table-header.css";
+// import "./table-header.css";
 
 interface TableHeaderProps<T extends Record<string, unknown>> {
   tableInstance: ReturnType<typeof useTableGrid<T>>;
@@ -43,7 +43,9 @@ export function TableHeader<T extends Record<string, unknown>>({
   return (
     <div
       className={cn(
-        withoutTailwind ? 'rtg-header' : cn("rtg-table-header", styles.header()),
+        withoutTailwind
+          ? "rtg-header"
+          : cn("rtg-table-header", styles.header()),
         className
       )}
       style={style}
@@ -51,7 +53,9 @@ export function TableHeader<T extends Record<string, unknown>>({
     >
       <div
         className={cn(
-          withoutTailwind ? 'rtg-header-row' : cn("rtg-table-header-row", styles.headerRow()),
+          withoutTailwind
+            ? "rtg-header-row"
+            : cn("rtg-table-header-row", styles.headerRow()),
           headerRowClassName
         )}
         style={{
@@ -103,11 +107,11 @@ export function TableHeader<T extends Record<string, unknown>>({
               enableColumnResize={enableColumnResize}
               withoutTailwind={withoutTailwind}
               className={cn(
-                withoutTailwind 
+                withoutTailwind
                   ? [
-                      'rtg-header-column',
-                      isPinnedLeft && 'rtg-header-column--pinned-left',
-                      isPinnedRight && 'rtg-header-column--pinned-right'
+                      "rtg-header-column",
+                      isPinnedLeft && "rtg-header-column--pinned-left",
+                      isPinnedRight && "rtg-header-column--pinned-right",
                     ]
                   : [
                       column.className,
@@ -116,7 +120,7 @@ export function TableHeader<T extends Record<string, unknown>>({
                       isPinnedRight &&
                         "sticky right-0 z-[35] shadow-[-1px_0_0_0_theme(colors.gray.200)]",
                     ],
-                TableColumnClassName,
+                TableColumnClassName
               )}
               style={{
                 ...(isPinnedLeft && { left: `${leftOffset}px`, zIndex: 35 }),

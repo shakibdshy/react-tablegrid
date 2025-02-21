@@ -3,7 +3,7 @@ import { cn } from "@/utils/cn";
 import { tableStyles } from "@/styles/table.style";
 import type { Column } from "@/types/column.types";
 import type { UpdateDataFn } from "@/types/table.types";
-import "./table-cell.css";
+// import "./table-cell.css";
 
 interface TableCellProps<T> {
   column: Column<T>;

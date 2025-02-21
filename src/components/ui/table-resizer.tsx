@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef } from "react";
 import { cn } from "@/utils/cn";
 import { tableStyles } from "@/styles/table.style";
-import "./table-resizer.css";
+// import "./table-resizer.css";
 
 interface TableResizerProps {
   columnId: string;

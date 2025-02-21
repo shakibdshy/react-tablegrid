@@ -4,7 +4,7 @@ import type { Column, HeaderGroup } from "@/types/column.types";
 import type { useTableGrid } from "@/hooks/use-table-grid";
 import { useMemo } from "react";
 import { getGridTemplateColumns, reorderColumns } from "@/utils/table-helper";
-import "./table-header-group.css";
+// import "./table-header-group.css";
 
 interface TableHeaderGroupProps<T extends Record<string, unknown>> {
   className?: string;
